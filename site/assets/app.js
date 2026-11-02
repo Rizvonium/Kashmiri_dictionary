@@ -311,7 +311,7 @@ function renderWelcome() {
     <section><h2>Browse by first letter</h2><div class="alpha">${ALPHABET.map(c => `<button data-letter="${c}">${c}</button>`).join("")}</div></section>
     <section><h2>Tips</h2><ul class="tips">
       <li>Tap a Kashmiri word in a result to look it up, 🔊 to hear it, ✎ to use it in a sentence.</li>
-      <li>No Kashmiri keyboard? Press <b>⌨ کٲشُر</b> (or Ctrl+K). The same keyboard opens in every Kashmiri box.</li>
+      <li>No Kashmiri keyboard? Press <b>⌨ کٲشُر</b> (or Ctrl+K). It only opens when you ask, follows the box you click (Roman or کٲشُر), and stays closed once you close it.</li>
       <li><button class="chip" data-browseall>Browse all ${DB.rows.length.toLocaleString()} entries</button></li></ul></section></div>`;
   if (w) $("wotd").appendChild(entryCard({ r: w, why: "" }, ""));
   $("count").textContent = `${DB.rows.length.toLocaleString()} entries`;
@@ -662,8 +662,8 @@ function kbInsert(str) {
 }
 function sizeKb() { document.documentElement.style.setProperty("--kb-h", KB.open ? $("kb").offsetHeight + "px" : "0px"); }
 function kbShow(open, target) {
-  KB.open = open; if (target) { KB.target = target; KB.mode = target.dataset.kb === "roman" ? "roman" : "ks"; }
-  $("kb").hidden = !open; $("kbdBtn").setAttribute("aria-pressed", open);
+  KB.open = open; store.set("ksd-kb-open", open); if (target) { KB.target = target; KB.mode = target.dataset.kb === "roman" ? "roman" : "ks"; }
+  $("kb").hidden = !open; $("kbdBtn").setAttribute("aria-pressed", open); $("kbdBtnW").setAttribute("aria-pressed", open);
   if (isTouch) document.querySelectorAll("[data-kb]").forEach(el => el.setAttribute("inputmode", open ? "none" : (el.tagName === "INPUT" && el.type === "search" ? "search" : "text")));
   if (open) renderKb(); else sizeKb();
 }
@@ -754,14 +754,18 @@ function wire() {
   $("clearMine").onclick = () => { store.set("ksd-mine", []); $("addMsg").textContent = "Your words were removed (reload to clear them from this page)."; };
 
   // keyboard
-  document.querySelectorAll("[data-kb]").forEach(el => el.addEventListener("focus", () => { if (KB.open || el.id !== "q") kbShow(true, el); }));
+  document.querySelectorAll("[data-kb]").forEach(el => el.addEventListener("focus", () => { if (KB.open) kbShow(true, el); else KB.target = el; }));
   $("kbRoman").onclick = () => { KB.mode = "roman"; renderKb(); };
   $("kbKs").onclick = () => { KB.mode = "ks"; renderKb(); };
   $("kbClose").onclick = () => kbShow(false);
+  $("kbdBtnW").onclick = () => {
+    const t = KB.target && KB.target.closest && KB.target.closest("#view-write") ? KB.target : $("w1");
+    kbShow(!KB.open, t); if (KB.open && !isTouch) t.focus();
+  };
   addEventListener("resize", sizeKb);
   document.addEventListener("keydown", e => {
     const a = document.activeElement;
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); const t = a?.dataset?.kb ? a : $("q"); kbShow(!KB.open, t); if (!isTouch) t.focus(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); const t = a?.dataset?.kb ? a : (route() === "write" ? $("w1") : $("q")); kbShow(!KB.open, t); if (!isTouch) t.focus(); return; }
     if (e.key === "Escape" && KB.open) { kbShow(false); return; }
     if (e.key === "/" && !(a && /INPUT|TEXTAREA/.test(a.tagName))) { e.preventDefault(); go("dict"); $("q").focus(); return; }
     if (!KB.open || KB.mode !== "ks" || !$("physChk").checked || a !== kbTarget() || e.ctrlKey || e.metaKey || e.altKey) return;
@@ -793,6 +797,7 @@ loadData().then(() => {
   if (qParam) { $("q").value = qParam; onSearchInput(true); } else runSearch();
   if (route() === "write") { W.ready = true; updateWriter(); }
   probeServer();
+  if (store.get("ksd-kb-open", false)) kbShow(true, route() === "write" ? $("w1") : $("q"));
 }).catch(err => {
   $("results").innerHTML = `<div class="empty">Could not load the dictionary (${esc(err.message)}).<br>Open the site through a web server (e.g. <code>python3 -m http.server -d site</code>) or the deployed address.</div>`;
 });

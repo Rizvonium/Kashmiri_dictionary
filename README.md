@@ -31,7 +31,7 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 
 ## Website
 
-`site/` is one static page, with no build step, and three tabs. One keyboard is shared by every field: it opens in Roman for Roman fields and in کٲشُر for Kashmiri fields.
+`site/` is one static page, with no build step, and three tabs. One on-screen keyboard is shared by every field. It opens only when you press ⌨ (or Ctrl+K) and stays closed once closed. While open, it shows Roman for Roman fields and کٲشُر for Kashmiri fields.
 
 * **Dictionary**: search in English, Kashmiri script, Hindi, or Roman Kashmiri spelled any way (*koshur* / *kaeshur* / *kạ̄shur*, *cxoont* / *tsoont*). Vowel signs and letter variants are optional. It offers filters, browsing by letter, audio, "did you mean", a word of the day and recent searches.
 * **Write & Translate**: type a sentence in a–z and get four views of it: your input, the dictionary Kashmiri spelling (chosen using the sentence's context; tap any word to see and pick other spellings), the corrected Roman spelling, and a letter-by-letter Kashmiri spelling. `\word` and `\{phrase\}` keep names exactly as typed. The **Meaning & translation** panel offers:
