@@ -1,0 +1,56 @@
+{
+  "total_entries": 38978,
+  "by_source": {
+    "kashmirizabaan": 8637,
+    "kaeshir": 9049,
+    "hassan": 5563,
+    "injilashah-phonemes": 82,
+    "grierson": 21145
+  },
+  "with_perso_arabic_headword": 20131,
+  "by_script_quality": {
+    "native": 12188,
+    "none": 18765,
+    "auto-transliterated": 5348,
+    "unverified": 82,
+    "source-perso-arabic (1932)": 2595
+  },
+  "with_roman": 35610,
+  "with_devanagari": 19326,
+  "with_audio": 5606,
+  "with_example_en": 11684,
+  "with_hindi": 8245,
+  "unique_native_headwords": 9659,
+  "non_inventory_chars_in_headwords": {
+    "U+002E FULL STOP": 11,
+    "U+002F SOLIDUS": 4,
+    "U+0660 ARABIC-INDIC DIGIT ZERO": 2,
+    "U+0027 APOSTROPHE": 1
+  },
+  "sources": {
+    "kashmirizabaan": {
+      "name": "kashmirizabaan.com English-Kashmiri dictionary (via ubaierbhat/kzwebscrap and injilashah/Kashmiri-language-text-dataset)",
+      "license": "MIT (scrape repo); underlying site content: rights unclear"
+    },
+    "kaeshir": {
+      "name": "Kaeshir Dictionary curated collection (izan-majeed/kaeshir-dictionary-data, collected-words.json)",
+      "license": "MIT"
+    },
+    "hassan": {
+      "name": "Sheeba Hassan, A Pronouncing Dictionary of Kashmiri (DSAL, Univ. of Chicago), via ubaierbhat/kzwebscrap and izan-majeed/kaeshir-dictionary-data",
+      "license": "DSAL / author copyright - research and non-commercial use"
+    },
+    "grierson": {
+      "name": "G. A. Grierson, A Dictionary of the Kashmiri Language (1932), DSAL digital edition",
+      "license": "Public domain text (1932); DSAL digitization - cite DSAL"
+    },
+    "injilashah-phonemes": {
+      "name": "injilashah/Kashmiri-language-text-dataset, wordphonemes-meaning.csv",
+      "license": "not stated on dataset card"
+    },
+    "omarrran": {
+      "name": "Omarrran/kashmiri_multilingual_dictionary_dataset (Hugging Face, gated)",
+      "license": "Apache-2.0"
+    }
+  }
+}

@@ -14,7 +14,19 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 | [`docs/ORTHOGRAPHY.md`](docs/ORTHOGRAPHY.md) | **Which Unicode to use for Kashmiri** and every normalization rule applied |
 | `scripts/` | `fetch_sources.sh` (download), `build_dataset.py` (merge), `ks_normalize.py` (Unicode normalizer) |
 
-<!-- STATS -->
+## At a glance
+
+| | |
+|---|---|
+| Total entries | **38,978** |
+| With a Perso-Arabic headword | 20,131 (12,188 in native modern orthography, 9,659 unique words) |
+| With Devanagari | 19,326 |
+| With romanization | 35,610 |
+| With native-speaker audio | 5,606 |
+| With English example sentence | 11,684 |
+| With Hindi gloss | 8,245 |
+| Entries by source | Grierson 21,145 · kashmirizabaan 8,637 · Kaeshir 9,049 · Hassan 5,563 · other 82 (one entry can come from several sources) |
+
 
 ## Entry schema
 

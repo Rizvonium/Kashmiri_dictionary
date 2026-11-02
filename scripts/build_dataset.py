@@ -435,7 +435,7 @@ def main(raw, out_dir):
         for c in foreign_chars(e.get("headword_ks", "")):
             qa_foreign[f"U+{ord(c):04X} {unicodedata.name(c, '?')}"] += 1
         for f in FIELDS:
-            e.setdefault(f, "")
+            e[f] = unicodedata.normalize("NFC", e.get(f) or "")
 
     with open(os.path.join(out_dir, "kashmiri_dictionary.jsonl"), "w", encoding="utf-8") as fh:
         for e in entries:

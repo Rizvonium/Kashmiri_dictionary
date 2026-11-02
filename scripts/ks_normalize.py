@@ -54,7 +54,12 @@ def normalize_ks(text):
     """Return Kashmiri Perso-Arabic text in the dataset's canonical form."""
     if not text:
         return ""
-    t = _LEGACY_KASHMIRI_YEH.sub("ؠ", text)
+    # Arabic presentation forms (U+FB50-FDFF, U+FE70-FEFF) -> base letters
+    t = "".join(unicodedata.normalize("NFKC", c)
+                if "ﭐ" <= c <= "﷿" or "ﹰ" <= c <= "﻿" else c for c in text)
+    # Sindhi/Hindustani letters used in Grierson's 1932 spellings -> Kashmiri/Urdu
+    t = t.replace("ڐ", "ڈ").replace("ٿ", "تھ").replace("ڇ", "چھ")
+    t = _LEGACY_KASHMIRI_YEH.sub("ؠ", t)
     t = t.translate(_TRANS)
     t = _DUP_MARK.sub(r"\1", t)
     t = unicodedata.normalize("NFC", t)

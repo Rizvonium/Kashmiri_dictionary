@@ -56,6 +56,8 @@ the same bytes and string comparison and search work.
 | `ۆ` U+06C6 | `وٚ` (U+0648 U+065A) | o vowel in the Hassan/DSAL Perso-Arabic |
 | `ٳ` U+0673 | `اٟ` (U+0627 U+065F) | U+0673 has been deprecated since Unicode 6.0 |
 | `ك` `ي` `ى` `ه` | `ک` `ی` `ی` `ہ` | Arabic keyboard forms |
+| `ڐ` `ٿ` `ڇ` (Sindhi letters in Grierson 1932) | `ڈ` `تھ` `چھ` | Urdu/Kashmiri spellings of ḍ, tʰ, cʰ |
+| Arabic presentation forms (U+FB50–FEFF) | base letters | old encodings |
 | doubled marks (`اََ`) | one mark | typing errors |
 | tatweel, LRM/RLM, BOM | removed | |
 | `,` `،` with any spacing | `، ` | one list separator |
