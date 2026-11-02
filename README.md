@@ -34,7 +34,7 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 Two pages, both in `site/`:
 
 * **`index.html`**: the main dictionary (described below).
-* **`koshurlex.html`** (KoshurLex): type Kashmiri in *any* Roman spelling (kaeshur / koshur / kạ̄shur, cxoont / tsoont). It also offers a Roman-Kashmiri keyboard and a Roman → Perso-Arabic writer that marks rule-based guesses, and you can add your own entries (saved in your browser only). The method is described in [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md).
+* **`koshurlex.html`** (KoshurLex): a **Sentence Studio** (type a sentence in a–z and get three live outputs: literal Kashmiri, dictionary Kashmiri chosen using the sentence's context, and corrected Roman; protect words with `\word` / `\{phrase\}`). You can also type Kashmiri in *any* Roman spelling (kaeshur / koshur / kạ̄shur, cxoont / tsoont). It also offers a Roman-Kashmiri keyboard and a Roman → Perso-Arabic writer that marks rule-based guesses, and you can add your own entries (saved in your browser only). The method is described in [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md).
 
 `site/` is a static website, with no build step. It loads `site/data/dictionary.json` and offers:
 

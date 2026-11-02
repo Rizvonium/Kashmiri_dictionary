@@ -70,6 +70,42 @@ The writer converts one word at a time:
    `ae` → ٲ, `oo` → وٗ, `'` → ؠ …). These words are **marked as guesses**: a
    dotted underline on the web page, and a printed list in the CLI.
 
+## Sentence Studio (KoshurLex first tab)
+
+You type a whole sentence using only a–z. The studio fills in three outputs at once:
+
+1. **Direct / literal**: a letter-by-letter conversion of exactly what you
+   typed. It does not use the dictionary.
+2. **Dictionary Kashmiri**: each word replaced by a dictionary spelling. The
+   candidates for each word are found by exact spelling, then phonetic
+   skeleton, then consonant root. Each candidate's score combines how well it
+   matched with how reliable its source is: core list > native > Aksharantar
+   spelling > Grierson 1932 > unverified > machine-transliterated. Context is
+   then added in **two passes**:
+   * **gloss overlap (Lesk-style)**: +6 for each content word the candidate's
+     English meaning shares with the chosen meanings of words within ±3
+     positions, up to +18;
+   * **hand-checked hints**: +12. For example, ترٛےٚ "three" next to
+     cxoont, kitaab or insaan.
+
+   Words that aren't found are spelled by rule and **underlined**. A badge
+   shows how many words were found in the dictionary.
+3. **Corrected Roman**: the dictionary's Roman spelling of each chosen word,
+   plus a plain a–z version where long vowels are written doubled
+   (ā → aa, ī → ee, ū → oo, ạ̄ → ae).
+
+**Escapes (LaTeX-style)**: wrap a single word as `\word` or a phrase as
+`\{several words\}`. Escaped text is copied unchanged into all three outputs,
+which is useful for names, English and numbers.
+
+Tap any word in the trace to see every candidate with its score.
+
+This is context *scoring*, not a trained language model. No Kashmiri corpus
+with word order is available here to train one. The demo homographs suggested
+earlier were checked against the data and dropped: *trēsh* "thirst" is not
+spelled like *tre* "three", and Grierson's *tar* means seedling or fresh, not
+cold.
+
 ## Where the Roman spellings come from
 
 | Source | Roman spellings |

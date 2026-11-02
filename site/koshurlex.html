@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KoshurLex — Romanized Kashmiri Keyboard &amp; Smart Multi-Spelling Dictionary</title>
+  <title>KoshurLex — Roman Kashmiri Sentence Studio, Keyboard &amp; Smart Dictionary</title>
   <meta name="author" content="Kainaat & RGMir">
   <meta name="description" content="Type Kashmiri in any Roman spelling (kaeshur, koshur, kạ̄shur) and find it in a 47,000-entry dictionary; convert Roman Kashmiri to Perso-Arabic script.">
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
@@ -16,6 +16,7 @@
     .naskh { font-family: 'Noto Naskh Arabic', serif; direction: rtl; unicode-bidi: isolate; }
     .kbd-key { transition: all 0.12s ease; user-select: none; }
     .kbd-key:active { transform: translateY(2px); }
+    body .font-mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Naskh Arabic", monospace; }
     .guess { text-decoration: underline dotted #fbbf24; text-underline-offset: 6px; }
     :focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
   </style>
@@ -34,9 +35,12 @@
             <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               Multi-Spelling Engine
             </span>
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              Sentence Studio + <code>\escape</code>
+            </span>
           </h1>
           <p class="text-xs text-slate-400">
-            Type in any Romanized Kashmiri spelling, Kashmiri Perso-Arabic script, or English meaning ·
+            Type with the 26 English letters in any Roman spelling, Kashmiri script, or English · protect words with <code class="text-amber-300">\word</code> / <code class="text-amber-300">\{phrase\}</code> ·
             Developed by <b class="text-emerald-300">Kainaat &amp; RGMir</b>
           </p>
         </div>
@@ -44,11 +48,11 @@
 
       <!-- Navigation Tabs -->
       <nav class="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700/70">
-        <button id="tabBtnSearch" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-emerald-600 text-white transition">
-          Smart Search &amp; Keyboard
+        <button id="tabBtnComposer" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-emerald-600 text-white transition">
+          Sentence Studio (3 outputs)
         </button>
-        <button id="tabBtnComposer" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition">
-          Roman → کٲشُر Writer
+        <button id="tabBtnSearch" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition">
+          Smart Search &amp; Keyboard
         </button>
         <button id="tabBtnAgent" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition">
           Dataset Links &amp; Add Entry
@@ -62,7 +66,7 @@
   <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
 
     <!-- VIEW 1: SMART SEARCH & ROMANIZED KEYBOARD -->
-    <section id="viewSearch" class="space-y-5">
+    <section id="viewSearch" class="hidden space-y-5">
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <label for="searchInput" class="text-sm font-semibold text-slate-200">
@@ -165,46 +169,110 @@
       </div>
     </section>
 
-    <!-- VIEW 2: ROMAN -> KASHMIRI PERSO-ARABIC COMPOSER / WRITER -->
-    <section id="viewComposer" class="hidden space-y-5">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+    <!-- VIEW: 26-KEY SENTENCE STUDIO (3 live outputs, \escape protection) -->
+    <section id="viewComposer" class="space-y-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 class="text-base font-bold text-white">Romanized Kashmiri → Perso-Arabic Writer</h2>
-            <p class="text-xs text-slate-400">
-              Type Romanized Kashmiri on the left. Each word is looked up in the dictionary first (any spelling).
-              Words not found are spelled by phonetic rules and shown with a <span class="guess text-amber-300">dotted underline</span> — check those.
+            <h2 class="text-sm sm:text-base font-bold text-white">Type Romanized Kashmiri using only the 26 English letters (a–z)</h2>
+            <p class="text-xs text-slate-400 max-w-3xl">
+              Each word is matched against the full dictionary in any spelling. When a word has several possible Kashmiri spellings,
+              the studio compares each candidate's English meaning with the meanings of the neighbouring words (two passes) and picks the one that fits best.
+              Put <code class="text-amber-300 font-mono">\word</code> or <code class="text-amber-300 font-mono">\{a phrase\}</code> (like LaTeX) around anything that must stay exactly as typed — names, English, numbers.
             </p>
           </div>
-          <button id="copyComposerBtn" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">
-            Copy Kashmiri Unicode
-          </button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-1.5">
-            <label for="composerRomanInput" class="text-xs font-medium text-slate-300">Type Romanized Kashmiri Sentence:</label>
-            <textarea id="composerRomanInput" rows="5"
-              placeholder="Try typing: kaeshur zabaan chhu saeri khotah meeth..."
-              class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500">kaeshur lughat aab cxoont trovmut gagur</textarea>
-          </div>
-          <div class="space-y-1.5">
-            <label class="text-xs font-medium text-slate-300">Converted Kashmiri Perso-Arabic Unicode:</label>
-            <div id="composerArabicOutput" lang="ks"
-              class="w-full min-h-[132px] bg-slate-950 border border-slate-700 rounded-xl p-4 text-xl text-emerald-300 nastaliq"></div>
+          <div class="flex items-center gap-2">
+            <button id="insertEscapeBtn" class="text-xs px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-mono transition">Insert \{ … \}</button>
+            <button id="clearComposerBtn" class="text-xs px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">Clear</button>
           </div>
         </div>
-        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-xs space-y-2">
-          <div class="font-semibold text-slate-200">Romanized Kashmiri Typing Conventions (Casual &amp; Academic):</div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300 font-mono">
-            <div><span class="text-emerald-400">ae / ạ̄</span> → ٲ (/əː/)</div>
-            <div><span class="text-emerald-400">ạ</span> → ◌ٔ (/ə/)</div>
-            <div><span class="text-emerald-400">ɨ</span> → ◌ٕ (/ɨ/)</div>
-            <div><span class="text-emerald-400">ɨ̄</span> → ◌ٟ (/ɨː/)</div>
-            <div><span class="text-emerald-400">cx / ts</span> → ژ (/t͡s/)</div>
-            <div><span class="text-emerald-400">cxh / tsh</span> → ژھ (/t͡sʰ/)</div>
-            <div><span class="text-emerald-400">' (apostrophe)</span> → ؠ (/ʲ/)</div>
-            <div><span class="text-emerald-400">ɔ / oa</span> → ۄ (/ɔ/)</div>
+
+        <textarea id="composerRomanInput" rows="3" spellcheck="false" autocomplete="off"
+          placeholder="Type a Roman Kashmiri sentence, e.g. bu chhus kaeshur zabaan parun   or   \Ali chhu kaeshur lughat parun"
+          class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl p-3.5 text-base text-white font-mono placeholder-slate-500 outline-none transition">yih makaan chhu dah waryo peth trovmut</textarea>
+
+        <div class="flex flex-wrap items-center gap-1.5 text-xs">
+          <span class="text-slate-400 mr-1">Try:</span>
+          <button data-sentence="yih makaan chhu dah waryo peth trovmut" class="sentence-chip px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">yih makaan chhu … trovmut <span class="text-slate-400">(abandoned house)</span></button>
+          <button data-sentence="saeri insaan chhi aazaad zaamut" class="sentence-chip px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">saeri insaan chhi aazaad zaamut</button>
+          <button data-sentence="treh cxoont te aab" class="sentence-chip px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">treh cxoont te aab <span class="text-slate-400">(three apples and water)</span></button>
+          <button data-sentence="koshur zabaan chhu meeth" class="sentence-chip px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">koshur zabaan chhu meeth</button>
+          <button data-sentence="\Ali chhu \{Ali Mohammad and Sons\} sinz kaeshur lughat parun" class="sentence-chip px-2.5 py-1 rounded-full bg-amber-950/60 hover:bg-amber-900/60 border border-amber-700/50 text-amber-200 transition">\escape demo <span class="font-mono">\Ali … \{Ali Mohammad and Sons\}</span></button>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800/80 space-y-1.5">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 mb-1">
+            <span>26-key keyboard + escape keys (<code class="text-amber-300">\</code>, <code class="text-amber-300">\{</code>, <code class="text-amber-300">\}</code>)</span>
+            <span id="sentenceContextStatus" class="text-emerald-400 font-medium">Loading dictionary…</span>
           </div>
+          <div id="qwerty26Container" class="space-y-1.5"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg space-y-3">
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">1 · Direct / literal Kashmiri</span>
+              <button data-copy-target="box1DirectOutput" class="copy-box-btn text-[11px] px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition">Copy</button>
+            </div>
+            <p class="text-[11px] text-slate-400">Letter-by-letter conversion of exactly what you typed, without the dictionary.</p>
+          </div>
+          <div id="box1DirectOutput" lang="ks" class="w-full min-h-[120px] bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xl text-slate-300 nastaliq"></div>
+          <div class="text-[11px] text-slate-500 flex items-center justify-between"><span>Rule-based spelling</span><span>\escaped text kept as typed</span></div>
+        </div>
+
+        <div class="bg-slate-900 border-2 border-emerald-500/50 rounded-2xl p-4 flex flex-col justify-between shadow-lg space-y-3">
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">2 · Dictionary Kashmiri (کٲشُر)</span>
+              <button data-copy-target="box2InferredKashmiri" class="copy-box-btn text-[11px] px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">Copy</button>
+            </div>
+            <p class="text-[11px] text-slate-300">Each word replaced by its dictionary spelling, chosen using the whole sentence. <span class="guess text-amber-300">Underlined</span> words were not found and are rule-based guesses.</p>
+          </div>
+          <div id="box2InferredKashmiri" lang="ks" class="w-full min-h-[120px] bg-slate-950 border border-emerald-500/30 rounded-xl p-3.5 text-xl text-emerald-300 nastaliq"></div>
+          <div class="text-[11px] text-emerald-400/90 flex items-center justify-between"><span>Dictionary + sentence-context scoring</span><span id="box2ConfidenceBadge">—</span></div>
+        </div>
+
+        <div class="bg-slate-900 border border-indigo-500/40 rounded-2xl p-4 flex flex-col justify-between shadow-lg space-y-3">
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-indigo-300">3 · Corrected Roman Kashmiri</span>
+              <button data-copy-target="box3CorrectedRoman" class="copy-box-btn text-[11px] px-2 py-0.5 rounded bg-indigo-600/40 hover:bg-indigo-600/60 text-indigo-200 border border-indigo-500/40 transition">Copy</button>
+            </div>
+            <p class="text-[11px] text-slate-400">The dictionary's Roman spelling of each chosen word, plus a plain a–z version.</p>
+          </div>
+          <div class="space-y-2">
+            <div id="box3CorrectedRoman" class="w-full min-h-[72px] bg-slate-950 border border-slate-800 rounded-xl p-3 text-base text-indigo-200 font-mono leading-relaxed"></div>
+            <div class="bg-slate-950/70 border border-slate-800/80 rounded-lg px-3 py-1.5 text-xs flex items-center justify-between gap-2">
+              <span class="text-slate-400 whitespace-nowrap">Plain a–z:</span>
+              <code id="box3Clean26Roman" class="text-slate-200 font-mono text-right"></code>
+            </div>
+          </div>
+          <div class="text-[11px] text-indigo-300/80 flex items-center justify-between"><span>Normalizes informal spellings</span><span>\escaped text untouched</span></div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Word-by-word trace (tap a word to see other candidates)</h3>
+          <span id="inferredEnglishMeaningStrip" class="text-xs text-emerald-300 font-medium"></span>
+        </div>
+        <div id="tokenInferenceTrace" class="flex flex-wrap gap-2"></div>
+        <div id="candidatePanel" class="hidden bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs"></div>
+      </div>
+
+      <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-xs space-y-2">
+        <div class="font-semibold text-slate-200">Roman Kashmiri typing conventions (a–z only):</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300 font-mono">
+          <div><span class="text-emerald-400">ae</span> → ٲ (/əː/)</div>
+          <div><span class="text-emerald-400">aa</span> → آ / ا (/aː/)</div>
+          <div><span class="text-emerald-400">ee / oo</span> → یٖ / وٗ</div>
+          <div><span class="text-emerald-400">oa</span> → ۄ (/ɔ/)</div>
+          <div><span class="text-emerald-400">cx / ts</span> → ژ (/t͡s/)</div>
+          <div><span class="text-emerald-400">cxh / tsh</span> → ژھ (/t͡sʰ/)</div>
+          <div><span class="text-emerald-400">chh / kh / ph / th</span> → چھ / کھ / پھ / تھ</div>
+          <div><span class="text-amber-300">\word  \{…\}</span> → kept as typed</div>
         </div>
       </div>
     </section>
@@ -323,7 +391,27 @@
       ["زَبان", "zabān / zabaan", "language, tongue"],
       ["مِیٖٹھ", "mīṭh / meeth", "sweet"],
       ["چُھ", "chhu / chu", "is (masculine singular)"],
-    ].map(([k, r, m]) => ({ kashmiri_unicode: k, romanized_kashmiri: r, meaning: m, source: "KoshurLex core list", quality: "native" }));
+      ["چھِ", "chhi / chi", "are (plural); is (feminine)"],
+      ["چُھس", "chhus / chus", "am (masculine)"],
+      ["یہِ", "yih / yi / yeh", "this, it"],
+      ["مَکان", "makaan / makan / makān", "house, building"],
+      ["بہٕ", "bu / bɨ / ba", "I"],
+      ["تہٕ", "te / ta / tɨ", "and"],
+      ["ترٛےٚ", "tre / treh / trē", "three"],
+      ["آزاد", "aazaad / azaad / āzād", "free, independent"],
+      ["اِنسان", "insaan / insān", "human being, people"],
+      ["سٲری", "saeri / saeree / sạ̄rī", "all, everyone"],
+      ["لُغَت", "lughat / lugat", "dictionary"],
+      ["پَرُن", "parun", "to read, to study"],
+      ["کھیوٚن", "khyon / khyun", "to eat"],
+      ["کِتاب", "kitaab / kitāb", "book"],
+      ["سٕنٛز", "sinz / sɨnz", "of (feminine possessed noun)"],
+      ["دَہ", "dah / daha", "ten"],
+      ["ؤری", "warih / wahar / vạrī", "year"],
+      ["ؤریو", "waryo / vạryo", "years (oblique plural)"],
+      ["پؠٹھ", "peth / pyeth / peṭh", "since, from, on"],
+      ["زامُت", "zaamut / zāmut", "born"],
+    ].map(([k, r, m]) => ({ kashmiri_unicode: k, romanized_kashmiri: r, meaning: m, source: "KoshurLex core list", quality: "core" }));
 
     // =========================================================================
     // 2. KOSHUR SOUNDEX & DETERMINISTIC TRANSLITERATION FUNCTIONS
@@ -430,7 +518,7 @@
     // =========================================================================
     let dictionaryData = [];
     const index = { variant: new Map(), pskel: new Map(), cskel: new Map(), imeVariant: new Map(), imePskel: new Map() };
-    const QUALITY_RANK = { "native": 0, "source-perso-arabic (1932)": 1, "spelling": 1.5, "": 2, "auto-transliterated": 3, "unverified": 4 };
+    const QUALITY_RANK = { "native": 0, "core": 0.5, "source-perso-arabic (1932)": 1, "spelling": 1.5, "": 2, "auto-transliterated": 3, "unverified": 4 };
     function push(map, key, item) { if (!key) return; let a = map.get(key); if (!a) map.set(key, a = []); a.push(item); }
 
     function addEntry(raw, front) {
@@ -667,18 +755,199 @@
     }
 
     // =========================================================================
-    // 6. COMPOSER / WRITER
+    // 6. SENTENCE STUDIO: \escape tokenizer, candidates, 2-pass context scoring
     // =========================================================================
-    function updateComposerOutput() {
-      const text = document.getElementById("composerRomanInput").value;
-      const out = document.getElementById("composerArabicOutput");
-      out.innerHTML = text.split(/(\s+)/).map(token => {
-        if (!token || /^\s+$/.test(token)) return token.includes("\n") ? "<br>" : " ";
-        const m = token.match(/^([^\p{L}'’]*)(.*?)([^\p{L}'’]*)$/u);
-        const { text: ks, guessed } = romanWordToKashmiriIME(m[2]);
-        return esc(m[1]) + (guessed ? `<span class="guess" title="Not in dictionary — spelled by rules">${esc(ks)}</span>` : esc(ks)) + esc(m[3]);
-      }).join("");
+    // \{multi word phrase\}  or  \word  are protected and copied verbatim to all three outputs.
+    function tokenizeSentenceWithEscapes(inputStr) {
+      const regex = /\\\{([\s\S]*?)\\\}|\\([^\s\\]+)|(\s+)|([^\s\\]+)|(\\)/g;
+      const tokens = []; let m;
+      while ((m = regex.exec(inputStr)) !== null) {
+        if (m[1] !== undefined) tokens.push({ type: "escaped", raw: m[0], text: m[1] });
+        else if (m[2] !== undefined) tokens.push({ type: "escaped", raw: m[0], text: m[2] });
+        else if (m[3] !== undefined) tokens.push({ type: "space", text: m[3] });
+        else if (m[4] !== undefined) tokens.push({ type: "word", text: m[4] });
+        else tokens.push({ type: "word", text: m[5] });
+      }
+      return tokens;
     }
+
+    // Output 1: literal letter-by-letter spelling (no dictionary)
+    function directLiteralRomanToKashmiri(rawWord) {
+      let s = (rawWord || "").toLowerCase().trim();
+      if (!s) return "";
+      const rules = [["tsh", "ژھ"], ["cxh", "ژھ"], ["chh", "چھ"], ["sh", "ش"], ["ts", "ژ"], ["cx", "ژ"], ["ch", "چ"],
+        ["kh", "کھ"], ["ph", "پھ"], ["th", "تھ"], ["bh", "بھ"], ["dh", "دھ"], ["gh", "گھ"], ["ae", "ٲ"], ["aa", "آ"],
+        ["ee", "یٖ"], ["oo", "وٗ"], ["oa", "ۄ"], ["'", "ؠ"]];
+      for (const [k, v] of rules) s = s.split(k).join(v);
+      if (/^[aiueo]/.test(s)) s = "ا" + s;
+      const charRules = { "a": "َ", "i": "ِ", "u": "ُ", "e": "ے", "o": "و", "b": "ب", "p": "پ", "t": "ت", "j": "ج", "d": "د",
+        "r": "ر", "z": "ز", "s": "س", "f": "ف", "q": "ق", "k": "ک", "g": "گ", "l": "ل", "m": "م", "n": "ن",
+        "v": "و", "w": "و", "h": "ہ", "y": "ی", "c": "چ", "x": "ش" };
+      let out = ""; for (const ch of s) out += charRules[ch] ?? ch;
+      return normKs(out);
+    }
+
+    // Plain a–z form of a Roman spelling (for Output 3)
+    function toClean26(rom) {
+      return (rom || "").normalize("NFC").replace(/ʦ/g, "ts").replace(/ạ̄/g, "ae").replace(/ā/g, "aa").replace(/ī/g, "ee").replace(/ū/g, "oo").replace(/ē/g, "e").replace(/ō/g, "o").replace(/[ɔͻ]/g, "o").replace(/[ɨι]/g, "u")
+        .replace(/ə/g, "a").replace(/ʰ/g, "h").replace(/[ʲʸ]/g, "y")
+        .normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z\s-]/g, "").replace(/\s+/g, " ").trim();
+    }
+
+    const STOP = new Set("the a an of to and or in on at for with from by is are be was were as it its this that these those which who whom not no".split(" "));
+    function glossWords(meaning) {
+      return new Set((meaning || "").toLowerCase().replace(/^[a-z.]+\.\s/, "").split(/[^a-z]+/).filter(w => w.length > 2 && !STOP.has(w)));
+    }
+    // Hand-checked context hints: candidate Kashmiri word -> Roman words that make it likelier
+    const CONTEXT_HINTS = { "ترٛےٚ": ["cxoont", "tsoont", "insaan", "kitaab", "makaan", "waryo", "dah"] };
+    const QUALITY_BONUS = { "native": 8, "core": 9, "source-perso-arabic (1932)": 2, "spelling": 4, "": 0, "auto-transliterated": -12, "unverified": -6 };
+
+    function wordCandidates(clean) {
+      const ps = computePhoneticSkeleton(clean), cs = computeConsonantSkeleton(clean);
+      const best = new Map();
+      const add = (it, base, method) => {
+        if (!it.kashmiri_unicode) return;
+        const sc = base + (QUALITY_BONUS[it.quality ?? ""] ?? 0) + (it.meaning ? 3 : 0);
+        const p = best.get(it); if (!p || p.score < sc) best.set(it, { entry: it, base, score: sc, method });
+      };
+      (index.variant.get(clean) || []).forEach(it => add(it, 95, "exact spelling"));
+      if (ps) (index.pskel.get(ps) || []).forEach(it => add(it, 88, "phonetic skeleton"));
+      if (best.size < 3 && cs.length >= 3) (index.cskel.get(cs) || []).slice(0, 400).forEach(it => add(it, 79, "consonant root"));
+      return [...best.values()].sort((a, b) => b.score - a.score).slice(0, 8);
+    }
+
+    function inferWholeSentence(inputStr) {
+      const tokens = tokenizeSentenceWithEscapes(inputStr);
+      const words = [];
+      tokens.forEach((t, i) => {
+        if (t.type !== "word") return;
+        const m = t.text.match(/^([^A-Za-z'’]*)([A-Za-z'’]*)([^A-Za-z'’]*)$/) || ["", "", t.text, ""];
+        t.pre = m[1]; t.core = m[2]; t.post = m[3];
+        t.clean = t.core.toLowerCase().replace(/’/g, "'");
+        t.cands = t.clean ? wordCandidates(t.clean) : [];
+        t.wi = words.length; words.push(t);
+      });
+      const rawSet = new Set(words.map(w => w.clean)), rawSkels = new Set(words.map(w => computePhoneticSkeleton(w.clean)));
+      // pass 1: best by spelling + quality;  pass 2: add context (gloss overlap with neighbours ±3, hints)
+      words.forEach(w => { w.choice = w.cands[0] || null; w.bonus = 0; });
+      for (let pass = 0; pass < 2; pass++) {
+        words.forEach(w => {
+          if (w.cands.length < 2) return;
+          const ctx = new Set();
+          words.forEach(o => { if (o !== w && Math.abs(o.wi - w.wi) <= 3 && o.choice) glossWords(o.choice.entry.meaning).forEach(g => ctx.add(g)); });
+          let top = null;
+          for (const c of w.cands) {
+            let bonus = 0;
+            for (const g of glossWords(c.entry.meaning)) if (ctx.has(g)) bonus += 6;
+            bonus = Math.min(bonus, 18);
+            for (const h of CONTEXT_HINTS[c.entry.kashmiri_unicode] || []) if (rawSet.has(h) || rawSkels.has(computePhoneticSkeleton(h))) { bonus += 12; break; }
+            const total = c.score + bonus;
+            if (!top || total > top.total) top = { c, total, bonus };
+          }
+          w.choice = top.c; w.bonus = top.bonus;
+        });
+      }
+      const out = { box1: [], box2: [], box3: [], box3c: [], trace: [], gloss: [], found: 0, total: 0 };
+      tokens.forEach(t => {
+        if (t.type === "space") { ["box1", "box2", "box3", "box3c"].forEach(k => out[k].push(esc(t.text))); return; }
+        if (t.type === "escaped") {
+          const e = esc(t.text);
+          ["box1", "box2", "box3", "box3c"].forEach(k => out[k].push(`<span class="text-amber-300">${e}</span>`));
+          out.trace.push({ raw: t.raw, ks: t.text, rom: t.text, meaning: "kept exactly as typed", method: "\\escape", kind: "escaped" });
+          out.gloss.push(t.text);
+          return;
+        }
+        const direct = directLiteralRomanToKashmiri(t.core);
+        out.box1.push(esc(t.pre + direct + t.post));
+        if (!t.clean) { ["box2", "box3", "box3c"].forEach(k => out[k].push(esc(t.text))); return; }
+        out.total++;
+        if (!t.choice) {
+          const g = romanWordToKashmiriIME(t.clean).text || direct;
+          out.box2.push(esc(t.pre) + `<span class="guess" title="Not in the dictionary — rule-based spelling">${esc(g)}</span>` + esc(t.post));
+          out.box3.push(esc(t.text)); out.box3c.push(esc(toClean26(t.text)));
+          out.trace.push({ raw: t.text, ks: g, rom: t.text, meaning: "not in dictionary — rule-based guess", method: "guess", kind: "guess", cands: [] });
+          return;
+        }
+        out.found++;
+        const e = t.choice.entry;
+        const primary = (e.romanized_kashmiri || "").split(/\s*\/\s*|\s+or\s+|;\s*/)[0].replace(/\s+\d+$/, "").trim() || t.core;
+        out.box2.push(esc(t.pre + e.kashmiri_unicode + t.post));
+        out.box3.push(esc(t.pre + primary + t.post));
+        out.box3c.push(esc(t.pre + toClean26(primary) + t.post));
+        if (e.meaning) out.gloss.push(e.meaning.replace(/^[a-z ]+\.\s/i, "").split(/[;,]/)[0].trim());
+        out.trace.push({ raw: t.text, ks: e.kashmiri_unicode, rom: primary, meaning: e.meaning || "spelling only", source: e.source,
+          method: t.choice.method + (t.bonus ? ` + context (+${t.bonus})` : ""), kind: t.bonus ? "context" : "dict", cands: t.cands, chosen: t.choice });
+      });
+      return out;
+    }
+
+    let lastTrace = [];
+    function updateSentenceStudio() {
+      const r = inferWholeSentence(document.getElementById("composerRomanInput").value);
+      const put = (id, parts) => { document.getElementById(id).innerHTML = parts.join("") || "—"; };
+      put("box1DirectOutput", r.box1); put("box2InferredKashmiri", r.box2); put("box3CorrectedRoman", r.box3); put("box3Clean26Roman", r.box3c);
+      document.getElementById("box2ConfidenceBadge").textContent = r.total ? `found in dictionary: ${r.found}/${r.total} words` : "—";
+      document.getElementById("inferredEnglishMeaningStrip").textContent = r.gloss.length ? `Gloss: “${r.gloss.join(" · ")}”` : "";
+      lastTrace = r.trace;
+      const style = { escaped: ["border-amber-500/50 bg-amber-950/20", "bg-amber-500/20 text-amber-300"],
+        context: ["border-emerald-500/60 bg-emerald-950/20", "bg-emerald-500/20 text-emerald-300"],
+        guess: ["border-amber-700/40 bg-slate-950/80", "bg-amber-900/40 text-amber-300"],
+        dict: ["border-slate-800 bg-slate-950/80", "bg-slate-800 text-slate-300"] };
+      document.getElementById("tokenInferenceTrace").innerHTML = r.trace.map((it, i) => `
+        <button type="button" data-trace="${i}" class="text-left rounded-xl border ${style[it.kind][0]} p-2.5 text-xs flex flex-col gap-1 min-w-[150px] max-w-[230px] hover:border-emerald-400/70">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono text-slate-400">${esc(it.raw)}</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded ${style[it.kind][1]}">${esc(it.method)}</span>
+          </div>
+          <div class="flex items-baseline justify-between gap-3 pt-0.5">
+            <span class="font-mono font-semibold text-indigo-300">${esc(it.rom)}</span>
+            <span class="text-lg text-emerald-300 naskh" lang="ks">${esc(it.ks)}</span>
+          </div>
+          <div class="text-[11px] text-slate-400 truncate" title="${esc(it.meaning)}">${esc(it.meaning)}</div>
+        </button>`).join("");
+      document.getElementById("candidatePanel").classList.add("hidden");
+    }
+    function showCandidates(i) {
+      const it = lastTrace[i], panel = document.getElementById("candidatePanel");
+      if (!it || !it.cands || !it.cands.length) { panel.classList.add("hidden"); return; }
+      panel.innerHTML = `<div class="text-slate-300 mb-2">Candidates for <b class="font-mono">${esc(it.raw)}</b> (score = spelling match + reliability; context added in the sentence):</div>` +
+        it.cands.map(c => `<div class="flex items-center gap-3 py-1 border-t border-slate-800/70">
+          <span class="naskh text-lg text-emerald-300 w-28 text-right" lang="ks">${esc(c.entry.kashmiri_unicode)}</span>
+          <span class="font-mono text-indigo-200 w-40 truncate">${esc(c.entry.romanized_kashmiri)}</span>
+          <span class="text-slate-400 flex-1 truncate">${esc(c.entry.meaning || "spelling only")}</span>
+          <span class="text-slate-500 w-40 truncate">${esc(c.method)} · ${esc(c.entry.source)}</span>
+          <span class="font-mono ${c === it.chosen ? "text-emerald-300" : "text-slate-500"} w-10 text-right">${c.score}</span></div>`).join("");
+      panel.classList.remove("hidden");
+    }
+
+    function render26KeyComposerKeyboard() {
+      const container = document.getElementById("qwerty26Container");
+      const rows = [["q","w","e","r","t","y","u","i","o","p","\\","\\{","\\}"], ["a","s","d","f","g","h","j","k","l","'"], ["z","x","c","v","b","n","m","⌫","Space"]];
+      container.innerHTML = "";
+      rows.forEach(row => {
+        const rDiv = document.createElement("div"); rDiv.className = "flex flex-wrap justify-center gap-1.5";
+        row.forEach(k => {
+          const btn = document.createElement("button"); btn.type = "button";
+          const esck = k.startsWith("\\"), wide = k === "Space" || k === "⌫";
+          btn.className = `kbd-key ${k === "Space" ? "px-10" : wide ? "px-4" : "w-9 sm:w-10"} h-10 rounded-lg border text-xs sm:text-sm font-mono font-medium flex items-center justify-center ${esck ? "bg-amber-950/60 hover:bg-amber-900/70 border-amber-700/50 text-amber-300" : "bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-100"}`;
+          btn.textContent = k;
+          btn.addEventListener("mousedown", e => e.preventDefault());
+          btn.addEventListener("click", () => insertIntoTextarea(k === "⌫" ? null : k === "Space" ? " " : k));
+          rDiv.appendChild(btn);
+        });
+        container.appendChild(rDiv);
+      });
+    }
+    function insertIntoTextarea(str) {
+      const ta = document.getElementById("composerRomanInput");
+      let s = ta.selectionStart ?? ta.value.length, e = ta.selectionEnd ?? s;
+      if (str === null) { if (s === e && s > 0) s -= 1; ta.value = ta.value.slice(0, s) + ta.value.slice(e); ta.setSelectionRange(s, s); }
+      else { ta.value = ta.value.slice(0, s) + str + ta.value.slice(e); ta.setSelectionRange(s + str.length, s + str.length); }
+      if (!matchMedia("(hover: none)").matches) ta.focus();
+      scheduleStudio();
+    }
+    let studioTimer = null;
+    function scheduleStudio() { clearTimeout(studioTimer); studioTimer = setTimeout(updateSentenceStudio, 120); }
 
     // =========================================================================
     // 7. USER ENTRIES (localStorage) & CSV EXPORT
@@ -696,12 +965,16 @@
       sortIndexes();
       renderKeyboard();
       triggerSearchUpdate();
-      updateComposerOutput();
-      loadFullDataset().then(() => { triggerSearchUpdate(); updateComposerOutput(); });
+      render26KeyComposerKeyboard();
+      updateSentenceStudio();
+      loadFullDataset().then(() => {
+        triggerSearchUpdate(); updateSentenceStudio();
+        document.getElementById("sentenceContextStatus").textContent = `${dictionaryData.length.toLocaleString()} words · context scoring on`;
+      });
 
       const tabs = [
-        { btn: "tabBtnSearch", view: "viewSearch" },
         { btn: "tabBtnComposer", view: "viewComposer" },
+        { btn: "tabBtnSearch", view: "viewSearch" },
         { btn: "tabBtnAgent", view: "viewAgent" }
       ];
       tabs.forEach(t => {
@@ -737,15 +1010,20 @@
       document.getElementById("modeRomanBtn").addEventListener("click", () => setMode("roman"));
       document.getElementById("modeArabicBtn").addEventListener("click", () => setMode("arabic"));
 
-      document.getElementById("composerRomanInput").addEventListener("input", updateComposerOutput);
-      document.getElementById("copyComposerBtn").addEventListener("click", async (e) => {
-        const outText = document.getElementById("composerArabicOutput").innerText;
-        try { await navigator.clipboard.writeText(outText); } catch (err) {
-          const ta = document.createElement("textarea"); ta.value = outText; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+      document.getElementById("composerRomanInput").addEventListener("input", scheduleStudio);
+      document.getElementById("clearComposerBtn").addEventListener("click", () => { document.getElementById("composerRomanInput").value = ""; updateSentenceStudio(); });
+      document.getElementById("insertEscapeBtn").addEventListener("click", () => insertIntoTextarea(" \\{keep this\\} "));
+      document.querySelectorAll(".sentence-chip").forEach(chip => chip.addEventListener("click", () => {
+        document.getElementById("composerRomanInput").value = chip.getAttribute("data-sentence"); updateSentenceStudio();
+      }));
+      document.getElementById("tokenInferenceTrace").addEventListener("click", e => { const b = e.target.closest("[data-trace]"); if (b) showCandidates(+b.dataset.trace); });
+      document.querySelectorAll(".copy-box-btn").forEach(btn => btn.addEventListener("click", async () => {
+        const text = document.getElementById(btn.dataset.copyTarget).innerText;
+        try { await navigator.clipboard.writeText(text); } catch (err) {
+          const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
         }
-        e.target.textContent = "Copied!";
-        setTimeout(() => { e.target.textContent = "Copy Kashmiri Unicode"; }, 1500);
-      });
+        const orig = btn.textContent; btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = orig; }, 1400);
+      }));
 
       document.getElementById("addEntryBtn").addEventListener("click", () => {
         const ksUni = document.getElementById("addUnicodeInput").value.trim();
@@ -758,6 +1036,7 @@
         const item = addEntry({ ...rec, source: "User Added", quality: "native" }, true);
         sortIndexes();
         ["addUnicodeInput", "addRomanInput", "addMeaningInput"].forEach(id => document.getElementById(id).value = "");
+        updateSentenceStudio();
         feedback.textContent = `Added and saved in this browser (Roman: ${item.romanized_kashmiri || "—"}${item.rom_auto ? " (auto)" : ""}, skeleton: ${item.phonetic_skeleton || "—"})`;
         triggerSearchUpdate();
       });
