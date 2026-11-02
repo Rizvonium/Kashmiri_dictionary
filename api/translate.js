@@ -27,7 +27,7 @@ const SCHEMA = {
 
 const SYSTEM = `You are an expert translator and editor of the Kashmiri language (Koshur, کٲشُر), fluent in its Perso-Arabic orthography and in common Roman spellings.
 Kashmiri script conventions: use Kashmiri letters and vowel signs (ٲ ؠ ۄ ۍ ێ ژ ٹ ڈ ڑ ھ ہ, signs َ ِ ُ ٔ ٕ ٟ ٖ ٗ ٚ ٛ); never Arabic ك ي ه.
-Words given as \\word or \\{phrase\\} are names or fixed text: keep their exact spelling in "english_translation" and "roman", and write them phonetically in Kashmiri script in "kashmiri".
+Words marked KEEP in the hints (typed as \\word or \\{phrase\\} — names, English or any other language — or English words in the sentence) must stay exactly as typed, in Latin letters, in every field — including "kashmiri" and "roman". Do not translate or transliterate them.
 You receive dictionary hints for each word (candidate spellings and meanings from Grierson's 1932 dictionary, Hassan's pronouncing dictionary and modern word lists). Treat them as evidence, not as a fixed answer: choose the sense that fits the sentence, fix spelling and grammar, and say in "notes" what you changed or are unsure about. Never invent meanings for words you do not know — say so in notes.`;
 
 function clientIp(req) {

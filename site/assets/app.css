@@ -186,6 +186,8 @@ mark{background:#ffe58f;color:inherit;border-radius:3px;padding:0 1px}
 .tok.context{border-color:var(--accent);background:var(--accent-2)}
 .tok.escaped{border-color:var(--gold);background:var(--gold-2)}
 .tok.guess{border-style:dashed;border-color:var(--gold)}
+.tok.english{border-color:var(--indigo);background:var(--indigo-2)}
+.tok.english .ks,.tok.escaped .ks{font-family:ui-monospace,Menlo,monospace;font-size:14px;direction:ltr;color:var(--text)}
 .tok .row{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .tok .raw{color:var(--muted);font-family:ui-monospace,Menlo,monospace}
 .tok .rom{font-weight:700;color:var(--indigo);font-family:ui-monospace,Menlo,monospace}

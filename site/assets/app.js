@@ -101,6 +101,10 @@ const CORE = [
   ["سٲری", "saeri / saeree / sạ̄rī", "all, everyone"], ["لُغَت", "lughat / lugat", "dictionary"], ["پَرُن", "parun", "to read, to study"], ["کھیوٚن", "khyon / khyun", "to eat"],
   ["کِتاب", "kitaab / kitāb", "book"], ["سٕنٛز", "sinz / sɨnz", "of (feminine possessed noun)"], ["دَہ", "dah / daha", "ten"], ["ؤری", "warih / wahar / vạrī", "year"],
   ["ؤریو", "waryo / vạryo", "years (oblique plural)"], ["زامُت", "zaamut / zāmut", "born"],
+  ["سُنٛد", "sund / sond / sundu", "of, 's (masculine possessed noun)"], ["ہُنٛد", "hund / hond", "of, 's (masculine possessed noun)"],
+  ["ہُنٛز", "hunz / honz", "of, 's (feminine possessed noun)"], ["کٲم", "kaam / kaem / kām / kam", "work, job"], ["کَران", "karaan / karan / karān", "doing"],
+  ["کَرُن", "karun / karin", "to do"], ["کیاہ", "kyah / kya / kyaa", "what"], ["اَز", "az / aaz", "today"], ["گَژُھن", "gatshun / gachun / gatsun", "to go"],
+  ["یُن", "yun / yiun / yeun", "to come"],
 ];
 
 const DB = { rows: [], spell: [], byVariant: new Map(), bySound: new Map(), byRoot: new Map(), ready: false, vocab: new Map(), posCount: {} };
@@ -160,6 +164,7 @@ async function loadData() {
   store.get("ksd-mine", []).forEach(m => addRow({ ks: m.ks, rom: m.rom, gloss: m.mean, grp: "mine", src: "My words", q: "user" }));
   // English vocabulary for "did you mean"
   DB.rows.forEach(r => { if (r.grp !== "grierson") r.glossF.split(/[^a-z]+/).forEach(w => { if (w.length > 2) DB.vocab.set(w, (DB.vocab.get(w) || 0) + 1); }); });
+  fetchJSON("data/english_words.json").then(list => { list.forEach(w => ENG.add(w)); if (W.ready) updateWriter(); }).catch(() => {});
   // Spelling-only pairs (Aksharantar) — used by the writer, and as extra spellings; loaded after the dictionary is usable
   fetchJSON("data/roman_pairs.json").then(pairs => {
     for (const [ks, roms] of pairs) {
@@ -373,6 +378,18 @@ function resetFilters() {
 
 /* ============================================================== WRITE & TRANSLATE */
 const W = { ready: false, last: null, trace: [] };
+// English words stay in English in all four boxes (unless the word is a known Kashmiri word, or the user flips it)
+const ENG = new Set();
+const KS_PRIORITY = new Set(["me", "so", "te", "ti", "na", "ma", "yi", "su", "tu", "bu", "ba", "ta", "chu", "chi", "yeh", "ath", "as"]);
+const OVR = { toKs: new Set(store.get("ksd-toKs", [])), toEn: new Set(store.get("ksd-toEn", [])) };
+function saveOvr() { store.set("ksd-toKs", [...OVR.toKs]); store.set("ksd-toEn", [...OVR.toEn]); }
+function keepEnglish(clean) {
+  if (!$("keepEn") || !$("keepEn").checked) return OVR.toEn.has(clean);
+  if (OVR.toKs.has(clean)) return false;
+  if (OVR.toEn.has(clean)) return true;
+  if (!ENG.has(clean) || KS_PRIORITY.has(clean)) return false;
+  return !(DB.byVariant.get(clean) || []).some(e => e.grp === "core" || e.grp === "mine");   // hand-checked Kashmiri words win
+}
 const STOP = new Set("the a an of to and or in on at for with from by is are be was were as it its this that these those which who whom not no".split(" "));
 const glossWords = m => new Set(String(m || "").toLowerCase().replace(/^[a-z.]+\.\s/, "").split(/[^a-z]+/).filter(w => w.length > 2 && !STOP.has(w)));
 const CONTEXT_HINTS = { "ترٛےٚ": ["cxoont", "tsoont", "insaan", "kitaab", "makaan", "waryo", "dah"] };
@@ -404,7 +421,10 @@ function infer(str) {
     if (t.type !== "w") return;
     const m = t.text.match(/^([^A-Za-z'’]*)([A-Za-z'’]*)([^A-Za-z'’]*)$/) || ["", "", t.text, ""];
     Object.assign(t, { pre: m[1], core: m[2], post: m[3], clean: m[2].toLowerCase().replace(/’/g, "'") });
-    t.cands = t.clean ? candidates(t.clean) : []; t.wi = words.length; words.push(t);
+    t.cands = t.clean ? candidates(t.clean) : [];
+    t.english = !!t.clean && keepEnglish(t.clean);
+    if (t.english) return;
+    t.wi = words.length; words.push(t);
   });
   const rawSet = new Set(words.map(w => w.clean)), rawSnd = new Set(words.map(w => soundKey(w.clean)));
   words.forEach(w => { w.choice = w.cands[0] || null; w.bonus = 0; });
@@ -424,20 +444,25 @@ function infer(str) {
   toks.forEach(t => {
     if (t.type === "sp") { ["ks", "lit", "rom", "clean"].forEach(k => o[k].push(t.text)); return; }
     if (t.type === "esc") {
-      const k = escapedToKs(t.text); o.ks.push(k); o.lit.push(k); o.rom.push(t.text); o.clean.push(t.text);
-      o.trace.push({ raw: t.raw, ks: k, rom: t.text, meaning: `kept as “${t.text}”`, gloss: t.text, how: "\\escape", kind: "escaped" }); return;
+      ["ks", "lit", "rom", "clean"].forEach(k => o[k].push(t.text));
+      o.trace.push({ raw: t.raw, ks: t.text, rom: t.text, meaning: "kept exactly as typed (\\escape — any language)", gloss: t.text, how: "\\escape", kind: "escaped", keep: true }); return;
+    }
+    if (!t.clean) { ["ks", "lit", "rom", "clean"].forEach(k => o[k].push(t.text)); return; }
+    if (t.english) {
+      ["ks", "lit", "rom", "clean"].forEach(k => o[k].push(t.text));
+      o.trace.push({ raw: t.text, ks: t.text, rom: t.text, meaning: "English word — kept in English (tap for Kashmiri)", gloss: t.core, how: "English", kind: "english", keep: true, cands: t.cands, clean: t.clean });
+      return;
     }
     const lit = literalToKs(t.core); o.lit.push(t.pre + lit + t.post);
-    if (!t.clean) { ["ks", "rom", "clean"].forEach(k => o[k].push(t.text)); return; }
     o.total++;
     if (!t.choice) {
       o.ks.push(t.pre + lit + t.post); o.rom.push(t.text); o.clean.push(toClean26(t.text)); o.guessed.push(lit);
-      o.trace.push({ raw: t.text, ks: lit, rom: t.text, meaning: "not in the dictionary — spelled by rule", gloss: t.text, how: "guess", kind: "guess", cands: [] }); return;
+      o.trace.push({ raw: t.text, word: t.clean, isEng: ENG.has(t.clean), ks: lit, rom: t.text, meaning: "not in the dictionary — spelled by rule", gloss: t.text, how: "guess", kind: "guess", cands: [] }); return;
     }
     o.found++;
     const e = t.choice.e, primary = (e.rom.split(/\s*\/\s*|\s+or\s+|;\s*/)[0] || t.core).replace(/\s+\d+$/, "").trim();
     o.ks.push(t.pre + e.ks + t.post); o.rom.push(t.pre + primary + t.post); o.clean.push(t.pre + toClean26(primary) + t.post);
-    o.trace.push({ raw: t.text, ks: e.ks, rom: primary, clean: toClean26(primary), meaning: e.meaning || "spelling only", gloss: shortMeaning(e.meaning) || t.core,
+    o.trace.push({ raw: t.text, word: t.clean, isEng: ENG.has(t.clean), ks: e.ks, rom: primary, clean: toClean26(primary), meaning: e.meaning || "spelling only", gloss: shortMeaning(e.meaning) || t.core,
       how: t.choice.how + (t.bonus ? ` + context +${t.bonus}` : ""), kind: t.bonus ? "context" : "dict", cands: t.cands, chosen: t.choice, src: SRC_LABEL[e.grp] || e.src });
   });
   o.meaning = synthesize(str, o.trace);
@@ -462,7 +487,8 @@ function updateWriter() {
   $("w4").value = r.ks.join(""); $("w2").value = r.lit.join(""); $("w3").value = r.rom.join("");
   $("w3Clean").textContent = r.clean.join("") || "—";
   $("w1Count").textContent = r.trace.length ? `${r.trace.length} word${r.trace.length === 1 ? "" : "s"}` : "";
-  $("w4Badge").textContent = r.total ? `found in the dictionary: ${r.found}/${r.total}` : "—";
+  const kept = r.trace.filter(t => t.keep).length;
+  $("w4Badge").textContent = (r.total ? `found in the dictionary: ${r.found}/${r.total}` : "") + (kept ? `${r.total ? " · " : ""}${kept} kept in English` : "") || "—";
   $("w4Guess").textContent = r.guessed.length ? `spelled by rule: ${r.guessed.join(" ")}` : "";
   $("trDict").textContent = r.meaning.text || "—"; $("trDictNote").textContent = r.meaning.note;
   $("glossStrip").textContent = r.trace.length ? r.trace.map(t => t.gloss).join(" · ") : "";
@@ -475,8 +501,16 @@ function updateWriter() {
 }
 function showCands(i) {
   const t = W.trace[i], box = $("cands");
-  if (!t || !t.cands || !t.cands.length) { box.hidden = true; return; }
-  box.innerHTML = `<div class="muted" style="margin-bottom:4px">Other dictionary spellings for <b>${esc(t.raw)}</b> — tap one to use it:</div>` +
+  if (!t) { box.hidden = true; return; }
+  if (t.kind === "escaped") { box.innerHTML = `<div class="muted"><b>${esc(t.raw)}</b> is escaped with \\ — it always stays exactly as typed.</div>`; box.hidden = false; return; }
+  if (t.kind === "english") {
+    box.innerHTML = `<div class="muted" style="margin-bottom:6px"><b>${esc(t.raw)}</b> is an English word, so it stays in English in all four boxes.</div>` +
+      (t.cands && t.cands.length ? `<button class="btn sm primary" data-flip="ks:${esc(t.clean)}">Write it in Kashmiri instead</button> <span class="muted">(would become <span class="ks" lang="ks">${esc(t.cands[0].e.ks)}</span> — ${esc(shortMeaning(t.cands[0].e.meaning) || "spelling only")})</span>` : `<span class="muted">No Kashmiri word with this spelling was found.</span>`);
+    box.hidden = false; return;
+  }
+  const flip = t.isEng ? `<div style="margin:2px 0 8px"><button class="btn sm" data-flip="en:${esc(t.word)}">Keep “${esc(t.raw)}” in English</button> <span class="muted">— it is also an English word</span></div>` : "";
+  if (!t.cands || !t.cands.length) { box.innerHTML = flip || `<div class="muted">No dictionary spellings for <b>${esc(t.raw)}</b>.</div>`; box.hidden = false; return; }
+  box.innerHTML = flip + `<div class="muted" style="margin-bottom:4px">Other dictionary spellings for <b>${esc(t.raw)}</b> — tap one to use it:</div>` +
     t.cands.map((c, j) => `<div class="cand"><span class="ks" lang="ks">${esc(c.e.ks)}</span><span class="mono">${esc(c.e.rom.slice(0, 40))}</span><span class="src muted">${esc(c.e.meaning || "spelling only")} · ${esc(SRC_LABEL[c.e.grp] || "")}</span><button data-pick="${i}:${j}" ${c === t.chosen ? 'title="current choice"' : ""}>${c === t.chosen ? "✓" : "use"}</button></div>`).join("");
   box.hidden = false;
 }
@@ -499,7 +533,7 @@ async function probeServer() {
   $("aiProvider").textContent = serverAI ? "Claude (this site)" : "free public model";
 }
 function hintsForWriter() {
-  return (W.last?.trace || []).map(t => t.kind === "escaped" ? `${t.raw} -> keep exactly "${t.rom}"`
+  return (W.last?.trace || []).map(t => t.keep ? `${t.raw} -> KEEP EXACTLY "${t.rom}" in Latin letters in every output (${t.kind === "english" ? "English word" : "escaped text — a name, English or another language; do not translate it"})`
     : `${t.raw} -> ${t.ks}${t.cands && t.cands.length > 1 ? " (alternatives: " + t.cands.slice(1, 4).map(c => c.e.ks + " = " + shortMeaning(c.e.meaning)).join("; ") + ")" : ""} = ${t.meaning}`);
 }
 function hintsForEnglish(text) {
@@ -522,7 +556,7 @@ async function aiRequest(payload) {
   // free public model (text.pollinations.ai) — same task, same hints
   const task = payload.mode === "en2ks"
     ? `Translate this English text into Kashmiri.\nEnglish: ${payload.english}\nDictionary hints (English word -> Kashmiri candidates):\n${payload.hints.join("\n") || "(none)"}`
-    : `Correct and translate this Kashmiri text.\nRoman Kashmiri as typed: ${payload.roman || "(none)"}\nKashmiri script (may contain errors): ${payload.kashmiri}\nWords written as \\word or \\{phrase\\} are names: keep their spelling.\nDictionary hints (typed word -> candidate spelling = meaning):\n${payload.hints.join("\n") || "(none)"}`;
+    : `Correct and translate this Kashmiri text.\nRoman Kashmiri as typed: ${payload.roman || "(none)"}\nKashmiri script (may contain errors): ${payload.kashmiri}\nWords marked KEEP (written as \\word or \\{phrase\\} — names, English or any other language — or English words) must stay exactly as typed, in Latin letters, in every output including "kashmiri" and "roman".\nDictionary hints (typed word -> candidate spelling = meaning):\n${payload.hints.join("\n") || "(none)"}`;
   const prompt = `${task}\nReturn ONLY a JSON object with keys "english_translation", "kashmiri" (Perso-Arabic), "roman" (Romanized Kashmiri), "notes" (corrections or uncertain words; empty if none).`;
   const r = await fetch("https://text.pollinations.ai/", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages: [{ role: "system", content: FREE_SYSTEM }, { role: "user", content: prompt }], model: "openai", jsonMode: true }) });
@@ -688,6 +722,8 @@ function wire() {
     const m = t.closest("[data-more]"); if (m) { const d = m.previousElementSibling; const open = d.classList.toggle("clamp"); m.textContent = open ? "Read full entry ↓" : "Show less ↑"; return; }
     const hw = t.closest(".entry .hw .ks"); if (hw) { searchFor(hw.textContent); return; }
     const tok = t.closest("[data-tok]"); if (tok) { showCands(+tok.dataset.tok); return; }
+    const fl = t.closest("[data-flip]");
+    if (fl) { const [to, w] = fl.dataset.flip.split(":"); if (to === "ks") { OVR.toKs.add(w); OVR.toEn.delete(w); } else { OVR.toEn.add(w); OVR.toKs.delete(w); } saveOvr(); updateWriter(); toast(to === "ks" ? `“${w}” will be written in Kashmiri` : `“${w}” will stay in English`); return; }
     const pk = t.closest("[data-pick]"); if (pk) { const [i, j] = pk.dataset.pick.split(":").map(Number); pickCandidate(i, j); return; }
   });
 
@@ -698,6 +734,8 @@ function wire() {
   $("w1Clear").onclick = () => { $("w1").value = ""; updateWriter(); };
   document.querySelectorAll("[data-sentence]").forEach(c => c.onclick = () => { $("w1").value = c.dataset.sentence; updateWriter(); });
   $("translateBtn").onclick = translateWriter;
+  $("keepEn").checked = store.get("ksd-keepEn", true);
+  $("keepEn").onchange = e => { store.set("ksd-keepEn", e.target.checked); updateWriter(); };
   $("aiApplyKs").onclick = () => { $("w4").value = $("aiKs").textContent; toast("Box 2 updated"); };
   $("aiApplyRom").onclick = () => { $("w3").value = $("aiRom").textContent; toast("Box 3 updated"); };
   $("enBtn").onclick = translateEnglish;

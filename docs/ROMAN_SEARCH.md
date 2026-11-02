@@ -94,9 +94,7 @@ You type a whole sentence using only a–z. The studio fills in three outputs at
    plus a plain a–z version where long vowels are written doubled
    (ā → aa, ī → ee, ū → oo, ạ̄ → ae).
 
-**Escapes (LaTeX-style)**: wrap a single word as `\word` or a phrase as
-`\{several words\}`. Escaped text is copied unchanged into all three outputs,
-which is useful for names, English and numbers.
+**Escapes and English words.** Anything typed as `\word` or `\{several words\}` is copied **exactly as typed into all four boxes** and into the translation. Use it for names and for text in English or any other language, in any script (`\{میرا نام\}`, `\नमस्ते`, `\{bonjour mon ami\}`). English words found in the English word list (`site/data/english_words.json`, 14,493 words from the dataset's English meanings and examples) are also kept in English. The exceptions are hand-checked Kashmiri words and a few short Kashmiri words that look English (*me, so, te, ti, na, ma*…). Tap a word to switch it between English and Kashmiri; the choice is remembered. The "Keep English words in English" switch turns the automatic rule off.
 
 Tap any word in the trace to see every candidate with its score.
 

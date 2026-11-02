@@ -93,15 +93,18 @@
         <button class="chip" data-sentence="treh cxoont te aab">treh cxoont te aab</button>
         <button class="chip" data-sentence="\Shafi \Shauq sinz kitaab chhu kaeshur lughat">\Shafi \Shauq sinz kitaab …</button>
       </div>
-      <span class="badge" id="writeStatus">loading dictionary…</span>
+      <div class="chips" style="align-items:center">
+        <label class="toggle" title="English words (from the English dictionary) stay in English in all four boxes. Tap a word below to change one."><input type="checkbox" id="keepEn" checked><span>Keep English words in English</span></label>
+        <span class="badge" id="writeStatus">loading dictionary…</span>
+      </div>
     </div>
 
     <div class="quad">
       <div class="card qbox">
         <div class="qhead"><span class="qtitle"><span class="qnum">1</span>Type Roman Kashmiri (a–z)</span>
           <span><button class="btn sm" data-copy="w1">Copy</button> <button class="btn sm" id="w1Clear">Clear</button></span></div>
-        <textarea id="w1" class="roman" data-kb="roman" rows="3" spellcheck="false" autocomplete="off" placeholder="e.g. bu chhus kaeshur zabaan parun — any spelling works. Use \word or \{a phrase\} for names."></textarea>
-        <div class="qfoot"><span>Any spelling: koshur = kaeshur = kạ̄shur · <code>\word</code> keeps names</span><span id="w1Count"></span></div>
+        <textarea id="w1" class="roman" data-kb="roman" rows="3" spellcheck="false" autocomplete="off" placeholder="e.g. bu chhus kaeshur zabaan parun — any spelling works. Put names or words in any other language as \word or \{a phrase\} — they stay exactly as typed."></textarea>
+        <div class="qfoot"><span>Any spelling: koshur = kaeshur = kạ̄shur · <code>\word</code> and English words stay as typed</span><span id="w1Count"></span></div>
       </div>
       <div class="card qbox main">
         <div class="qhead"><span class="qtitle"><span class="qnum">2</span>Kashmiri — dictionary spelling</span>
@@ -113,7 +116,7 @@
         <div class="qhead"><span class="qtitle"><span class="qnum indigo">3</span>Corrected Roman spelling</span>
           <button class="btn sm" data-copy="w3">Copy</button></div>
         <textarea id="w3" class="roman" data-kb="roman" rows="2"></textarea>
-        <div class="qfoot"><span>Plain a–z: <code id="w3Clean"></code></span><span>\escaped kept as typed</span></div>
+        <div class="qfoot"><span>Plain a–z: <code id="w3Clean"></code></span><span>\escaped &amp; English kept as typed</span></div>
       </div>
       <div class="card qbox">
         <div class="qhead"><span class="qtitle"><span class="qnum gold">4</span>Letter-by-letter Kashmiri</span>
@@ -166,7 +169,7 @@
       <div><b>ae</b> → ٲ &nbsp; <b>aa</b> → آ / ا</div>
       <div><b>ee</b> → یٖ &nbsp; <b>oo</b> → وٗ &nbsp; <b>oa</b> → ۄ</div>
       <div><b>ts / cx</b> → ژ &nbsp; <b>tsh</b> → ژھ</div>
-      <div><b>\word</b> &nbsp;<b>\{…\}</b> → kept</div>
+      <div><b>\word</b> &nbsp;<b>\{…\}</b> &amp; English words → kept as typed</div>
     </div>
   </section>
 
