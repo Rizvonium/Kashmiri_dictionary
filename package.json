@@ -1,0 +1,9 @@
+{
+  "name": "kashmiri-dictionary",
+  "private": true,
+  "type": "module",
+  "description": "Kashmiri dictionary website (static, site/) + optional translation function (api/translate.js) for Vercel",
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.1.0"
+  }
+}

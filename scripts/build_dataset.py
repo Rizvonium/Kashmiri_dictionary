@@ -68,6 +68,10 @@ SOURCES = {
         "name": "AI4Bharat Aksharantar Kashmiri transliteration pairs (romanizations only)",
         "license": "CC-BY-4.0 (manual) / CC0 (mined)",
     },
+    "user-upload": {
+        "name": "Word lists contributed by the project owners (data/contrib/*.csv)",
+        "license": "provided by the project owners",
+    },
     "omarrran": {
         "name": "Omarrran/kashmiri_multilingual_dictionary_dataset (Hugging Face, gated)",
         "license": "Apache-2.0",
@@ -418,8 +422,36 @@ def roman_sort_key(word):
     return "".join(c for c in d if c.isalnum() or c == " ")
 
 
-SRC_RANK = {"kashmirizabaan": 0, "kaeshir": 0, "omarrran": 0, "hassan": 1,
+SRC_RANK = {"kashmirizabaan": 0, "kaeshir": 0, "omarrran": 0, "user-upload": 0, "hassan": 1,
             "injilashah-phonemes": 2, "chikhapo": 2, "grierson": 3}
+
+
+def build_contrib(existing):
+    """Merge data/contrib/*.csv (kashmiri_unicode, romanized_kashmiri, meaning[, source])."""
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "contrib")
+    seen_ks = {(e.get("headword_ks", ""), e.get("gloss_en", "").lower()) for e in existing if e.get("headword_ks")}
+    seen_rom = {(e.get("headword_roman", "").lower(), e.get("gloss_en", "").lower()) for e in existing if e.get("headword_roman")}
+    out, n_rows = [], 0
+    for p in sorted(glob.glob(os.path.join(here, "*.csv"))):
+        for r in csv.DictReader(open(p, encoding="utf-8-sig")):
+            n_rows += 1
+            ks = normalize_ks(clean(r.get("kashmiri_unicode")))
+            rom = clean(r.get("romanized_kashmiri"))
+            mean = clean(r.get("meaning"))
+            if not (ks or rom) or not (mean or (ks and rom)):
+                continue
+            if (ks and (ks, mean.lower()) in seen_ks) or (not ks and (rom.lower(), mean.lower()) in seen_rom):
+                continue
+            if ks:
+                seen_ks.add((ks, mean.lower()))
+            seen_rom.add((rom.lower(), mean.lower()))
+            ref = os.path.basename(p) + (f" ({clean(r.get('source'))})" if clean(r.get("source")) else "")
+            out.append(dict(headword_ks=ks, headword_roman=rom, roman_scheme="contrib" if rom else "",
+                            gloss_en=mean, source="user-upload", source_ref=ref,
+                            script_quality="native" if ks else ""))
+    if n_rows:
+        print(f"contrib: {n_rows} rows read, {len(out)} new entries added", file=sys.stderr)
+    return out
 
 
 AKSHARANTAR_KEEP = {"AK-Freq", "AK-Uni", "IndicCorp"}   # drop AK-NEI / AK-NEF (named entities)
@@ -476,6 +508,7 @@ def main(raw, out_dir):
 
     chik = build_chikhapo(raw)
     entries = en_ks + hassan + injila + chik + grierson
+    entries += build_contrib(entries)
 
     # attach Aksharantar romanizations (exact spelling first, else same consonant skeleton)
     ak = load_aksharantar(raw)

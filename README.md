@@ -29,33 +29,34 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 | With Hindi gloss | 8,245 |
 | Entries by source | Grierson 21,145 · kashmirizabaan 8,637 · Kaeshir 9,049 · ChiKhaPo 7,894 · Hassan 5,563 · other 82 (one entry can come from several sources) |
 
-## Website (search UI)
+## Website
 
-Two pages, both in `site/`:
+`site/` is one static page, with no build step, and three tabs. One keyboard is shared by every field: it opens in Roman for Roman fields and in کٲشُر for Kashmiri fields.
 
-* **`index.html`**: the main dictionary (described below).
-* **`koshurlex.html`** (KoshurLex): a **Sentence Studio** (type a sentence in a–z and get three live outputs: literal Kashmiri, dictionary Kashmiri chosen using the sentence's context, and corrected Roman; protect words with `\word` / `\{phrase\}`). You can also type Kashmiri in *any* Roman spelling (kaeshur / koshur / kạ̄shur, cxoont / tsoont). It also offers a Roman-Kashmiri keyboard and a Roman → Perso-Arabic writer that marks rule-based guesses, and you can add your own entries (saved in your browser only). The method is described in [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md).
+* **Dictionary**: search in English, Kashmiri script, Hindi, or Roman Kashmiri spelled any way (*koshur* / *kaeshur* / *kạ̄shur*, *cxoont* / *tsoont*). Vowel signs and letter variants are optional. It offers filters, browsing by letter, audio, "did you mean", a word of the day and recent searches.
+* **Write & Translate**: type a sentence in a–z and get four views of it: your input, the dictionary Kashmiri spelling (chosen using the sentence's context; tap any word to see and pick other spellings), the corrected Roman spelling, and a letter-by-letter Kashmiri spelling. `\word` and `\{phrase\}` keep names exactly as typed. The **Meaning & translation** panel offers:
+  * a word-by-word meaning from the dictionary (offline);
+  * an **AI translation and correction**, which receives every word's dictionary hints;
+  * **English → Kashmiri**.
+* **Sources & add a word**: add your own words (saved in your browser and exportable as CSV), and read about the sources.
 
-`site/` is a static website, with no build step. It loads `site/data/dictionary.json` and offers:
+### Translation quality: optional server-side Claude
 
-* instant search in Kashmiri script, English, romanized Kashmiri, Hindi and Devanagari, plus full-text search of Grierson's definitions
-* Smart / Starts with / Exact / Contains matching. Vowel signs are ignored unless you ask for them
-* filters for source, part of speech and audio, and browsing by Kashmiri letter
-* an on-screen **Kashmiri keyboard** that also maps your physical keyboard, covering every Kashmiri letter and vowel sign ([docs/KEYBOARD.md](docs/KEYBOARD.md))
-* a welcome page with example searches, a word of the day, your recent searches, and browsing by letter
-* forgiving search: کاشر finds کٲشُر (letter variants and vowel signs are ignored unless you ask for an exact spelling), and "did you mean …" for English typos
-* on phones, the keyboard slides up from the bottom and the phone's own keyboard stays hidden
-* native-speaker audio, Naskh/Nastaʿlīq typeface switch (both fonts cover all Kashmiri code points), dark mode, and shareable `#q=…` links
+The best translations come from the included Vercel function `api/translate.js`, which calls **Claude** (`claude-opus-5-5`, high effort, with server-side refusal fallback enabled). To turn it on, open Vercel → Project → Settings → Environment Variables and add `ANTHROPIC_API_KEY`, then redeploy. Without the key, the site falls back to a free public model (text.pollinations.ai), which works on the deployed site but not from `localhost`. The function only accepts requests from your own site (or the `ALLOWED_ORIGINS` you list), limits each request to 1,200 characters, and rate-limits each IP address on a best-effort basis. Note that each translation spends your API credit.
 
-**Run locally:** `python3 -m http.server -d site 8000`, then open http://localhost:8000
+**Run locally:** `python3 -m http.server -d site 8000`. The dictionary and writer work fully; AI translation needs the deployed site.
 
-**Deploy to Vercel:** import this repo. `vercel.json` already sets `outputDirectory: "site"`, and no framework or build command is needed. Alternatively, run `npx vercel --prod` in the repo root.
+**Deploy:** import the repo into Vercel. `vercel.json` serves `site/`, sets up the `api/` function, and redirects the old `/koshurlex.html` address.
 
 After rebuilding the data, refresh the site's copy:
 
 ```bash
 python3 scripts/build_site_data.py data/kashmiri_dictionary.jsonl site/data/dictionary.json
 ```
+
+### Adding word lists
+
+Put CSV files (`kashmiri_unicode, romanized_kashmiri, meaning`) in `data/contrib/` and rebuild. They are normalized, de-duplicated and merged; see `data/contrib/README.md`.
 
 ## Entry schema
 

@@ -5,773 +5,224 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kashmiri Dictionary · کٲشُر لُغَت</title>
 <meta name="author" content="Kainaat & RGMir">
-<meta name="description" content="Search 39,000 Kashmiri dictionary entries in Perso-Arabic, Roman and Devanagari, with English and Hindi meanings, audio and an on-screen Kashmiri keyboard.">
+<meta name="description" content="Kashmiri dictionary with 47,000 entries in Perso-Arabic, Roman and Devanagari; type Kashmiri in any spelling, convert Roman to Kashmiri script, and translate Kashmiri ↔ English.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#f7f5f0; --surface:#ffffff; --surface-2:#f1eee6; --border:#e3ddd0;
-  --text:#1f2328; --muted:#6a6f76; --accent:#0f6b5c; --accent-2:#e7f2ef; --accent-ink:#ffffff;
-  --warn:#9a5b00; --warn-bg:#fdf3e1; --chip:#eef0f2; --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.05);
-  --ks-font:"Noto Naskh Arabic","Noto Nastaliq Urdu",serif; --radius:14px;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#111416; --surface:#181c1f; --surface-2:#20262a; --border:#2c3338;
-    --text:#e8eaed; --muted:#9aa3ab; --accent:#4fc1a8; --accent-2:#1b2f2b; --accent-ink:#0b1412;
-    --warn:#f0b65a; --warn-bg:#2d2414; --chip:#262d32; --shadow:none;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#111416; --surface:#181c1f; --surface-2:#20262a; --border:#2c3338;
-  --text:#e8eaed; --muted:#9aa3ab; --accent:#4fc1a8; --accent-2:#1b2f2b; --accent-ink:#0b1412;
-  --warn:#f0b65a; --warn-bg:#2d2414; --chip:#262d32; --shadow:none;
-}
-:root[data-font="nastaliq"]{ --ks-font:"Noto Nastaliq Urdu","Noto Naskh Arabic",serif; }
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-button,input,select{font:inherit;color:inherit}
-a{color:var(--accent)}
-.ks{font-family:var(--ks-font);direction:rtl;unicode-bidi:isolate}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-
-/* header */
-header.top{padding:28px 0 8px}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.brand h1 .ks{font-size:30px;font-weight:600;color:var(--accent);line-height:1.2}
-.tools{display:flex;gap:8px}
-.icon-btn{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:7px 11px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px}
-.icon-btn:hover{border-color:var(--accent)}
-.sub{color:var(--muted);margin:6px 0 0;font-size:14px}
-
-/* search */
-.search-card{padding:14px 0 6px}
-.sticky{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0;margin:-8px 0 0}
-input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
-.search-box{display:flex;align-items:center;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:4px 6px 4px 14px;gap:6px}
-.search-box:focus-within{border-color:var(--accent)}
-.search-box svg{flex:none;color:var(--muted)}
-#q{flex:1;min-width:0;border:0;outline:0;background:transparent;font-size:19px;padding:10px 4px;unicode-bidi:plaintext}
-#q.rtl{font-family:var(--ks-font);font-size:22px}
-.kbd-toggle{border:0;background:var(--accent-2);color:var(--accent);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:600;white-space:nowrap}
-.kbd-toggle[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-.clear-btn{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:6px 8px;font-size:18px;line-height:1}
-.controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
-.seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:2px}
-.seg button{border:0;background:transparent;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
-select.f{border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:6px 8px;font-size:13px;max-width:100%}
-label.chk{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}
-
-/* keyboard */
-#kbd{display:none;margin-top:10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow)}
-#kbd.open{display:block}
-.kbd-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:12.5px;color:var(--muted)}
-.krow{display:flex;gap:5px;justify-content:center;margin-bottom:5px}
-.key{flex:1 1 0;min-width:0;max-width:64px;height:52px;border:1px solid var(--border);border-bottom-width:2px;background:var(--surface-2);border-radius:9px;cursor:pointer;position:relative;padding:0;display:flex;align-items:center;justify-content:center;user-select:none;transition:transform .05s}
-.key:active,.key.hit{transform:translateY(1px);background:var(--accent-2);border-color:var(--accent)}
-.key .main{font-family:var(--ks-font);font-size:22px;line-height:1}
-.key .alt{position:absolute;top:3px;left:6px;font-family:var(--ks-font);font-size:13px;color:var(--accent);line-height:1}
-.key .lat{position:absolute;bottom:2px;right:6px;font-size:9.5px;color:var(--muted);text-transform:uppercase}
-.key.wide{max-width:110px;flex:1.6 1 0;font-size:12.5px;font-family:inherit}
-.key.space{max-width:340px;flex:5 1 0}
-.key.on{background:var(--accent);color:var(--accent-ink)}
-.key.on .alt,.key.on .lat{color:var(--accent-ink)}
-.marks-title{font-size:12px;color:var(--muted);margin:10px 2px 6px}
-.marks{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:5px}
-.mark{border:1px solid var(--border);background:var(--surface-2);border-radius:9px;cursor:pointer;padding:4px 2px;text-align:center}
-.mark:hover{border-color:var(--accent)}
-.mark .g{font-family:var(--ks-font);font-size:24px;line-height:1.5;display:block}
-.mark .n{font-size:10.5px;color:var(--muted);display:block;line-height:1.2}
-
-/* alphabet */
-.alpha{display:flex;flex-wrap:wrap;gap:4px;direction:rtl;margin:12px 0 4px}
-.alpha button{font-family:var(--ks-font);font-size:19px;min-width:38px;height:38px;border:1px solid var(--border);background:var(--surface);border-radius:9px;cursor:pointer;line-height:1}
-.alpha button:hover,.alpha button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-
-/* status & results */
-.status{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin:12px 2px 10px;flex-wrap:wrap}
-#results{display:grid;gap:12px;padding-bottom:20px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
-.card-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.hw{display:flex;flex-direction:column;gap:2px;min-width:0}
-.hw .ks{font-size:30px;line-height:1.55;font-weight:600}
-:root[data-font="nastaliq"] .hw .ks{font-size:27px;line-height:2}
-.hw .rom{font-size:17px;font-weight:600}
-.hw .rom.big{font-size:21px}
-.hw .deva{font-size:16px;color:var(--muted)}
-.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
-.badge{font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
-.badge.pos{background:var(--accent-2);color:var(--accent);font-weight:600}
-.badge.warn{background:var(--warn-bg);color:var(--warn)}
-.gloss{font-size:16px;margin:8px 0 0}
-.gloss b{font-weight:600}
-.hindi{color:var(--muted);margin:2px 0 0}
-.ex{margin:8px 0 0;padding:8px 12px;border-inline-start:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0;font-size:14px}
-.ex .ks{display:block;font-size:19px}
-.def{margin:8px 0 0;font-size:14.5px;color:var(--text);white-space:pre-line}
-.def.clamp{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.more{border:0;background:none;color:var(--accent);cursor:pointer;padding:4px 0;font-size:13px;font-weight:600}
-.actions{display:flex;gap:6px;flex:none}
-.act{border:1px solid var(--border);background:var(--surface);border-radius:999px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
-.act:hover{color:var(--accent);border-color:var(--accent)}
-.act.playing{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.foot{color:var(--muted);font-size:12px;margin-top:8px}
-.loadmore{display:block;margin:6px auto 30px;border:1px solid var(--border);background:var(--surface);padding:10px 22px;border-radius:999px;cursor:pointer;font-weight:600}
-.empty{text-align:center;color:var(--muted);padding:40px 10px}
-.loading{text-align:center;padding:60px 10px;color:var(--muted)}
-.bar{height:4px;background:var(--surface-2);border-radius:4px;overflow:hidden;max-width:320px;margin:12px auto}
-.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
-mark{background:#ffe58f;color:inherit;border-radius:3px;padding:0 1px}
-:root[data-theme="dark"] mark{background:#5c4a12}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) mark{background:#5c4a12}}
-.credit{margin:4px 0 0;font-size:13px;color:var(--muted)}
-.credit b,.made b{color:var(--accent);font-weight:600}
-.made{font-size:14px;margin-top:10px!important}
-.made .ks{font-size:16px}
-.pill{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13.5px;display:inline-flex;align-items:center;gap:6px;min-height:38px;position:relative}
-.pill:hover{border-color:var(--accent)}
-.pill[aria-expanded="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-2)}
-.pill.ghost{border-style:dashed;color:var(--muted)}
-.pill .ks{font-size:16px}
-.dot[hidden]{display:none}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block}
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
-.filters[hidden]{display:none}
-.filters select.f{min-height:38px}
-.toggle{display:inline-flex;align-items:center;cursor:pointer}
-.toggle input{position:absolute;opacity:0;pointer-events:none}
-.toggle span{border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:13.5px;min-height:38px;display:inline-flex;align-items:center;background:var(--surface-2)}
-.toggle input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.toggle input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
-.seg button{min-height:34px}
-.alpha[hidden]{display:none}
-.welcome{display:grid;gap:14px}
-.welcome h2{font-size:15px;margin:0 0 8px;color:var(--muted);font-weight:600}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;min-height:40px}
-.chip:hover{border-color:var(--accent);color:var(--accent)}
-.chip.ks{font-size:19px;padding:4px 14px}
-.chip small{color:var(--muted);margin-inline-start:6px;font:12px Inter,system-ui,sans-serif;direction:ltr;unicode-bidi:isolate}
-.tips{margin:0;padding-inline-start:18px;color:var(--muted);font-size:14px}
-.tips li{margin:3px 0}
-.wotd{position:relative}
-.wotd .label{display:block;margin-bottom:2px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700}
-.suggest{margin:-2px 2px 12px;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.suggest[hidden]{display:none}
-.suggest .chip{min-height:34px;padding:5px 12px}
-.totop{position:fixed;right:16px;bottom:20px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;font-size:18px;z-index:30}
-.hw .ks{cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (hover:none){ .desk-only{display:none} }
-@media (max-width:640px){
-  #kbd.open{position:fixed;left:0;right:0;bottom:0;margin:0;border-radius:16px 16px 0 0;z-index:40;padding:8px 6px calc(8px + env(safe-area-inset-bottom));max-height:62vh;overflow-y:auto;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
-  body.kbd-open{padding-bottom:62vh}
-  body.kbd-open .totop{display:none}
-  .marks{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:68px;overflow-x:auto;padding-bottom:4px}
-  .controls .seg{width:100%} .controls .seg button{flex:1}
-  .filters select.f{width:100%}
-  .tools .icon-btn{padding:7px 9px}
-}
-footer{border-top:1px solid var(--border);color:var(--muted);font-size:13px;padding:22px 0 40px;margin-top:10px}
-footer p{margin:4px 0}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
-.toast.show{opacity:1}
-@media (max-width:640px){
-  .brand h1{font-size:18px} .brand h1 .ks{font-size:24px}
-  .key{height:44px} .key .main{font-size:18px} .key .alt{font-size:11px;left:3px} .key .lat{display:none}
-  .krow{gap:3px} .hw .ks{font-size:26px}
-  .card{padding:14px}
-}
-</style>
+<link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <h1><span class="ks" lang="ks">کٲشُر لُغَت</span><span>Kashmiri Dictionary</span></h1>
+      <a class="logo" href="#dict">
+        <span class="logo-mark" aria-hidden="true">کٲشُر</span>
+        <span>
+          <h1>Kashmiri Dictionary <span class="ks" lang="ks">کٲشُر لُغَت</span></h1>
+          <p id="sub">Dictionary · any-spelling search · Roman ↔ کٲشُر writer · translation — developed by <b>Kainaat &amp; RGMir</b></p>
+        </span>
+      </a>
       <div class="tools">
-        <a class="icon-btn" href="koshurlex.html" title="Type Kashmiri in any Roman spelling; Roman → Perso-Arabic writer" style="text-decoration:none;color:inherit">KoshurLex ⌨ Roman</a>
         <button class="icon-btn" id="fontBtn" title="Switch Kashmiri typeface">Naskh</button>
         <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
       </div>
     </div>
-    <p class="sub" id="sub">Kashmiri ↔ English · Perso-Arabic, Roman &amp; Devanagari</p>
-    <p class="credit">Developed by <b>Kainaat &amp; RGMir</b></p>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="dict" aria-selected="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/></svg>Dictionary <span class="ks">لُغَت</span></button>
+      <button class="tab" role="tab" data-view="write" aria-selected="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Write &amp; Translate <span class="ks">تَرجُمہٕ</span></button>
+      <button class="tab" role="tab" data-view="about" aria-selected="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg>Sources &amp; add a word</button>
+    </nav>
   </header>
 
-  <div class="search-card">
-    <div class="sticky"><div class="search-box">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" autocomplete="off" spellcheck="false" placeholder="Search Kashmiri, English, Roman or हिन्दी…  e.g. آب · water · ʦūr" aria-label="Search">
-      <button class="clear-btn" id="clearQ" title="Clear" aria-label="Clear search">×</button>
-      <button class="kbd-toggle" id="kbdBtn" aria-pressed="false" title="Kashmiri keyboard (Ctrl+K toggles physical-keyboard mapping)">⌨ کٲشُر</button>
-    </div></div>
-    <div class="controls">
-      <div class="seg" id="modeSeg" role="group" aria-label="Match">
-        <button data-v="auto" aria-pressed="true">Smart</button>
-        <button data-v="start" aria-pressed="false">Starts with</button>
-        <button data-v="exact" aria-pressed="false">Exact</button>
-        <button data-v="contains" aria-pressed="false">Contains</button>
+  <!-- ===================================================== DICTIONARY -->
+  <section id="view-dict" class="view" role="tabpanel">
+    <div class="search-bar">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" data-kb="ks" autocomplete="off" spellcheck="false" placeholder="Search in any spelling: آب · water · koshur · tsoont · पानी" aria-label="Search the dictionary">
+        <button class="clear-x" id="clearQ" title="Clear" aria-label="Clear search">×</button>
+        <button class="kbd-btn" id="kbdBtn" aria-pressed="false" title="Kashmiri keyboard (Ctrl+K)">⌨ <span class="ks">کٲشُر</span></button>
       </div>
-      <button class="pill" id="filterBtn" aria-expanded="false" aria-controls="filters">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
-        Filters <span class="dot" id="filterDot" hidden></span></button>
-      <button class="pill" id="browseBtn" aria-expanded="false" aria-controls="alpha" title="Browse words by first letter"><span class="ks">ا ب پ</span> Browse</button>
-    </div>
-    <div class="filters" id="filters" hidden>
-      <select class="f" id="fieldSel" aria-label="Search in">
-        <option value="any">Search in: everything</option>
-        <option value="ks">Kashmiri script</option>
-        <option value="en">English meaning</option>
-        <option value="roman">Romanized Kashmiri</option>
-        <option value="hi">Hindi / Devanagari</option>
-        <option value="def">Full definitions</option>
-      </select>
-      <select class="f" id="srcSel" aria-label="Source">
-        <option value="">All sources</option>
-        <option value="modern">Modern dictionary (kashmirizabaan + Kaeshir)</option>
-        <option value="hassan">Hassan pronouncing dictionary</option>
-        <option value="grierson">Grierson 1932</option>
-        <option value="chikhapo">ChiKhaPo lexicon (unverified)</option>
-      </select>
-      <select class="f" id="posSel" aria-label="Part of speech"><option value="">Any part of speech</option></select>
-      <label class="toggle"><input type="checkbox" id="audioChk"><span>🔊 Has audio</span></label>
-      <label class="toggle" title="Off: آب also finds اَب, اب … (vowel signs and letter variants ignored)"><input type="checkbox" id="diaChk"><span>Exact spelling (vowel signs)</span></label>
-      <button class="pill ghost" id="resetBtn">Reset filters</button>
-    </div>
-
-    <div id="kbd" aria-label="Kashmiri on-screen keyboard">
-      <div class="kbd-head">
-        <span>Kashmiri keyboard · <b>⇧</b> shows the green letters<span class="desk-only"> · <label class="chk"><input type="checkbox" id="physChk" checked> type with my keyboard</label> · Ctrl+K / Esc</span></span>
-        <button class="pill" id="kbdClose" aria-label="Close keyboard">Done ✓</button>
+      <div class="controls">
+        <div class="seg" id="modeSeg" role="group" aria-label="Match">
+          <button data-v="auto" aria-pressed="true">Smart</button>
+          <button data-v="start" aria-pressed="false">Starts with</button>
+          <button data-v="exact" aria-pressed="false">Exact</button>
+          <button data-v="contains" aria-pressed="false">Contains</button>
+        </div>
+        <button class="btn" id="filterBtn" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>Filters <span class="dot" id="filterDot" hidden></span></button>
+        <button class="btn" id="browseBtn" aria-expanded="false"><span class="ks">ا ب پ</span> Browse</button>
       </div>
-      <div id="krows"></div>
-      <div class="marks-title">Vowel signs &amp; marks (اعراب) — tap after a letter</div>
-      <div class="marks" id="marks"></div>
+      <div class="panel" id="filters" hidden>
+        <select class="f" id="fieldSel" aria-label="Search in">
+          <option value="any">Search in: everything</option>
+          <option value="ks">Kashmiri script</option>
+          <option value="en">English meaning</option>
+          <option value="roman">Roman spelling (any)</option>
+          <option value="hi">Hindi / Devanagari</option>
+          <option value="def">Full definitions</option>
+        </select>
+        <select class="f" id="srcSel" aria-label="Source">
+          <option value="">All sources</option>
+          <option value="modern">Modern dictionary (kashmirizabaan + Kaeshir)</option>
+          <option value="hassan">Hassan pronouncing dictionary</option>
+          <option value="grierson">Grierson 1932</option>
+          <option value="chikhapo">ChiKhaPo lexicon (unverified)</option>
+          <option value="mine">My added words</option>
+        </select>
+        <select class="f" id="posSel" aria-label="Part of speech"><option value="">Any part of speech</option></select>
+        <label class="toggle"><input type="checkbox" id="audioChk"><span>🔊 Has audio</span></label>
+        <label class="toggle" title="Off: آب also finds اَب, اب … (vowel signs and letter variants ignored)"><input type="checkbox" id="diaChk"><span>Exact Kashmiri spelling</span></label>
+        <button class="btn ghost" id="resetBtn">Reset</button>
+      </div>
+      <div class="panel" id="alphaPanel" hidden><div class="alpha" id="alpha"></div></div>
+    </div>
+    <div class="status" aria-live="polite"><span id="count"></span><span id="hint"></span></div>
+    <div class="suggest" id="suggest" hidden></div>
+    <main id="results"><div class="loading">Loading the dictionary…<div class="bar"><i id="barFill"></i></div></div></main>
+    <button class="btn loadmore" id="more" hidden>Show more</button>
+  </section>
+
+  <!-- ===================================================== WRITE & TRANSLATE -->
+  <section id="view-write" class="view" role="tabpanel" hidden>
+    <div class="write-head">
+      <div class="chips" id="sentenceChips">
+        <button class="chip" data-sentence="yih makaan chhu dah waryo peth trovmut">yih makaan chhu … trovmut</button>
+        <button class="chip" data-sentence="saeri insaan chhi aazaad zaamut">saeri insaan chhi aazaad zaamut</button>
+        <button class="chip" data-sentence="koshur zabaan chhu meeth">koshur zabaan chhu meeth</button>
+        <button class="chip" data-sentence="treh cxoont te aab">treh cxoont te aab</button>
+        <button class="chip" data-sentence="\Shafi \Shauq sinz kitaab chhu kaeshur lughat">\Shafi \Shauq sinz kitaab …</button>
+      </div>
+      <span class="badge" id="writeStatus">loading dictionary…</span>
     </div>
 
-    <div class="alpha" id="alpha" aria-label="Browse by letter" hidden></div>
-  </div>
+    <div class="quad">
+      <div class="card qbox">
+        <div class="qhead"><span class="qtitle"><span class="qnum">1</span>Type Roman Kashmiri (a–z)</span>
+          <span><button class="btn sm" data-copy="w1">Copy</button> <button class="btn sm" id="w1Clear">Clear</button></span></div>
+        <textarea id="w1" class="roman" data-kb="roman" rows="3" spellcheck="false" autocomplete="off" placeholder="e.g. bu chhus kaeshur zabaan parun — any spelling works. Use \word or \{a phrase\} for names."></textarea>
+        <div class="qfoot"><span>Any spelling: koshur = kaeshur = kạ̄shur · <code>\word</code> keeps names</span><span id="w1Count"></span></div>
+      </div>
+      <div class="card qbox main">
+        <div class="qhead"><span class="qtitle"><span class="qnum">2</span>Kashmiri — dictionary spelling</span>
+          <button class="btn sm primary" data-copy="w4">Copy</button></div>
+        <textarea id="w4" class="ks" dir="rtl" lang="ks" data-kb="ks" rows="2"></textarea>
+        <div class="qfoot"><span id="w4Badge">—</span><span id="w4Guess" class="guessline"></span></div>
+      </div>
+      <div class="card qbox">
+        <div class="qhead"><span class="qtitle"><span class="qnum indigo">3</span>Corrected Roman spelling</span>
+          <button class="btn sm" data-copy="w3">Copy</button></div>
+        <textarea id="w3" class="roman" data-kb="roman" rows="2"></textarea>
+        <div class="qfoot"><span>Plain a–z: <code id="w3Clean"></code></span><span>\escaped kept as typed</span></div>
+      </div>
+      <div class="card qbox">
+        <div class="qhead"><span class="qtitle"><span class="qnum gold">4</span>Letter-by-letter Kashmiri</span>
+          <button class="btn sm" data-copy="w2">Copy</button></div>
+        <textarea id="w2" class="ks" dir="rtl" lang="ks" data-kb="ks" rows="2"></textarea>
+        <div class="qfoot"><span>Rule-based, without the dictionary — useful for names and new words</span></div>
+      </div>
+    </div>
 
-  <div class="status" aria-live="polite"><span id="count"></span><span id="hint"></span></div>
-  <div id="suggest" class="suggest" hidden></div>
-  <main id="results"><div class="loading">Loading dictionary…<div class="bar"><i id="barFill"></i></div></div></main>
-  <button class="loadmore" id="more" hidden>Show more</button>
+    <div class="card translate">
+      <div class="tr-head">
+        <div>
+          <h2>Meaning &amp; translation</h2>
+          <p>Uses box 2 (or your edits to it). The dictionary column works offline. <b>Translate</b> sends the sentence and its dictionary
+            hints to an AI translator — Claude on this site's server when configured, otherwise a free public model — and shows corrections it suggests. AI output can be wrong; the hints and notes help you check it.</p>
+        </div>
+        <div class="chips">
+          <button class="btn primary" id="translateBtn">✨ Translate &amp; correct</button>
+        </div>
+      </div>
+      <div class="tr-grid">
+        <div class="tr-card">
+          <h3>From the dictionary <span class="badge">offline</span></h3>
+          <div class="tr-out" id="trDict"></div>
+          <div class="tr-small" id="trDictNote"></div>
+        </div>
+        <div class="tr-card best">
+          <h3>AI translation <span class="badge indigo" id="aiProvider">not run yet</span></h3>
+          <div class="tr-out placeholder" id="trAi">Click “Translate &amp; correct”.</div>
+          <div class="tr-suggest" id="aiSuggest" hidden>
+            <div>Corrected Kashmiri: <span class="ks" id="aiKs" lang="ks"></span> <button class="btn sm" id="aiApplyKs">Use in box 2</button></div>
+            <div>Roman: <code id="aiRom"></code> <button class="btn sm" id="aiApplyRom">Use in box 3</button></div>
+            <div class="tr-small" id="aiNotes"></div>
+          </div>
+        </div>
+        <div class="tr-card">
+          <h3>English → Kashmiri</h3>
+          <div class="tr-small">Type English to get Kashmiri. Dictionary words appear instantly; the AI writes the sentence.</div>
+          <div class="en-input"><input id="enInput" data-kb="roman" placeholder="e.g. the water is cold" autocomplete="off"><button class="btn" id="enBtn">Translate</button></div>
+          <div class="tr-out" id="enOut"></div>
+          <div class="tr-small" id="enWords"></div>
+        </div>
+      </div>
+      <div class="status" style="margin:14px 2px 0"><b style="color:var(--text)">Word by word</b><span id="glossStrip" class="muted"></span></div>
+      <div class="trace" id="trace"></div>
+      <div class="cands" id="cands" hidden></div>
+    </div>
+
+    <div class="card howto">
+      <div><b>ae</b> → ٲ &nbsp; <b>aa</b> → آ / ا</div>
+      <div><b>ee</b> → یٖ &nbsp; <b>oo</b> → وٗ &nbsp; <b>oa</b> → ۄ</div>
+      <div><b>ts / cx</b> → ژ &nbsp; <b>tsh</b> → ژھ</div>
+      <div><b>\word</b> &nbsp;<b>\{…\}</b> → kept</div>
+    </div>
+  </section>
+
+  <!-- ===================================================== ABOUT / SOURCES / ADD -->
+  <section id="view-about" class="view about" role="tabpanel" hidden>
+    <div class="card">
+      <h2>Add a word</h2>
+      <p class="muted" style="margin-top:0">Fill any of the three columns. Your words are saved <b>in this browser only</b>, appear in search (“My added words”) and are used by the writer.</p>
+      <div class="add-grid">
+        <input id="addKs" dir="rtl" lang="ks" class="ks" data-kb="ks" placeholder="کٲشُر لفظ" aria-label="Kashmiri script">
+        <input id="addRom" data-kb="roman" placeholder="Roman spelling(s), e.g. posh / poash" aria-label="Roman spelling">
+        <input id="addMean" data-kb="roman" placeholder="English meaning, e.g. flower" aria-label="Meaning">
+      </div>
+      <div class="controls"><button class="btn primary" id="addBtn">Add word</button><button class="btn" id="exportMine">Download my words (CSV)</button><button class="btn ghost" id="clearMine">Remove my words</button><span class="muted" id="addMsg"></span></div>
+    </div>
+    <div class="card">
+      <h2>What's inside</h2>
+      <table>
+        <tr><th>Source</th><th>What it contributes</th><th>Licence</th></tr>
+        <tr><td>G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL</td><td>21,145 scholarly entries: Roman, Devanagari, Perso-Arabic for loanwords, full definitions</td><td>Public domain text; credit DSAL</td></tr>
+        <tr><td>kashmirizabaan.com + Kaeshir Dictionary (Izan Majeed)</td><td>Modern Perso-Arabic spellings, popular Roman spellings, Hindi glosses, English examples</td><td>MIT (Kaeshir); site content rights unclear</td></tr>
+        <tr><td>Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL)</td><td>Phonemic Roman spellings and native-speaker audio (Perso-Arabic is machine-generated, marked “auto script”)</td><td>DSAL / author — research use</td></tr>
+        <tr><td>ChiKhaPo lexicon</td><td>7,894 Kashmiri → English pairs, automatically compiled (marked “unverified”)</td><td>MIT</td></tr>
+        <tr><td>AI4Bharat Aksharantar</td><td>~41,000 everyday Roman spellings of Kashmiri words (“also typed”)</td><td>CC-BY / CC0</td></tr>
+      </table>
+      <p class="muted">All Kashmiri text uses one Unicode convention (NFC with the Kashmiri letters ٲ ؠ ۄ ۍ ێ and vowel signs ٕ ٔ ٟ ٖ ٗ ٚ ٛ). Details, data files and code: <a href="https://github.com/rizvonium/kashmiri_dictionary">github.com/rizvonium/kashmiri_dictionary</a>.</p>
+    </div>
+    <div class="card">
+      <h2>How the any-spelling search works</h2>
+      <p class="muted" style="margin:0">Every Roman spelling is reduced to a sound key (<code>cxoont</code>, <code>tsoont</code>, <code>tsūnṭh</code> → <code>tsunt</code>) and a consonant root (<code>koshur</code>, <code>kaeshur</code> → <code>kshr</code>). Kashmiri script is matched with or without vowel signs, and common letter variants (ٲ/ا, ؠ/ی, ۄ/و) are treated alike. In the writer, when a word has several dictionary spellings, the one whose meaning fits the neighbouring words best is chosen; tap a word to see the alternatives.</p>
+    </div>
+  </section>
 
   <footer>
-    <p><b>Sources.</b> G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL, University of Chicago · Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL; audio © DSAL) · Kaeshir Dictionary (Izan Majeed, MIT) · kashmirizabaan.com (via kzwebscrap / injilashah) · ChiKhaPo (MIT) · Roman spellings: AI4Bharat Aksharantar (CC-BY/CC0).</p>
-    <p><b>Script.</b> All Kashmiri text is in Unicode NFC, using the Kashmiri Perso-Arabic code points (ٲ ؠ ۄ ۍ ٕ ٔ ٟ ٖ ٗ ٚ ٛ …). Entries marked <span class="badge warn">auto script</span> have machine-generated Perso-Arabic spellings, so trust their romanization and audio instead.</p>
-    <p>Data &amp; code: <a href="https://github.com/rizvonium/kashmiri_dictionary">github.com/rizvonium/kashmiri_dictionary</a></p>
-    <p class="made">Developed by <b>Kainaat &amp; RGMir</b> · <span class="ks" lang="ks">کٲشُر لُغَت</span></p>
+    <p class="made">Developed by <b>Kainaat &amp; RGMir</b> · <span class="ks">کٲشُر لُغَت</span></p>
+    <p>Data: Grierson 1932 &amp; Hassan (DSAL, University of Chicago) · Kaeshir Dictionary · kashmirizabaan.com · ChiKhaPo · AI4Bharat Aksharantar.</p>
   </footer>
+</div>
+
+<!-- One keyboard for the whole site: switches to Roman or کٲشُر depending on the field you use -->
+<div class="kb" id="kb" hidden>
+  <div class="kb-in">
+    <div class="kb-head">
+      <span class="kb-label" id="kbLabel">Keyboard</span>
+      <span class="desk-only muted"><label class="toggle" style="font-size:12px"><input type="checkbox" id="physChk" checked><span style="min-height:28px;padding:3px 10px">type with my keyboard</span></label></span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div class="seg" role="group" aria-label="Keyboard"><button id="kbRoman" aria-pressed="false">Roman</button><button id="kbKs" aria-pressed="true"><span class="ks">کٲشُر</span></button></div>
+        <button class="btn sm" id="kbClose">Done ✓</button>
+      </div>
+    </div>
+    <div id="kbRows"></div>
+    <div class="marks" id="kbMarks"></div>
+  </div>
 </div>
 <div class="toast" id="toast"></div>
 <button class="totop" id="toTop" aria-label="Back to top" hidden>↑</button>
-
-<script>
-"use strict";
-/* ------------------------------------------------------------------ Kashmiri normalization (mirrors scripts/ks_normalize.py) */
-const KS_MAP = {"ك":"ک","ي":"ی","ى":"ی","ه":"ہ","ۀ":"ۂ",
-  "ۭ":"ٟ","ۆ":"وٚ","ٳ":"اٟ","ڐ":"ڈ","ٿ":"تھ",
-  "ڇ":"چھ","ـ":"","‏":"","‎":"","﻿":""};
-const MARK_RE = /[ً-ْٔ-ٰٟ]/g;      // vowel signs (keeps madda U+0653 so آ stays آ)
-const ARABIC_RE = /[؀-ۿݐ-ݿﭐ-﻿]/;
-const DEVA_RE = /[ऀ-ॿ]/;
-function normKs(s){
-  s = s.replace(/[ﭐ-﷿ﹰ-﻾]/g, c => c.normalize("NFKC"));
-  s = s.replace(/ٮ۪/g, "ؠ");
-  s = s.replace(/[كيىهۀۭۆٳڐٿڇـ‏‎﻿]/g, c => KS_MAP[c]);
-  return s.normalize("NFC").replace(/\s+/g, " ").trim();
-}
-function bareKs(s){ return normKs(s).normalize("NFD").replace(MARK_RE, "").normalize("NFC"); }
-/* "loose" key: also folds letter variants people often type interchangeably
-   (ٲ/أ/إ/آ → ا, ۄ/ؤ → و, ؠ/ێ/ۍ/ئ/ے → ی, ۂ/ۃ/ة → ہ, ں → ن), so کاشر finds کٲشُر */
-const LOOSE = {"ٲ":"ا","أ":"ا","إ":"ا","آ":"ا","ۄ":"و","ؤ":"و","ؠ":"ی","ێ":"ی","ۍ":"ی","ئ":"ی","ے":"ی","ۂ":"ہ","ۃ":"ہ","ة":"ہ","ں":"ن","\u0653":"","\u200C":""};
-function looseKs(s){ return bareKs(s).normalize("NFD").replace(/[ٲأإآۄؤؠێۍئےۂۃةں\u0653\u200C]/g, c => LOOSE[c] ?? c).replace(/\s+/g, " "); }
-const isTouch = matchMedia("(hover: none)").matches;
-const LAT_SPECIAL = {"ʦ":"ts","ʰ":"h","ʸ":"y","ι":"i","ͻ":"o","ɔ":"o","ə":"a","ɨ":"i","ñ":"n","ŋ":"ng","ʃ":"sh","ʒ":"zh","ʷ":"w","ʼ":"","ʻ":"","'":"","’":"",":":""};
-function foldLat(s){
-  return s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase()
-          .replace(/[ʦʰʸιͻɔəɨñŋʃʒʷʼʻ'’:]/g, c => LAT_SPECIAL[c] ?? c).replace(/\s+/g, " ").trim();
-}
-function escapeHtml(s){ return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-function escapeRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-
-/* ------------------------------------------------------------------ Keyboard layout
-   Phonetic layout in the style of the widely used Urdu phonetic (CRULP) keyboards:
-   each letter sits on the Latin key with the nearest sound, Shift gives the related
-   letter, and Shift + number row gives the Kashmiri vowel signs.  Covers every letter
-   and mark in docs/ORTHOGRAPHY.md. [code, normal, shift, latin label] */
-const ZW = "‌";
-const LAYOUT = [
-  [["Backquote","‌","ً","`"],["Digit1","1","َ","1"],["Digit2","2","ِ","2"],["Digit3","3","ُ","3"],["Digit4","4","ٔ","4"],["Digit5","5","ٕ","5"],["Digit6","6","ٖ","6"],["Digit7","7","ٗ","7"],["Digit8","8","ٚ","8"],["Digit9","9","ٛ","9"],["Digit0","0","ٟ","0"],["Minus","-","ّ","-"],["Equal","=","ٰ","="]],
-  [["KeyQ","ق","ۄ","q"],["KeyW","و","ؤ","w"],["KeyE","ع","ٲ","e"],["KeyR","ر","ڑ","r"],["KeyT","ت","ٹ","t"],["KeyY","ے","ؠ","y"],["KeyU","ء","ۍ","u"],["KeyI","ی","ێ","i"],["KeyO","ہ","أ","o"],["KeyP","پ","إ","p"],["BracketLeft","ْ","ٓ","["],["BracketRight","ٌ","ٍ","]"],["Backslash","٘","ۃ","\\"]],
-  [["KeyA","ا","آ","a"],["KeyS","س","ص","s"],["KeyD","د","ڈ","d"],["KeyF","ف","ئ","f"],["KeyG","گ","غ","g"],["KeyH","ھ","ح","h"],["KeyJ","ج","ض","j"],["KeyK","ک","خ","k"],["KeyL","ل","ۂ","l"],["Semicolon","؛",":",";"],["Quote","'","\"","'"]],
-  [["KeyZ","ز","ذ","z"],["KeyX","ش","ژ","x"],["KeyC","چ","ث","c"],["KeyV","ط","ظ","v"],["KeyB","ب","ة","b"],["KeyN","ن","ں","n"],["KeyM","م","ۓ","m"],["Comma","،","<",","],["Period","۔",">","."],["Slash","/","؟","/"]]
-];
-const MARKS = [
-  ["َ","zabar · a"],["ِ","zer · i"],["ُ","pesh · u"],["ٔ","ə (hamza above)"],["ٕ","ɨ (hamza below)"],
-  ["ٖ","iː (khaḍā zer)"],["ٗ","uː (ulṭā pesh)"],["ٚ","e / o (small v)"],["ٛ","ʲ/ʷ (inverted v)"],["ٟ","ɨː (wavy hamza)"],
-  ["ّ","shad · double"],["ْ","jazm · sukun"],["ٰ","khaḍā zabar"],["ً","do zabar · an"],["ٓ","madd"],["٘","nūn ghunna mark"],
-  ["ٲ","əː letter"],["ؠ","Kashmiri yē"],["ۄ","ɔ (wāw ring)"],["ۍ","yē with tail ʲ"],["ێ","e (yē v)"],["‌","ZWNJ (no join)"]
-];
-const KEYMAP = {};
-LAYOUT.flat().forEach(([code,n,s]) => KEYMAP[code] = [n,s]);
-const isMark = ch => /^[ً-ٰٟ]$/.test(ch);
-const show = ch => ch === "‌" ? "ZW" : isMark(ch) ? "◌" + ch : ch;
-
-/* ------------------------------------------------------------------ State */
-const state = {rows:[], meta:null, mode:"auto", field:"any", src:"", pos:"", audio:false, dia:false, shift:false, page:0, hits:[], letter:""};
-const PAGE = 40;
-const $ = id => document.getElementById(id);
-const qEl = $("q");
-
-/* ------------------------------------------------------------------ Theme & font */
-const root = document.documentElement;
-function setTheme(t){ if(t) root.setAttribute("data-theme", t); else root.removeAttribute("data-theme"); try{localStorage.setItem("ksd-theme", t||"")}catch(e){} }
-function setFont(f){ root.setAttribute("data-font", f); $("fontBtn").textContent = f === "nastaliq" ? "Nastaʿlīq" : "Naskh"; try{localStorage.setItem("ksd-font", f)}catch(e){} }
-try{ const t = localStorage.getItem("ksd-theme"); if(t) setTheme(t); setFont(localStorage.getItem("ksd-font") || "naskh"); }catch(e){ setFont("naskh"); }
-$("themeBtn").onclick = () => {
-  const dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  setTheme(dark ? "light" : "dark");
-};
-$("fontBtn").onclick = () => setFont(root.getAttribute("data-font") === "nastaliq" ? "naskh" : "nastaliq");
-
-/* ------------------------------------------------------------------ Keyboard UI */
-function renderKeyboard(){
-  const host = $("krows"); host.innerHTML = "";
-  LAYOUT.forEach((row, i) => {
-    const r = document.createElement("div"); r.className = "krow";
-    if(i === 3){ r.appendChild(specialKey("⇧ Shift", "shift")); }
-    row.forEach(([code,n,s,lat]) => {
-      const b = document.createElement("button");
-      b.type = "button"; b.className = "key"; b.dataset.code = code;
-      const main = state.shift ? s : n, alt = state.shift ? n : s;
-      b.innerHTML = `<span class="main">${escapeHtml(show(main))}</span><span class="alt">${escapeHtml(show(alt))}</span><span class="lat">${escapeHtml(lat)}</span>`;
-      b.title = `${lat.toUpperCase()} → ${n === ZW ? "ZWNJ" : n}   ·   Shift+${lat.toUpperCase()} → ${s}`;
-      b.onmousedown = e => e.preventDefault();
-      b.onclick = () => { insert(main); if(state.shift){ state.shift = false; renderKeyboard(); } };
-      r.appendChild(b);
-    });
-    if(i === 0){ r.appendChild(specialKey("⌫", "back")); }
-    host.appendChild(r);
-  });
-  const last = document.createElement("div"); last.className = "krow";
-  last.appendChild(specialKey("Clear", "clear"));
-  last.appendChild(specialKey("space", "space"));
-  last.appendChild(specialKey("‌ZWNJ", "zwnj"));
-  host.appendChild(last);
-}
-function specialKey(label, act){
-  const b = document.createElement("button"); b.type = "button";
-  b.className = "key wide" + (act === "space" ? " space" : "") + (act === "shift" && state.shift ? " on" : "");
-  b.textContent = label;
-  b.onmousedown = e => e.preventDefault();
-  b.onclick = () => {
-    if(act === "shift"){ state.shift = !state.shift; renderKeyboard(); }
-    else if(act === "back"){ backspace(); }
-    else if(act === "clear"){ qEl.value = ""; onInput(); qEl.focus(); }
-    else if(act === "space"){ insert(" "); }
-    else if(act === "zwnj"){ insert(ZW); }
-  };
-  return b;
-}
-function renderMarks(){
-  const host = $("marks");
-  MARKS.forEach(([ch, name]) => {
-    const b = document.createElement("button"); b.type = "button"; b.className = "mark";
-    b.innerHTML = `<span class="g">${escapeHtml(show(ch))}</span><span class="n">${escapeHtml(name)}</span>`;
-    b.title = `U+${ch.codePointAt(0).toString(16).toUpperCase().padStart(4,"0")}`;
-    b.onmousedown = e => e.preventDefault();
-    b.onclick = () => insert(ch);
-    host.appendChild(b);
-  });
-}
-function insert(text){
-  const s = qEl.selectionStart ?? qEl.value.length, e = qEl.selectionEnd ?? s;
-  qEl.value = qEl.value.slice(0, s) + text + qEl.value.slice(e);
-  const p = s + text.length; qEl.setSelectionRange(p, p); if(!isTouch) qEl.focus(); onInput();
-}
-function backspace(){
-  const s = qEl.selectionStart, e = qEl.selectionEnd;
-  if(s !== e){ qEl.value = qEl.value.slice(0, s) + qEl.value.slice(e); qEl.setSelectionRange(s, s); }
-  else if(s > 0){ const arr = Array.from(qEl.value.slice(0, s)); arr.pop(); const pre = arr.join(""); qEl.value = pre + qEl.value.slice(s); qEl.setSelectionRange(pre.length, pre.length); }
-  if(!isTouch) qEl.focus(); onInput();
-}
-function toggleKbd(force){
-  const open = force ?? !$("kbd").classList.contains("open");
-  $("kbd").classList.toggle("open", open);
-  $("kbdBtn").setAttribute("aria-pressed", open);
-  document.body.classList.toggle("kbd-open", open);
-  if(isTouch){ qEl.setAttribute("inputmode", open ? "none" : "search"); qEl.blur(); }
-  if(open && !isTouch) qEl.focus();
-}
-$("kbdBtn").onclick = () => toggleKbd();
-qEl.addEventListener("keydown", e => {
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k"){ e.preventDefault(); toggleKbd(); return; }
-  if(e.key === "Escape"){ toggleKbd(false); return; }
-  if(!$("kbd").classList.contains("open") || !$("physChk").checked) return;
-  if(e.ctrlKey || e.metaKey || e.altKey) return;
-  const m = KEYMAP[e.code]; if(!m) return;
-  e.preventDefault();
-  const shifted = e.shiftKey || (e.key.length === 1 && e.key !== e.key.toLowerCase());
-  const ch = shifted ? m[1] : m[0];
-  insert(ch);
-  const k = document.querySelector(`.key[data-code="${e.code}"]`);
-  if(k){ k.classList.add("hit"); setTimeout(() => k.classList.remove("hit"), 120); }
-});
-document.addEventListener("keydown", e => {
-  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && document.activeElement !== qEl){ e.preventDefault(); toggleKbd(true); }
-  if(e.key === "/" && document.activeElement !== qEl){ e.preventDefault(); qEl.focus(); }
-});
-
-/* ------------------------------------------------------------------ Alphabet browse */
-const ALPHABET = ["ا","آ","أ","ٲ","ب","پ","ت","ٹ","ث","ج","چ","ح","خ","د","ڈ","ذ","ر","ڑ","ز","ژ","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ک","گ","ل","م","ن","و","ۄ","ہ","ھ","ی","ؠ","ے"];
-function renderAlpha(){
-  const host = $("alpha");
-  ALPHABET.forEach(ch => {
-    const b = document.createElement("button"); b.type = "button"; b.textContent = ch; b.title = "Words beginning with " + ch;
-    b.setAttribute("aria-pressed", "false");
-    b.onclick = () => searchFor(ch, "start");
-    host.appendChild(b);
-  });
-}
-
-/* ------------------------------------------------------------------ Data */
-async function loadData(){
-  const res = await fetch("data/dictionary.json");
-  const total = +res.headers.get("content-length") || 0;
-  let text;
-  if(res.body && total){
-    const reader = res.body.getReader(); const chunks = []; let got = 0;
-    for(;;){ const {done, value} = await reader.read(); if(done) break; chunks.push(value); got += value.length; $("barFill").style.width = Math.min(100, got/total*100) + "%"; }
-    const buf = new Uint8Array(got); let o = 0; chunks.forEach(c => { buf.set(c, o); o += c.length; });
-    text = new TextDecoder().decode(buf);
-  } else text = await res.text();
-  const d = JSON.parse(text);
-  const F = Object.fromEntries(d.fields.map((f, i) => [f, i]));
-  state.meta = d;
-  const posCount = {};
-  state.rows = d.rows.map((r, i) => {
-    const src = d.sources[r[F.source]];
-    const e = {
-      i, ks: r[F.headword_ks], bare: r[F.headword_ks_bare], rom: r[F.headword_roman], scheme: d.schemes[r[F.roman_scheme]], rv: r[F.roman_variants] || "",
-      deva: r[F.headword_deva], pos: r[F.pos], gender: r[F.gender], gloss: r[F.gloss_en], def: r[F.definition_en],
-      hindi: r[F.hindi_gloss], exEn: r[F.example_en], exKs: r[F.example_ks], exKsR: r[F.example_ks_roman],
-      audio: r[F.audio_url] ? r[F.audio_url].replace(/^@h\//, "https://dsal.uchicago.edu/dictionaries/hassan/audio/") : "",
-      src, ref: r[F.source_ref], q: d.quality[r[F.script_quality]],
-    };
-    e.grp = src.startsWith("grierson") ? "grierson" : src.startsWith("hassan") ? "hassan" : src.startsWith("chikhapo") ? "chikhapo" : src.startsWith("injilashah") ? "other" : "modern";
-    e.romF = foldLat(e.rom);
-    e.rvF = e.rv ? e.rv.split(/;\s*/).map(foldLat) : [];
-    e.loose = e.ks ? looseKs(e.ks) : "";
-    e.glossF = e.gloss.toLowerCase();
-    e.glossWords = e.glossF.split(/[;,]\s*/).map(s => s.replace(/^(to|a|an|the)\s+/, "").trim());
-    if(e.pos) posCount[e.pos] = (posCount[e.pos] || 0) + 1;
-    return e;
-  });
-  // English vocabulary for "did you mean"
-  const vocab = new Map();
-  state.rows.forEach(r => { if(r.grp !== "grierson") r.glossF.split(/[^a-z]+/).forEach(w => { if(w.length > 2) vocab.set(w, (vocab.get(w) || 0) + 1); }); });
-  state.vocab = vocab;
-  const sel = $("posSel");
-  Object.entries(posCount).sort((a, b) => b[1] - a[1]).forEach(([p, n]) => {
-    const o = document.createElement("option"); o.value = p; o.textContent = `${p} (${n.toLocaleString()})`; sel.appendChild(o);
-  });
-  const nKs = state.rows.filter(r => r.ks).length;
-  $("sub").textContent = `${state.rows.length.toLocaleString()} entries · ${nKs.toLocaleString()} in Perso-Arabic script · ${state.rows.filter(r => r.audio).length.toLocaleString()} with audio · Grierson 1932, Hassan, Kaeshir & kashmirizabaan, merged`;
-}
-
-/* ------------------------------------------------------------------ Search */
-function detect(q){ return ARABIC_RE.test(q) ? "ks" : DEVA_RE.test(q) ? "deva" : "lat"; }
-function matcher(needle, mode){
-  if(mode === "exact") return h => h === needle ? 3 : 0;
-  if(mode === "start") return h => h === needle ? 3 : h.startsWith(needle) ? 2 : 0;
-  if(mode === "contains") return h => h === needle ? 3 : h.startsWith(needle) ? 2 : h.includes(needle) ? 1 : 0;
-  // smart: whole word / prefix ranking
-  return h => h === needle ? 3 : h.startsWith(needle) ? 2 : h.includes(needle) ? 1 : 0;
-}
-function search(){
-  const raw = qEl.value.trim();
-  const {field, mode, src, pos, audio, dia} = state;
-  let pool = state.rows;
-  if(src) pool = pool.filter(r => r.grp === src);
-  if(pos) pool = pool.filter(r => r.pos === pos);
-  if(audio) pool = pool.filter(r => r.audio);
-  if(!raw){ return pool.slice(); }
-  const script = detect(raw);
-  const hits = [];
-  if(script === "ks"){
-    const needle = dia ? normKs(raw) : bareKs(raw);
-    const m = matcher(needle, mode === "auto" ? "contains" : mode);
-    const mL = dia ? null : matcher(looseKs(raw), mode === "auto" ? "contains" : mode);
-    for(const r of pool){
-      let s = 0;
-      if(field === "any" || field === "ks"){
-        const h = dia ? r.ks : r.bare;
-        if(h){ s = m(h) * 10; if(!s && mL) s = mL(r.loose) * 8; }
-        if(!s && (r.exKs) && mode === "contains" && (dia ? r.exKs : bareKs(r.exKs)).includes(needle)) s = 1;
-      }
-      if(!s && (field === "def" || (field === "any" && (mode === "auto" || mode === "contains"))) && r.def && r.def.includes(normKs(raw))) s = 1;
-      if(s) hits.push([s - (r.q === "unverified" ? 7 : 0), r]);
-    }
-  } else if(script === "deva"){
-    const needle = raw.normalize("NFC");
-    const m = matcher(needle, mode === "auto" ? "contains" : mode);
-    for(const r of pool){
-      let s = 0;
-      if(field === "any" || field === "hi"){
-        const d = r.deva.split(/[,،]\s*/).map(x => x.trim());
-        s = Math.max(0, ...d.map(m)) * 10;
-        if(!s && r.hindi){ s = Math.max(0, ...r.hindi.split(/;\s*/).map(m)) * 5; }
-      }
-      if(s) hits.push([s - (r.q === "unverified" ? 7 : 0), r]);
-    }
-  } else {
-    const nl = raw.toLowerCase(), nf = foldLat(raw);
-    const wordRe = new RegExp(`(^|[^a-z])${escapeRe(nl)}([^a-z]|$)`);
-    for(const r of pool){
-      let s = 0;
-      if(field === "any" || field === "en"){
-        if(mode === "auto"){
-          if(r.glossWords.includes(nl)) s = 30;
-          else if(wordRe.test(r.glossF)) s = 20;
-          else if(r.glossF.includes(nl)) s = 6;
-        } else {
-          const m = matcher(nl, mode);
-          s = Math.max(0, ...r.glossWords.map(m)) * 10;
-        }
-      }
-      if(field === "any" || field === "roman"){
-        if(r.romF || r.rvF.length){
-          const forms = r.romF.split(/\s+or\s+|\s*\/\s*|,\s*/).map(x => x.replace(/\s+\d+$/, "")).concat(r.rvF);
-          const m = matcher(nf, mode === "auto" ? "start" : mode);
-          s = Math.max(s, Math.max(0, ...forms.map(m)) * 10 + (mode === "auto" ? 1 : 0) * (forms.includes(nf) ? 5 : 0));
-        }
-      }
-      if(!s && (field === "def" || (field === "any" && mode === "auto")) && r.def && nl.length > 2){
-        if(wordRe.test(r.def.toLowerCase())) s = 2;
-      }
-      if(!s && field === "def" && r.def && r.def.toLowerCase().includes(nl)) s = 1;
-      if(s) hits.push([s - (r.q === "unverified" ? 7 : 0), r]);
-    }
-  }
-  const qRank = {"native":0, "source-perso-arabic (1932)":1, "auto-transliterated":2, "":2, "unverified":3};
-  hits.sort((a, b) => b[0] - a[0] || qRank[a[1].q] - qRank[b[1].q] || (a[1].ks || a[1].rom).length - (b[1].ks || b[1].rom).length || a[1].i - b[1].i);
-  return hits.map(h => h[1]);
-}
-
-/* ------------------------------------------------------------------ Render */
-function hl(text, raw){
-  const safe = escapeHtml(text);
-  if(!raw || ARABIC_RE.test(raw) || raw.length < 2) return safe;
-  try{ return safe.replace(new RegExp(`(${escapeRe(escapeHtml(raw))})`, "gi"), "<mark>$1</mark>"); }catch(e){ return safe; }
-}
-const QUALITY_LABEL = {
-  "native": ["", ""],
-  "source-perso-arabic (1932)": ["1932 spelling", "Perso-Arabic spelling as printed by Grierson in 1932 (Persian-style, without Kashmiri vowel signs)"],
-  "auto-transliterated": ["auto script", "Perso-Arabic generated by machine from the romanization in the source. The romanization and audio are reliable; the script spelling may not be."],
-  "unverified": ["unverified", "From an automatically compiled word list (ChiKhaPo / stop-word list); spelling and meaning not checked by an editor"],
-};
-const SRC_LABEL = {modern:"Modern dictionary", hassan:"Hassan · DSAL", grierson:"Grierson 1932", chikhapo:"ChiKhaPo lexicon", other:"Stop-word list"};
-function card(r, raw){
-  const el = document.createElement("article"); el.className = "card"; el.id = "e" + r.i;
-  const parts = [];
-  parts.push(`<div class="card-top"><div class="hw">`);
-  if(r.ks) parts.push(`<span class="ks" lang="ks">${escapeHtml(r.ks)}</span>`);
-  if(r.rom) parts.push(`<span class="rom${r.ks ? "" : " big"}">${hl(r.rom, raw)}</span>`);
-  if(r.deva) parts.push(`<span class="deva" lang="ks-Deva">${escapeHtml(r.deva)}</span>`);
-  if(r.rv) parts.push(`<span class="deva" title="Common Roman spellings (AI4Bharat Aksharantar)">also typed: ${escapeHtml(r.rv)}</span>`);
-  parts.push(`</div><div class="actions">`);
-  if(r.audio) parts.push(`<button class="act" data-audio="${escapeHtml(r.audio)}" title="Play pronunciation" aria-label="Play pronunciation"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>`);
-  parts.push(`<button class="act" data-copy="${escapeHtml(r.ks || r.rom || r.deva)}" title="Copy word" aria-label="Copy word"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>`);
-  parts.push(`</div></div><div class="meta">`);
-  if(r.pos) parts.push(`<span class="badge pos">${escapeHtml(r.pos)}</span>`);
-  if(r.gender) parts.push(`<span class="badge">${escapeHtml({m:"masculine",f:"feminine","c.g.":"common gender","m/f":"m / f"}[r.gender] || r.gender)}</span>`);
-  const ql = QUALITY_LABEL[r.q];
-  if(ql && ql[0]) parts.push(`<span class="badge warn" title="${escapeHtml(ql[1])}">${ql[0]}</span>`);
-  parts.push(`</div>`);
-  if(r.gloss) parts.push(`<p class="gloss">${hl(r.gloss, raw)}</p>`);
-  if(r.hindi) parts.push(`<p class="hindi">हिन्दी: ${escapeHtml(r.hindi)}</p>`);
-  if(r.exKs || r.exEn || r.exKsR){
-    parts.push(`<div class="ex">`);
-    if(r.exKs) parts.push(`<span class="ks" lang="ks">${escapeHtml(r.exKs)}</span>`);
-    if(r.exKsR) parts.push(`<i>${escapeHtml(r.exKsR)}</i><br>`);
-    if(r.exEn) parts.push(`${hl(r.exEn, raw)}`);
-    parts.push(`</div>`);
-  }
-  if(r.def){
-    const long = r.def.length > 320;
-    parts.push(`<p class="def${long ? " clamp" : ""}">${hl(r.def.replace(/ ¶ /g, "\n"), raw)}</p>`);
-    if(long) parts.push(`<button class="more" data-more>Read full entry ↓</button>`);
-  }
-  parts.push(`<div class="foot">${SRC_LABEL[r.grp]}${r.ref && r.grp === "grierson" ? " · " + escapeHtml(r.ref.replace("Grierson 1932 ", "")) : ""}${r.scheme ? " · romanization: " + escapeHtml(r.scheme) : ""}</div>`);
-  el.innerHTML = parts.join("");
-  return el;
-}
-function render(reset){
-  const host = $("results");
-  if(reset && !qEl.value.trim() && !state.browseAll && !activeFilters()){ renderWelcome(); return; }
-  if(reset){ host.innerHTML = ""; state.page = 0; window.scrollTo({top: 0}); }
-  const start = state.page * PAGE, slice = state.hits.slice(start, start + PAGE);
-  const raw = qEl.value.trim();
-  const frag = document.createDocumentFragment();
-  slice.forEach(r => frag.appendChild(card(r, raw)));
-  host.appendChild(frag);
-  state.page++;
-  const n = state.hits.length;
-  if(!n){ host.innerHTML = `<div class="empty"><p style="font-size:28px;margin:0" class="ks">کہِنہٕ میوٗل نہٕ</p><p>Nothing found for “${escapeHtml(raw)}”.</p><p>${state.mode !== "contains" ? '<button class="chip" data-mode="contains">Try “Contains”</button> ' : ""}${activeFilters() ? '<button class="chip" data-reset>Clear filters</button> ' : ""}${state.dia ? '<button class="chip" data-nodia>Ignore vowel signs</button>' : ""}</p></div>`; }
-  $("count").textContent = raw ? `${n.toLocaleString()} result${n === 1 ? "" : "s"}` : `Browsing ${n.toLocaleString()} entries`;
-  if(reset) renderSuggest(raw, n);
-  $("more").hidden = state.page * PAGE >= n;
-  $("more").textContent = `Show more (${Math.max(0, n - state.page * PAGE).toLocaleString()} left)`;
-}
-$("more").onclick = () => render(false);
-$("results").addEventListener("click", e => {
-  const a = e.target.closest("[data-audio]"), c = e.target.closest("[data-copy]"), m = e.target.closest("[data-more]");
-  if(a) playAudio(a);
-  if(c){ navigator.clipboard?.writeText(c.dataset.copy).then(() => toast("Copied " + c.dataset.copy)); }
-  if(m){ const d = m.previousElementSibling; const open = d.classList.toggle("clamp"); m.textContent = open ? "Read full entry ↓" : "Show less ↑"; }
-  const hw = e.target.closest(".hw .ks"); if(hw && !a && !c){ searchFor(hw.textContent, "auto"); }
-  const chip = e.target.closest("[data-q]"); if(chip) searchFor(chip.dataset.q, chip.dataset.m || "auto");
-  if(e.target.closest("[data-mode]")){ setMode(e.target.closest("[data-mode]").dataset.mode); run(); }
-  if(e.target.closest("[data-reset]")) resetFilters();
-  if(e.target.closest("[data-nodia]")){ $("diaChk").checked = false; state.dia = false; run(); }
-  if(e.target.closest("[data-browseall]")){ state.browseAll = true; run(); }
-  if(e.target.closest("[data-letter]")){ searchFor(e.target.closest("[data-letter]").dataset.letter, "start"); }
-});
-let player = null, playingBtn = null;
-function playAudio(btn){
-  if(player){ player.pause(); playingBtn?.classList.remove("playing"); }
-  player = new Audio(btn.dataset.audio); playingBtn = btn; btn.classList.add("playing");
-  player.onended = player.onerror = () => btn.classList.remove("playing");
-  player.play().catch(() => { btn.classList.remove("playing"); toast("Audio unavailable"); });
-}
-function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 1600); }
-
-/* ------------------------------------------------------------------ Welcome, suggestions, filters */
-function searchFor(text, mode){
-  qEl.value = text; setMode(mode || "auto"); state.browseAll = false; onInput(true);
-  window.scrollTo({top: 0, behavior: "smooth"});
-}
-function activeFilters(){ return !!(state.src || state.pos || state.audio || state.field !== "any"); }
-function resetFilters(){
-  Object.assign(state, {src:"", pos:"", audio:false, field:"any"});
-  $("srcSel").value = ""; $("posSel").value = ""; $("fieldSel").value = "any"; $("audioChk").checked = false;
-  run();
-}
-const EXAMPLES = [["water"],["mother"],["love"],["آب","ks"],["کٲشُر","ks"],["کاشر","ks","plain spelling"],["पानी"],["ʦūr","","Grierson"],["house"],["گُلاب","ks"]];
-function recent(){ try{ return JSON.parse(localStorage.getItem("ksd-recent") || "[]"); }catch(e){ return []; } }
-function remember(q){ try{ const r = [q, ...recent().filter(x => x !== q)].slice(0, 8); localStorage.setItem("ksd-recent", JSON.stringify(r)); }catch(e){} }
-function renderWelcome(){
-  const host = $("results");
-  const natives = state.rows.filter(r => r.q === "native" && r.exEn && r.gloss);
-  const day = Math.floor(Date.now() / 864e5);
-  const w = natives[(day * 2654435761 >>> 0) % natives.length];
-  const rec = recent();
-  host.innerHTML = `<div class="welcome">
-    <section><h2>Try a search</h2><div class="chips">${EXAMPLES.map(([q, k, note]) =>
-      `<button class="chip${k === "ks" ? " ks" : ""}" data-q="${escapeHtml(q)}">${escapeHtml(q)}${note ? `<small>${escapeHtml(note)}</small>` : ""}</button>`).join("")}</div></section>
-    ${rec.length ? `<section><h2>Your recent searches</h2><div class="chips">${rec.map(q => `<button class="chip${ARABIC_RE.test(q) ? " ks" : ""}" data-q="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join("")}</div></section>` : ""}
-    <section><h2>Word of the day</h2><div class="wotd" id="wotd"></div></section>
-    <section><h2>Browse by first letter</h2><div class="alpha" style="margin:0">${ALPHABET.map(ch => `<button data-letter="${ch}" title="Words starting with ${ch}">${ch}</button>`).join("")}</div></section>
-    <section><h2>How to search</h2><ul class="tips">
-      <li>Type in <b>English</b>, <b>Kashmiri script</b>, <b>romanized Kashmiri</b> or <b>हिन्दी</b>. The language is detected automatically.</li>
-      <li>No Kashmiri keyboard? Tap <b>⌨ کٲشُر</b>. You also don’t need the vowel signs: <span class="ks">کاشر</span> finds <span class="ks">کٲشُر</span>.</li>
-      <li>Tap a Kashmiri word in a result to look it up exactly. Tap 🔊 to hear it spoken.</li>
-      <li><button class="chip" data-browseall>Browse all ${state.rows.length.toLocaleString()} entries</button></li>
-    </ul></section></div>`;
-  if(w){ const c = card(w, ""); $("wotd").appendChild(c); }
-  $("count").textContent = `${state.rows.length.toLocaleString()} entries ready`;
-  $("more").hidden = true; $("suggest").hidden = true;
-}
-function lev(a, b, max){
-  if(Math.abs(a.length - b.length) > max) return max + 1;
-  let prev = Array.from({length: b.length + 1}, (_, i) => i);
-  for(let i = 1; i <= a.length; i++){
-    const cur = [i]; let best = i;
-    for(let j = 1; j <= b.length; j++){
-      cur[j] = Math.min(prev[j] + 1, cur[j-1] + 1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1));
-      if(cur[j] < best) best = cur[j];
-    }
-    if(best > max) return max + 1;
-    prev = cur;
-  }
-  return prev[b.length];
-}
-function renderSuggest(raw, n){
-  const box = $("suggest"); box.hidden = true; box.innerHTML = "";
-  if(!raw || n >= 3 || ARABIC_RE.test(raw) || DEVA_RE.test(raw)) return;
-  const w = raw.toLowerCase().trim();
-  if(!/^[a-z]{3,}$/.test(w) || !state.vocab) return;
-  const max = w.length > 5 ? 2 : 1, cands = [];
-  for(const [v, c] of state.vocab){ if(v !== w && v[0] === w[0]){ const d = lev(w, v, max); if(d <= max) cands.push([d, -c, v]); } }
-  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  if(!cands.length) return;
-  box.innerHTML = "Did you mean: " + cands.slice(0, 4).map(([, , v]) => `<button class="chip" data-q="${v}">${v}</button>`).join("");
-  box.hidden = false;
-}
-$("suggest").addEventListener("click", e => { const c = e.target.closest("[data-q]"); if(c) searchFor(c.dataset.q); });
-$("filterBtn").onclick = () => { const f = $("filters"); f.hidden = !f.hidden; $("filterBtn").setAttribute("aria-expanded", !f.hidden); };
-$("browseBtn").onclick = () => { const a = $("alpha"); a.hidden = !a.hidden; $("browseBtn").setAttribute("aria-expanded", !a.hidden); };
-$("resetBtn").onclick = resetFilters;
-$("kbdClose").onclick = () => toggleKbd(false);
-const toTop = $("toTop");
-addEventListener("scroll", () => { toTop.hidden = scrollY < 900; }, {passive: true});
-toTop.onclick = () => scrollTo({top: 0, behavior: "smooth"});
-
-/* ------------------------------------------------------------------ Wiring */
-function setMode(v){ state.mode = v; document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v)); }
-document.querySelectorAll("#modeSeg button").forEach(b => b.onclick = () => { setMode(b.dataset.v); run(); });
-$("fieldSel").onchange = e => { state.field = e.target.value; run(); };
-$("srcSel").onchange = e => { state.src = e.target.value; run(); };
-$("posSel").onchange = e => { state.pos = e.target.value; run(); };
-$("audioChk").onchange = e => { state.audio = e.target.checked; run(); };
-$("diaChk").onchange = e => { state.dia = e.target.checked; run(); };
-$("clearQ").onclick = () => { qEl.value = ""; onInput(); qEl.focus(); };
-let timer = null, lastAlpha = "";
-function onInput(now){
-  if(state.mode === "start" && !ARABIC_RE.test(qEl.value) && ALPHABET.includes(lastAlpha)) setMode("auto");
-  lastAlpha = ALPHABET.includes(qEl.value.trim()) ? qEl.value.trim() : "";
-  qEl.classList.toggle("rtl", ARABIC_RE.test(qEl.value));
-  document.querySelectorAll("#alpha button").forEach(b => b.setAttribute("aria-pressed", b.textContent === qEl.value.trim() && state.mode === "start"));
-  if(qEl.value.trim()) state.browseAll = false; else if(state.mode !== "auto") setMode("auto");
-  clearTimeout(timer); if(now === true) run(); else timer = setTimeout(run, 140);
-}
-qEl.addEventListener("input", onInput);
-function run(){
-  if(!state.rows.length) return;
-  $("filterDot").hidden = !activeFilters();
-  clearTimeout(run.rt);
-  const qv = qEl.value.trim();
-  if(qv) run.rt = setTimeout(() => { if(qEl.value.trim() === qv && state.hits.length) remember(qv); }, 1500);
-  state.hits = search();
-  render(true);
-  const params = new URLSearchParams();
-  if(qEl.value.trim()) params.set("q", qEl.value.trim());
-  if(state.mode !== "auto") params.set("m", state.mode);
-  if(state.field !== "any") params.set("in", state.field);
-  if(state.src) params.set("src", state.src);
-  history.replaceState(null, "", params.toString() ? "#" + params.toString() : location.pathname);
-  $("hint").textContent = qEl.value.trim() ? ({ks:"Kashmiri script search", deva:"Devanagari search", lat:"English / Roman search"})[detect(qEl.value.trim())] : (isTouch ? "" : "Tip: press / to search, Ctrl+K for the keyboard");
-}
-function fromHash(){
-  const p = new URLSearchParams(location.hash.slice(1));
-  if(p.get("q")) qEl.value = p.get("q");
-  if(p.get("m")) setMode(p.get("m"));
-  if(p.get("in")){ state.field = p.get("in"); $("fieldSel").value = state.field; }
-  if(p.get("src")){ state.src = p.get("src"); $("srcSel").value = state.src; }
-  qEl.classList.toggle("rtl", ARABIC_RE.test(qEl.value));
-}
-
-renderKeyboard(); renderMarks(); renderAlpha(); fromHash();
-loadData().then(run).catch(err => {
-  $("results").innerHTML = `<div class="empty">Could not load <code>data/dictionary.json</code> (${escapeHtml(String(err))}).<br>Serve this folder over HTTP, e.g. <code>npx serve site</code> or deploy to Vercel.</div>`;
-});
-</script>
+<script src="assets/app.js"></script>
 </body>
 </html>
