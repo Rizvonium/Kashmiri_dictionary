@@ -1,5 +1,5 @@
 /* Kashmiri Dictionary — unified app: dictionary search + Roman/Kashmiri writer + translation + one keyboard.
-   Developed by Kainaat & RGMir. Data: see the "Sources" tab. */
+   By Sajad Kainaat & RGMir. Data: see the "Sources" tab. */
 "use strict";
 
 /* ============================================================== utilities */

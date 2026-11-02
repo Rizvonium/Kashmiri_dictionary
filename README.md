@@ -109,7 +109,7 @@ water = [e for e in entries if "water" in (e["gloss_en"] + e["definition_en"]).l
 
 ## Licence and credits
 
-Developed by **Kainaat & RGMir**.
+A labour of love (and a little fun) by **Sajad Kainaat & RGMir**, built on open-source resources.
 
 
 The build code is released under MIT. The data rows keep their sources'
