@@ -28,6 +28,26 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 | Entries by source | Grierson 21,145 · kashmirizabaan 8,637 · Kaeshir 9,049 · Hassan 5,563 · other 82 (one entry can come from several sources) |
 
 
+## Website (search UI)
+
+`site/` is a static website, with no build step. It loads `site/data/dictionary.json` and offers:
+
+* instant search in Kashmiri script, English, romanized Kashmiri, Hindi and Devanagari, plus full-text search of Grierson's definitions
+* Smart / Starts with / Exact / Contains matching. Vowel signs are ignored unless you ask for them
+* filters for source, part of speech and audio, and browsing by Kashmiri letter
+* an on-screen **Kashmiri keyboard** that also maps your physical keyboard, covering every Kashmiri letter and vowel sign ([docs/KEYBOARD.md](docs/KEYBOARD.md))
+* native-speaker audio, Naskh/Nastaʿlīq typeface switch (both fonts cover all Kashmiri code points), dark mode, and shareable `#q=…` links
+
+**Run locally:** `python3 -m http.server -d site 8000`, then open http://localhost:8000
+
+**Deploy to Vercel:** import this repo. `vercel.json` already sets `outputDirectory: "site"`, and no framework or build command is needed. Alternatively, run `npx vercel --prod` in the repo root.
+
+After rebuilding the data, refresh the site's copy:
+
+```bash
+python3 scripts/build_site_data.py data/kashmiri_dictionary.jsonl site/data/dictionary.json
+```
+
 ## Entry schema
 
 | Field | Meaning |

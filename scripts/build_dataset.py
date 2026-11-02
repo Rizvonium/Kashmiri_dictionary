@@ -298,6 +298,12 @@ G_POS = re.compile(
     r"m|f|c\.g|n|pl|sg|indecl|v|interr|num|onom|emph|abl|dat|ag|loc)\.\s*)+)")
 
 
+G_POS_MAP = {"conj": "verb", "inf": "verb (infinitive)", "dat": "inflected form",
+             "abl": "inflected form", "ag": "inflected form", "loc": "inflected form",
+             "interr": "pronoun", "indecl": "particle", "onom": "interjection", "emph": "particle",
+             "n": "noun", "v": "verb"}
+
+
 def sup_to_unicode(m):
     return "".join(SUP.get(c, c) for c in m.group(1))
 
@@ -352,14 +358,16 @@ def build_grierson(raw):
             pm = G_POS.match(definition)
             pos, gender = "", ""
             if pm:
-                toks = [t for t in re.split(r"\.\s*", pm.group(1).strip()) if t]
+                raw_pos = pm.group(1).replace("c.g.", "cg.")
+                toks = [t for t in re.split(r"\.\s*", raw_pos.strip()) if t]
                 gender = "/".join(dict.fromkeys(
-                    "c.g." if t == "c.g" else t for t in toks if t in ("m", "f", "c.g")))
-                main = [t for t in toks if t not in ("m", "f", "c.g", "sg", "pl")]
+                    "c.g." if t == "cg" else t for t in toks if t in ("m", "f", "cg")))
+                main = [t for t in toks if t not in ("m", "f", "cg", "sg", "pl")]
                 if main:
-                    pos = POS_MAP.get(main[0], main[0])
+                    # Grierson: "conj. 1/2/3" = verb conjugation class; case names = inflected forms
+                    pos = G_POS_MAP.get(main[0]) or POS_MAP.get(main[0], main[0])
                 elif gender:
-                    pos = "noun"
+                    pos = "noun" if "cg" not in toks else "adjective"
             key = (hw, page, definition[:80])
             if key in seen:
                 continue
