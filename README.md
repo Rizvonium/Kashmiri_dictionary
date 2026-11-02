@@ -31,6 +31,11 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 
 ## Website
 
+The site fills the screen like an app. A left sidebar holds the sections, your recent searches, letter browsing, the credit and the theme switches. The main area shows the current tool. In the dictionary, results are listed on the left and the selected entry, with the same word in other sources, is shown on the right. On tablets and phones, the sidebar slides in from a menu button, and an entry opens full screen with a back button.
+
+The look takes its colours from Kashmir in autumn: warm paper neutrals, one chinar-ember accent, and a chinar leaf as the logo and the mark of the selected item. The design follows [unslop](https://github.com/heydamir/unslop) by Damir Sokolovsky (CC BY 4.0). The animated example on the home screen, a Roman sentence turning into Kashmiri, follows the approach of [stageshow](https://github.com/benjitaylor/skills) by Benji Taylor (MIT), built in plain CSS and JS on the site's own writer engine.
+
+
 `site/` is one static page, with no build step, and three tabs. One on-screen keyboard is shared by every field. It opens only when you press ⌨ (or Ctrl+K) and stays closed once closed. While open, it shows Roman for Roman fields and کٲشُر for Kashmiri fields.
 
 * **Dictionary**: search in English, Kashmiri script, Hindi, or Roman Kashmiri spelled any way (*koshur* / *kaeshur* / *kạ̄shur*, *cxoont* / *tsoont*). Vowel signs and letter variants are optional. It offers filters, browsing by letter, audio, "did you mean", a word of the day and recent searches.

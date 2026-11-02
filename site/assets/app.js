@@ -265,14 +265,14 @@ function entryCard(h, raw) {
   if (r.deva) P.push(`<span class="sub" lang="ks-Deva">${esc(r.deva)}</span>`);
   if (r.rv) P.push(`<span class="sub" title="Everyday Roman spellings (AI4Bharat Aksharantar)">also typed: ${hl(r.rv.replace(/;\s*/g, " · "), raw)}</span>`);
   P.push(`</div><div class="actions">`);
-  if (r.audio) P.push(`<button class="act" data-audio="${esc(r.audio)}" title="Play pronunciation" aria-label="Play pronunciation"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>`);
-  if (r.ks) P.push(`<button class="act" data-write="${esc(r.variants[0] || r.ks)}" title="Use in Write & Translate" aria-label="Use in Write & Translate"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>`);
-  P.push(`<button class="act" data-copy="${esc(r.ks || r.rom || r.deva)}" title="Copy" aria-label="Copy"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>`);
+  if (r.audio) P.push(`<button class="act" data-audio="${esc(r.audio)}" title="Play pronunciation" aria-label="Play pronunciation"><svg class="ic"><use href="#i-volume"/></svg></button>`);
+  if (r.ks) P.push(`<button class="act" data-write="${esc(r.variants[0] || r.ks)}" title="Use in Write and translate" aria-label="Use in Write and translate"><svg class="ic"><use href="#i-pen"/></svg></button>`);
+  P.push(`<button class="act" data-copy="${esc(r.ks || r.rom || r.deva)}" title="Copy" aria-label="Copy"><svg class="ic"><use href="#i-copy"/></svg></button>`);
   P.push(`</div></div><div class="meta">`);
   if (r.pos) P.push(`<span class="badge pos">${esc(r.pos)}</span>`);
   if (r.gender) P.push(`<span class="badge">${esc({ m: "masculine", f: "feminine", "c.g.": "common gender", "m/f": "m / f" }[r.gender] || r.gender)}</span>`);
-  const ql = QLABEL[r.q]; if (ql) P.push(`<span class="badge ${r.q === "core" || r.q === "user" ? "indigo" : "warn"}" title="${esc(ql[1])}">${ql[0]}</span>`);
-  if (h.why) P.push(`<span class="badge indigo">${esc(h.why)}</span>`);
+  const ql = QLABEL[r.q]; if (ql) P.push(`<span class="badge ${r.q === "core" || r.q === "user" ? "note" : "warn"}" title="${esc(ql[1])}">${ql[0]}</span>`);
+  if (h.why) P.push(`<span class="badge note">${esc(h.why)}</span>`);
   P.push(`</div>`);
   if (r.gloss) P.push(`<p class="gloss">${hl(r.gloss, raw)}</p>`);
   if (r.hindi) P.push(`<p class="hindi">हिन्दी: ${esc(r.hindi)}</p>`);
@@ -286,7 +286,7 @@ function entryCard(h, raw) {
   if (r.def) {
     const long = r.def.length > 320;
     P.push(`<p class="def${long ? " clamp" : ""}">${hl(r.def.replace(/ ¶ /g, "\n"), raw)}</p>`);
-    if (long) P.push(`<button class="more" data-more>Read full entry ↓</button>`);
+    if (long) P.push(`<button class="more" data-more>Read the full entry</button>`);
   }
   P.push(`<div class="foot">${SRC_LABEL[r.grp] || esc(r.src)}${r.grp === "grierson" && r.ref ? " · " + esc(r.ref.replace("Grierson 1932 ", "")) : ""}${r.scheme ? " · romanization: " + esc(r.scheme) : ""}</div>`);
   el.innerHTML = P.join("");
@@ -294,43 +294,124 @@ function entryCard(h, raw) {
 }
 
 const ALPHABET = ["ا", "آ", "أ", "ٲ", "ب", "پ", "ت", "ٹ", "ث", "ج", "چ", "ح", "خ", "د", "ڈ", "ذ", "ر", "ڑ", "ز", "ژ", "س", "ش", "ص", "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ک", "گ", "ل", "م", "ن", "و", "ۄ", "ہ", "ھ", "ی", "ؠ", "ے"];
-const EXAMPLES = [["water"], ["mother"], ["love"], ["آب", "ks"], ["کٲشُر", "ks"], ["کاشر", "ks", "no vowel signs"], ["tsoont", "", "any spelling"], ["koshur"], ["पानी"], ["ʦūr", "", "Grierson"]];
+const EXAMPLES = [["water"], ["mother"], ["آب", "ks"], ["کاشر", "ks", "no vowel signs"], ["tsoont", "", "any spelling"], ["koshur"], ["पानी"], ["ʦūr", "", "Grierson"]];
+const LEAF = cls => `<svg class="${cls}" aria-hidden="true"><use href="#chinar"/></svg>`;
+const fmt = n => n.toLocaleString("en-US");
 function renderWelcome() {
-  const host = $("results");
+  $("panes").hidden = true; $("welcome").hidden = false;
   const natives = DB.rows.filter(r => r.q === "native" && r.exEn && r.gloss);
   const w = natives.length ? natives[(Math.floor(Date.now() / 864e5) * 2654435761 >>> 0) % natives.length] : null;
-  const rec = store.get("ksd-recent", []);
-  host.innerHTML = `<div class="welcome">
-    <div class="card hero"><div><h3>Look up Kashmiri — in any spelling</h3>
-      <p>Type English, Kashmiri script, Roman Kashmiri the way you'd text it (<i>koshur</i>, <i>kaeshur</i>, <i>tsoont</i>), or Hindi. Vowel signs are optional.
-      To write or translate whole sentences, open <a href="#write">Write &amp; Translate</a>.</p></div>
-      <div class="ks-big" lang="ks">کٲشُر لُغَت</div></div>
-    <section><h2>Try</h2><div class="chips">${EXAMPLES.map(([q, k, n]) => `<button class="chip${k ? " ks" : ""}" data-q="${esc(q)}">${esc(q)}${n ? `<small>${esc(n)}</small>` : ""}</button>`).join("")}</div></section>
-    ${rec.length ? `<section><h2>Recent</h2><div class="chips">${rec.map(q => `<button class="chip${ARABIC_RE.test(q) ? " ks" : ""}" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div></section>` : ""}
-    ${w ? `<section><h2>Word of the day</h2><div id="wotd"></div></section>` : ""}
-    <section><h2>Browse by first letter</h2><div class="alpha">${ALPHABET.map(c => `<button data-letter="${c}">${c}</button>`).join("")}</div></section>
-    <section><h2>Tips</h2><ul class="tips">
-      <li>Tap a Kashmiri word in a result to look it up, 🔊 to hear it, ✎ to use it in a sentence.</li>
-      <li>No Kashmiri keyboard? Press <b>⌨ کٲشُر</b> (or Ctrl+K). It only opens when you ask, follows the box you click (Roman or کٲشُر), and stays closed once you close it.</li>
-      <li><button class="chip" data-browseall>Browse all ${DB.rows.length.toLocaleString()} entries</button></li></ul></section></div>`;
+  const nKs = DB.rows.filter(r => r.ks).length, nAudio = DB.rows.filter(r => r.audio).length;
+  $("welcome").innerHTML = `<div class="welcome-grid">
+    <div class="card stat"><div class="label">Entries</div><div class="fig">${fmt(DB.rows.length)}</div><div class="sub">from five dictionaries and word lists</div></div>
+    <div class="card stat"><div class="label">In Kashmiri script</div><div class="fig">${fmt(nKs)}</div><div class="sub">one Unicode convention</div></div>
+    <div class="card stat"><div class="label">Spoken by a native speaker</div><div class="fig">${fmt(nAudio)}</div><div class="sub">Hassan pronouncing dictionary</div></div>
+    <div class="card stat"><div class="label">Everyday Roman spellings</div><div class="fig">${fmt(DB.spell.length || 38887)}</div><div class="sub">so koshur finds کٲشُر</div></div>
+    <div class="card hero">${LEAF("hero-leaf")}
+      <h2>Look up Kashmiri the way you type it</h2>
+      <p>English, Kashmiri script, Hindi, or Roman Kashmiri in any spelling. Whole sentences go to <a href="#write">Write and translate</a>.</p>
+      <div class="demo" aria-label="Example: a Roman sentence written in Kashmiri script">
+        <div class="demo-bar">${LEAF("leaf-mini")}Write and translate</div>
+        <div class="demo-row"><span class="demo-k">You type</span><span class="demo-roman" id="demoRoman"></span></div>
+        <div class="demo-row"><span class="demo-k">Kashmiri</span><span class="demo-ks" id="demoKs" lang="ks"></span></div>
+        <div class="demo-row"><span class="demo-k">Meaning</span><span class="demo-en" id="demoEn"></span></div>
+      </div>
+      <div class="chips">${EXAMPLES.map(([q, k, n]) => `<button class="chip" data-q="${esc(q)}">${k ? `<span class="ks" lang="ks">${esc(q)}</span>` : esc(q)}${n ? `<small>${esc(n)}</small>` : ""}</button>`).join("")}</div>
+    </div>
+    <div class="card wotd"><div class="section-label">${LEAF("leaf-mini")}Word of the day</div><div id="wotd"></div></div>
+    <div class="card tips">
+      <div><h3>Any spelling</h3><p>koshur, kaeshur and kạ̄shur find the same word. Kashmiri script works with or without vowel signs.</p></div>
+      <div><h3>No Kashmiri keyboard needed</h3><p>Press the keyboard button or <kbd>Ctrl</kbd> <kbd>K</kbd>. It follows the box you are in and stays closed once you close it.</p></div>
+      <div><h3>Everything, in order</h3><p><button class="chip" data-browseall>Browse all ${fmt(DB.rows.length)} entries</button></p></div>
+    </div></div>`;
   if (w) $("wotd").appendChild(entryCard({ r: w, why: "" }, ""));
-  $("count").textContent = `${DB.rows.length.toLocaleString()} entries`;
-  $("more").hidden = true; $("suggest").hidden = true;
+  startDemo();
 }
+function rowHtml(h, i, raw) {
+  const r = h.r;
+  const src = { grierson: "Grierson", hassan: "Hassan", chikhapo: "ChiKhaPo", modern: "modern", core: "core", mine: "mine", upload: "added", other: "list" }[r.grp] || "";
+  const gloss = r.gloss || (r.def ? r.def.slice(0, 140) : "");
+  return `<div class="row" role="option" data-row="${i}" aria-selected="false">
+    <div class="row-main">${r.ks ? `<span class="row-ks" lang="ks">${esc(r.ks)}</span>` : ""}${r.rom && !r.romAuto ? `<span class="row-rom">${hl(r.rom, raw)}</span>` : (r.deva && !r.ks ? `<span class="row-rom">${esc(r.deva)}</span>` : "")}</div>
+    <span class="row-src">${src}</span>
+    <div class="row-gloss">${h.why ? `<span class="row-why">${esc(h.why)} · </span>` : ""}${hl(gloss, raw) || '<span class="muted">no meaning given</span>'}</div></div>`;
+}
+const isNarrow = () => matchMedia("(max-width: 980px)").matches;
 function renderResults(reset) {
   const host = $("results"), raw = $("q").value.trim();
-  if (reset) { host.innerHTML = ""; S.page = 0; }
   if (reset && !raw && !S.browseAll && !activeFilters()) { renderWelcome(); return; }
-  const slice = S.hits.slice(S.page * PAGE, (S.page + 1) * PAGE);
-  const frag = document.createDocumentFragment();
-  slice.forEach(h => frag.appendChild(entryCard(h, raw)));
-  host.appendChild(frag); S.page++;
+  stopDemo();
+  $("welcome").hidden = true; $("panes").hidden = false;
+  if (reset) { host.innerHTML = ""; S.page = 0; S.sel = -1; $("results").parentElement.scrollTop = 0; }
+  const start = S.page * PAGE, slice = S.hits.slice(start, start + PAGE);
+  host.insertAdjacentHTML("beforeend", slice.map((h, k) => rowHtml(h, start + k, raw)).join(""));
+  S.page++;
   const n = S.hits.length;
-  if (!n) host.innerHTML = `<div class="empty"><p class="ks" style="font-size:28px;margin:0">کہِنہٕ میوٗل نہٕ</p><p>Nothing found for “${esc(raw)}”.</p><p class="chips" style="justify-content:center">${S.mode !== "contains" ? '<button class="chip" data-mode="contains">Try “Contains”</button>' : ""}${activeFilters() ? '<button class="chip" data-reset>Clear filters</button>' : ""}<a class="chip" href="#write" data-towrite="${esc(raw)}">Write it in the writer →</a></p></div>`;
-  $("count").textContent = raw ? `${n.toLocaleString()} result${n === 1 ? "" : "s"}` : `${n.toLocaleString()} entries`;
+  if (!n) {
+    host.innerHTML = `<div class="empty"><span class="ks" lang="ks">کہِنہٕ میوٗل نہٕ</span>Nothing found for “${esc(raw)}”<div class="chips" style="justify-content:center;margin-top:16px">${S.mode !== "contains" ? '<button class="chip" data-mode="contains">Try Contains</button>' : ""}${activeFilters() ? '<button class="chip" data-reset>Clear filters</button>' : ""}<a class="chip" href="#write" data-towrite="${esc(raw)}">Write it in the writer</a></div></div>`;
+    $("detail").innerHTML = "";
+  }
+  $("count").textContent = raw ? `${fmt(n)} result${n === 1 ? "" : "s"}` : `${fmt(n)} entries`;
   $("more").hidden = S.page * PAGE >= n;
-  $("more").textContent = `Show more (${Math.max(0, n - S.page * PAGE).toLocaleString()} left)`;
-  if (reset) renderSuggest(raw, n);
+  $("more").textContent = `Show more · ${fmt(Math.max(0, n - S.page * PAGE))} left`;
+  if (reset) { renderSuggest(raw, n); if (n) selectHit(0, false); }
+}
+function related(r) {
+  const k = r.vSound[0], out = [];
+  for (const x of DB.rows) {
+    if (x === r) continue;
+    if ((r.bare && x.bare === r.bare) || (k && k.length >= 3 && x.vSound.includes(k))) { out.push(x); if (out.length >= 10) break; }
+  }
+  return out.sort((a, b) => a.rank - b.rank);
+}
+function showDetail(h, raw) {
+  const host = $("detail"); host.innerHTML = "";
+  host.appendChild(entryCard(h, raw));
+  const rel = related(h.r);
+  if (rel.length) {
+    S.rel = rel;
+    host.insertAdjacentHTML("beforeend", `<div class="card related"><h3>Same word in other sources and spellings</h3>${rel.map((x, i) =>
+      `<button class="rel" data-rel="${i}"><span class="ks" lang="ks">${esc(x.ks || "")}</span><span class="g">${esc(x.variants[0] || x.deva || "")}${x.gloss || x.def ? " · " + esc(shortMeaning(x.gloss || x.def)) : ""}</span><span class="s">${SRC_LABEL[x.grp] || ""}</span></button>`).join("")}</div>`);
+  }
+  $("detailPane").scrollTop = 0;
+}
+function selectHit(i, open = true) {
+  const h = S.hits[i]; if (!h) return;
+  S.sel = i;
+  document.querySelectorAll("#results .row").forEach(el => el.setAttribute("aria-selected", +el.dataset.row === i));
+  showDetail(h, $("q").value.trim());
+  if (open && isNarrow()) $("detailPane").classList.add("open");
+}
+function renderRecent() {
+  const rec = store.get("ksd-recent", []), box = $("sideRecent");
+  box.innerHTML = rec.length ? rec.map(q => `<button class="${ARABIC_RE.test(q) ? "ks" : ""}" data-q="${esc(q)}" title="${esc(q)}">${esc(q)}</button>`).join("") : '<span class="side-empty">Your searches appear here</span>';
+}
+
+/* ---- demo on the home screen: a real sentence becoming Kashmiri (the engine's own output) */
+const DEMO_LINES = ["koshur zabaan chhu meeth", "yih makaan chhu dah waryo peth trovmut", "saeri insaan chhi aazaad zaamut"];
+let demoTimers = [];
+function stopDemo() { demoTimers.forEach(clearTimeout); demoTimers = []; }
+function startDemo() {
+  stopDemo();
+  const R = $("demoRoman"), K = $("demoKs"), E = $("demoEn"); if (!R) return;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let n = 0;
+  const at = (ms, fn) => demoTimers.push(setTimeout(fn, ms));
+  const play = () => {
+    const line = DEMO_LINES[n++ % DEMO_LINES.length], r = infer(line);
+    const words = r.ks.join("").split(" ");
+    K.innerHTML = words.map(w => `<span>${esc(w)}</span> `).join(""); E.textContent = r.meaning.text; E.classList.remove("in");
+    if (reduced) { R.textContent = line; K.querySelectorAll("span").forEach(s => s.classList.add("in")); E.classList.add("in"); return; }
+    R.innerHTML = '<span class="demo-caret"></span>';
+    let t = 300;
+    for (let i = 1; i <= line.length; i++) { const part = line.slice(0, i); at(t, () => { R.innerHTML = esc(part) + '<span class="demo-caret"></span>'; }); t += 55 + (line[i - 1] === " " ? 70 : 0); }
+    t += 250;
+    K.querySelectorAll("span").forEach((s, i) => at(t + i * 140, () => s.classList.add("in")));
+    t += words.length * 140 + 350;
+    at(t, () => E.classList.add("in"));
+    at(t + 3600, play);
+  };
+  play();
 }
 function lev(a, b, max) {
   if (Math.abs(a.length - b.length) > max) return max + 1;
@@ -359,8 +440,8 @@ function runSearch() {
   S.hits = search(); renderResults(true);
   const qv = $("q").value.trim();
   clearTimeout(runSearch.t);
-  if (qv) runSearch.t = setTimeout(() => { if ($("q").value.trim() === qv && S.hits.length) store.set("ksd-recent", [qv, ...store.get("ksd-recent", []).filter(x => x !== qv)].slice(0, 8)); }, 1500);
-  $("hint").textContent = qv ? ({ ks: "Kashmiri script", deva: "Devanagari", lat: "English / Roman — any spelling" })[detect(qv)] : (isTouch ? "" : "Press / to search · Ctrl+K keyboard");
+  if (qv) runSearch.t = setTimeout(() => { if ($("q").value.trim() === qv && S.hits.length) { store.set("ksd-recent", [qv, ...store.get("ksd-recent", []).filter(x => x !== qv)].slice(0, 8)); renderRecent(); } }, 1500);
+  $("hint").textContent = qv ? ({ ks: "Kashmiri script", deva: "Devanagari", lat: "English or Roman, any spelling" })[detect(qv)] : (isTouch ? "" : "/ to search · Ctrl K keyboard");
   if (route() === "dict") history.replaceState(null, "", qv ? "#dict?q=" + encodeURIComponent(qv) : "#dict");
 }
 function onSearchInput(now) {
@@ -370,7 +451,7 @@ function onSearchInput(now) {
   clearTimeout(searchTimer); if (now === true) runSearch(); else searchTimer = setTimeout(runSearch, 130);
 }
 function setMode(v) { S.mode = v; document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v)); }
-function searchFor(text, mode) { go("dict"); $("q").value = text; setMode(mode || "auto"); S.browseAll = false; onSearchInput(true); scrollTo({ top: 0, behavior: "smooth" }); }
+function searchFor(text, mode) { go("dict"); $("detailPane").classList.remove("open"); $("q").value = text; setMode(mode || "auto"); S.browseAll = false; onSearchInput(true); scrollTo({ top: 0, behavior: "smooth" }); }
 function resetFilters() {
   Object.assign(S, { src: "", pos: "", audio: false, field: "any" });
   $("srcSel").value = ""; $("posSel").value = ""; $("fieldSel").value = "any"; $("audioChk").checked = false; runSearch();
@@ -493,8 +574,8 @@ function updateWriter() {
   $("trDict").textContent = r.meaning.text || "—"; $("trDictNote").textContent = r.meaning.note;
   $("glossStrip").textContent = r.trace.length ? r.trace.map(t => t.gloss).join(" · ") : "";
   $("trace").innerHTML = r.trace.map((t, i) => `<button type="button" class="tok ${t.kind}" data-tok="${i}">
-      <span class="row"><span class="raw">${esc(t.raw)}</span><span class="how">${esc(t.how)}</span></span>
-      <span class="row"><span class="rom">${esc(t.rom)}</span><span class="ks" lang="ks">${esc(t.ks)}</span></span>
+      <span class="r"><span class="raw">${esc(t.raw)}</span><span class="how">${esc(t.how)}</span></span>
+      <span class="r"><span class="rom">${esc(t.rom)}</span><span class="ks" lang="ks">${esc(t.ks)}</span></span>
       <span class="mean" title="${esc(t.meaning)}">${esc(t.meaning)}</span></button>`).join("");
   $("cands").hidden = true; $("aiSuggest").hidden = true;
   store.set("ksd-draft", $("w1").value);
@@ -511,7 +592,7 @@ function showCands(i) {
   const flip = t.isEng ? `<div style="margin:2px 0 8px"><button class="btn sm" data-flip="en:${esc(t.word)}">Keep “${esc(t.raw)}” in English</button> <span class="muted">— it is also an English word</span></div>` : "";
   if (!t.cands || !t.cands.length) { box.innerHTML = flip || `<div class="muted">No dictionary spellings for <b>${esc(t.raw)}</b>.</div>`; box.hidden = false; return; }
   box.innerHTML = flip + `<div class="muted" style="margin-bottom:4px">Other dictionary spellings for <b>${esc(t.raw)}</b> — tap one to use it:</div>` +
-    t.cands.map((c, j) => `<div class="cand"><span class="ks" lang="ks">${esc(c.e.ks)}</span><span class="mono">${esc(c.e.rom.slice(0, 40))}</span><span class="src muted">${esc(c.e.meaning || "spelling only")} · ${esc(SRC_LABEL[c.e.grp] || "")}</span><button data-pick="${i}:${j}" ${c === t.chosen ? 'title="current choice"' : ""}>${c === t.chosen ? "✓" : "use"}</button></div>`).join("");
+    t.cands.map((c, j) => `<div class="cand"><span class="ks" lang="ks">${esc(c.e.ks)}</span><span class="mono">${esc(c.e.rom.slice(0, 40))}</span><span class="src muted">${esc(c.e.meaning || "spelling only")} · ${esc(SRC_LABEL[c.e.grp] || "")}</span><button data-pick="${i}:${j}" ${c === t.chosen ? 'title="current choice"' : ""}>${c === t.chosen ? "chosen" : "use"}</button></div>`).join("");
   box.hidden = false;
 }
 function pickCandidate(i, j) {     // replace one word in box 2 with an alternative spelling (and lock it in box 1 via the chosen roman form)
@@ -648,7 +729,7 @@ function renderKb() {
   const last = document.createElement("div"); last.className = "krow";
   last.appendChild(kbButton("key wide", "Clear", "", () => { const t = kbTarget(); t.value = ""; t.dispatchEvent(new Event("input", { bubbles: true })); }));
   last.appendChild(kbButton("key space", "space", "", () => kbInsert(" ")));
-  last.appendChild(kbButton("key wide", "Done ✓", "", () => kbShow(false)));
+  last.appendChild(kbButton("key wide", "Close", "", () => kbShow(false)));
   rows.appendChild(last);
   sizeKb();
 }
@@ -673,9 +754,15 @@ const root = document.documentElement;
 function setTheme(t) { if (t) root.setAttribute("data-theme", t); else root.removeAttribute("data-theme"); store.set("ksd-theme", t || ""); }
 function setFont(f) { root.setAttribute("data-font", f); $("fontBtn").textContent = f === "nastaliq" ? "Nastaʿlīq" : "Naskh"; store.set("ksd-font", f); }
 const route = () => (location.hash.slice(1).split("?")[0] || "dict");
+const TITLES = { dict: "Dictionary", write: "Write and translate", about: "Sources and your words" };
+function setSidebar(open) { $("sidebar").classList.toggle("open", open); $("scrim").hidden = !open; }
 function go(view, push = true) {
+  if (!TITLES[view]) view = "dict";
   ["dict", "write", "about"].forEach(v => { $("view-" + v).hidden = v !== view; });
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.view === view));
+  document.querySelectorAll(".tab").forEach(t => t.dataset.view === view ? t.setAttribute("aria-current", "page") : t.removeAttribute("aria-current"));
+  $("pageTitle").textContent = TITLES[view]; document.title = `${TITLES[view]} · Kashmiri Dictionary`;
+  setSidebar(false);
+  if (view === "dict" && !$("welcome").hidden && DB.ready) startDemo(); else stopDemo();
   if (push && route() !== view) history.replaceState(null, "", "#" + view);
   if (view === "write" && !W.ready && DB.ready) { W.ready = true; updateWriter(); }
 }
@@ -706,6 +793,19 @@ function wire() {
   $("browseBtn").onclick = () => { const p = $("alphaPanel"); p.hidden = !p.hidden; $("browseBtn").setAttribute("aria-expanded", !p.hidden); };
   $("alpha").innerHTML = ALPHABET.map(c => `<button data-letter="${c}" title="Words starting with ${c}">${c}</button>`).join("");
   $("more").onclick = () => renderResults(false);
+  $("detailBack").onclick = () => $("detailPane").classList.remove("open");
+  $("menuBtn").onclick = () => setSidebar(true);
+  $("scrim").onclick = () => setSidebar(false);
+  $("sideAlpha").innerHTML = ALPHABET.map(c => `<button data-letter="${c}" title="Words starting with ${c}">${c}</button>`).join("");
+  renderRecent();
+  $("results").addEventListener("keydown", e => {
+    if (!["ArrowDown", "ArrowUp"].includes(e.key) || S.sel < 0) return;
+    e.preventDefault(); const i = Math.max(0, Math.min(S.hits.length - 1, S.sel + (e.key === "ArrowDown" ? 1 : -1)));
+    if (i >= S.page * PAGE) renderResults(false);
+    selectHit(i, false); document.querySelector(`[data-row="${i}"]`)?.scrollIntoView({ block: "nearest" });
+  });
+  $("results").tabIndex = 0;
+  $("q").addEventListener("keydown", e => { if (e.key === "ArrowDown" && S.hits.length && !$("panes").hidden) { e.preventDefault(); $("results").focus(); selectHit(Math.max(0, S.sel), false); } });
   $("kbdBtn").onclick = () => { const q = $("q"); kbShow(!KB.open || KB.target !== q, q); if (KB.open && !isTouch) q.focus(); };
   document.addEventListener("click", e => {
     const t = e.target;
@@ -719,8 +819,10 @@ function wire() {
     if (c) { const el = $(c.dataset.copy); const v = el ? el.value ?? el.textContent : c.dataset.copy; navigator.clipboard?.writeText(v).then(() => toast("Copied")); return; }
     const w = t.closest("[data-write]"); if (w) { go("write"); $("w1").value = toClean26(w.dataset.write) || w.dataset.write; updateWriter(); scrollTo({ top: 0, behavior: "smooth" }); return; }
     const tw = t.closest("[data-towrite]"); if (tw) { e.preventDefault(); go("write"); $("w1").value = tw.dataset.towrite; updateWriter(); return; }
-    const m = t.closest("[data-more]"); if (m) { const d = m.previousElementSibling; const open = d.classList.toggle("clamp"); m.textContent = open ? "Read full entry ↓" : "Show less ↑"; return; }
-    const hw = t.closest(".entry .hw .ks"); if (hw) { searchFor(hw.textContent); return; }
+    const m = t.closest("[data-more]"); if (m) { const d = m.previousElementSibling; const open = d.classList.toggle("clamp"); m.textContent = open ? "Read the full entry" : "Show less"; return; }
+    const row = t.closest("[data-row]"); if (row) { selectHit(+row.dataset.row); return; }
+    const rl = t.closest("[data-rel]"); if (rl) { const x = S.rel && S.rel[+rl.dataset.rel]; if (x) showDetail({ r: x, why: "" }, ""); if (isNarrow()) $("detailPane").classList.add("open"); return; }
+    const hw = t.closest(".entry .hw .ks"); if (hw && !t.closest("#wotd")) { searchFor(hw.textContent); return; }
     const tok = t.closest("[data-tok]"); if (tok) { showCands(+tok.dataset.tok); return; }
     const fl = t.closest("[data-flip]");
     if (fl) { const [to, w] = fl.dataset.flip.split(":"); if (to === "ks") { OVR.toKs.add(w); OVR.toEn.delete(w); } else { OVR.toEn.add(w); OVR.toKs.delete(w); } saveOvr(); updateWriter(); toast(to === "ks" ? `“${w}” will be written in Kashmiri` : `“${w}” will stay in English`); return; }
@@ -793,11 +895,11 @@ $("w1").value = store.get("ksd-draft", "") || "yih makaan chhu dah waryo peth tr
 loadData().then(() => {
   const sel = $("posSel");
   Object.entries(DB.posCount).sort((a, b) => b[1] - a[1]).forEach(([p, n]) => { const o = document.createElement("option"); o.value = p; o.textContent = `${p} (${n.toLocaleString()})`; sel.appendChild(o); });
-  $("writeStatus").textContent = `${DB.rows.length.toLocaleString()} entries ready`;
+  $("writeStatus").textContent = `${fmt(DB.rows.length)} entries`;
   if (qParam) { $("q").value = qParam; onSearchInput(true); } else runSearch();
   if (route() === "write") { W.ready = true; updateWriter(); }
   probeServer();
   if (store.get("ksd-kb-open", false)) kbShow(true, route() === "write" ? $("w1") : $("q"));
 }).catch(err => {
-  $("results").innerHTML = `<div class="empty">Could not load the dictionary (${esc(err.message)}).<br>Open the site through a web server (e.g. <code>python3 -m http.server -d site</code>) or the deployed address.</div>`;
+  $("welcome").hidden = false; $("welcome").innerHTML = `<div class="empty">Could not load the dictionary (${esc(err.message)}).<br>Open the site through a web server (e.g. <code>python3 -m http.server -d site</code>) or the deployed address.</div>`;
 });

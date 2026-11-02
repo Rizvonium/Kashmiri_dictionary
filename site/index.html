@@ -2,223 +2,273 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kashmiri Dictionary · کٲشُر لُغَت</title>
 <meta name="author" content="Sajad Kainaat & RGMir">
-<meta name="description" content="Kashmiri dictionary with 47,000 entries in Perso-Arabic, Roman and Devanagari; type Kashmiri in any spelling, convert Roman to Kashmiri script, and translate Kashmiri ↔ English.">
+<meta name="description" content="Kashmiri dictionary with 47,000 entries in Perso-Arabic, Roman and Devanagari. Type Kashmiri in any spelling, write it in Kashmiri script and translate Kashmiri and English.">
+<meta name="theme-color" content="#f6f3ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141311" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/chinar.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Noto+Naskh+Arabic:wght@400;500;600&family=Noto+Nastaliq+Urdu:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/app.css">
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <a class="logo" href="#dict">
-        <span class="logo-mark" aria-hidden="true">کٲشُر</span>
-        <span>
-          <h1>Kashmiri Dictionary <span class="ks" lang="ks">کٲشُر لُغَت</span></h1>
-          <p id="sub">A labour of love (and a little fun) by <b>Sajad Kainaat &amp; RGMir</b> — built on open-source resources</p>
-        </span>
-      </a>
-      <div class="tools">
-        <button class="icon-btn" id="fontBtn" title="Switch Kashmiri typeface">Naskh</button>
-        <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
-      </div>
-    </div>
-    <nav class="tabs" role="tablist">
-      <button class="tab" role="tab" data-view="dict" aria-selected="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5V21h16"/></svg>Dictionary <span class="ks">لُغَت</span></button>
-      <button class="tab" role="tab" data-view="write" aria-selected="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Write &amp; Translate <span class="ks">تَرجُمہٕ</span></button>
-      <button class="tab" role="tab" data-view="about" aria-selected="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg>Sources &amp; add a word</button>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="chinar" viewBox="0 0 100 100">
+      <path d="M50 64 Q55.3 69.1 57.6 63.3 L69.7 64.5 L76.9 64.3 L85.2 61.5 L78.8 55.5 L72.3 52.4 Q68.8 51 64.6 50.6 L75.3 43.8 L80.8 36.9 L84.7 26.9 L74 28.3 L66 31.9 Q59.5 37.5 56.6 40.5 L57.9 26.6 L55.8 17.7 L50 8 L44.2 17.7 L42.1 26.6 Q42.9 36.4 43.4 40.5 L34 31.9 L26 28.3 L15.3 26.9 L19.2 36.9 L24.7 43.8 Q31.8 48.4 35.4 50.6 L27.7 52.4 L21.2 55.5 L14.8 61.5 L23.1 64.3 L30.3 64.5 Q43.4 66.4 42.4 63.3 Z" fill="currentColor"/>
+      <path d="M50 92 L50 56 M50 56 L80.3 60.4 M50 56 L79.8 30.7 M50 56 L50 14.4 M50 56 L20.2 30.7 M50 56 L19.7 60.4" stroke="var(--leaf-vein, rgba(255,255,255,.55))" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+    </symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z M4 19.5V21h16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 8h.01 M11 12h1v5h1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m20 20-3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 10h.01 M10 10h.01 M14 10h.01 M18 10h.01 M8 14h8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16 M4 12h16 M4 17h16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10 M18 7h2 M4 17h4 M12 17h8 M14 5v4 M8 15v4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10z M16.5 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 15V5a2 2 0 0 1 2-2h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5 M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12 M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="shell">
+  <!-- ============================================================ SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="#dict">
+      <svg class="brand-leaf" aria-hidden="true"><use href="#chinar"/></svg>
+      <span class="brand-text"><span class="brand-name">Kashmiri Dictionary</span><span class="brand-ks ks" lang="ks">کٲشُر لُغَت</span></span>
+    </a>
+
+    <nav class="nav" aria-label="Sections">
+      <button class="tab" data-view="dict" aria-current="page"><svg class="ic"><use href="#i-book"/></svg><span>Dictionary</span><span class="ks nav-ks" lang="ks">لُغَت</span></button>
+      <button class="tab" data-view="write"><svg class="ic"><use href="#i-pen"/></svg><span>Write and translate</span><span class="ks nav-ks" lang="ks">تَرجُمہٕ</span></button>
+      <button class="tab" data-view="about"><svg class="ic"><use href="#i-info"/></svg><span>Sources, add a word</span></button>
     </nav>
-  </header>
 
-  <!-- ===================================================== DICTIONARY -->
-  <section id="view-dict" class="view" role="tabpanel">
-    <div class="search-bar">
-      <div class="search-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="q" type="search" data-kb="ks" autocomplete="off" spellcheck="false" placeholder="Search in any spelling: آب · water · koshur · tsoont · पानी" aria-label="Search the dictionary">
-        <button class="clear-x" id="clearQ" title="Clear" aria-label="Clear search">×</button>
-        <button class="kbd-btn" id="kbdBtn" aria-pressed="false" title="Kashmiri keyboard (Ctrl+K)">⌨ <span class="ks">کٲشُر</span></button>
-      </div>
-      <div class="controls">
-        <div class="seg" id="modeSeg" role="group" aria-label="Match">
-          <button data-v="auto" aria-pressed="true">Smart</button>
-          <button data-v="start" aria-pressed="false">Starts with</button>
-          <button data-v="exact" aria-pressed="false">Exact</button>
-          <button data-v="contains" aria-pressed="false">Contains</button>
-        </div>
-        <button class="btn" id="filterBtn" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>Filters <span class="dot" id="filterDot" hidden></span></button>
-        <button class="btn" id="browseBtn" aria-expanded="false"><span class="ks">ا ب پ</span> Browse</button>
-      </div>
-      <div class="panel" id="filters" hidden>
-        <select class="f" id="fieldSel" aria-label="Search in">
-          <option value="any">Search in: everything</option>
-          <option value="ks">Kashmiri script</option>
-          <option value="en">English meaning</option>
-          <option value="roman">Roman spelling (any)</option>
-          <option value="hi">Hindi / Devanagari</option>
-          <option value="def">Full definitions</option>
-        </select>
-        <select class="f" id="srcSel" aria-label="Source">
-          <option value="">All sources</option>
-          <option value="modern">Modern dictionary (kashmirizabaan + Kaeshir)</option>
-          <option value="hassan">Hassan pronouncing dictionary</option>
-          <option value="grierson">Grierson 1932</option>
-          <option value="chikhapo">ChiKhaPo lexicon (unverified)</option>
-          <option value="mine">My added words</option>
-        </select>
-        <select class="f" id="posSel" aria-label="Part of speech"><option value="">Any part of speech</option></select>
-        <label class="toggle"><input type="checkbox" id="audioChk"><span>🔊 Has audio</span></label>
-        <label class="toggle" title="Off: آب also finds اَب, اب … (vowel signs and letter variants ignored)"><input type="checkbox" id="diaChk"><span>Exact Kashmiri spelling</span></label>
-        <button class="btn ghost" id="resetBtn">Reset</button>
-      </div>
-      <div class="panel" id="alphaPanel" hidden><div class="alpha" id="alpha"></div></div>
-    </div>
-    <div class="status" aria-live="polite"><span id="count"></span><span id="hint"></span></div>
-    <div class="suggest" id="suggest" hidden></div>
-    <main id="results"><div class="loading">Loading the dictionary…<div class="bar"><i id="barFill"></i></div></div></main>
-    <button class="btn loadmore" id="more" hidden>Show more</button>
-  </section>
-
-  <!-- ===================================================== WRITE & TRANSLATE -->
-  <section id="view-write" class="view" role="tabpanel" hidden>
-    <div class="write-head">
-      <div class="chips" id="sentenceChips">
-        <button class="chip" data-sentence="yih makaan chhu dah waryo peth trovmut">yih makaan chhu … trovmut</button>
-        <button class="chip" data-sentence="saeri insaan chhi aazaad zaamut">saeri insaan chhi aazaad zaamut</button>
-        <button class="chip" data-sentence="koshur zabaan chhu meeth">koshur zabaan chhu meeth</button>
-        <button class="chip" data-sentence="treh cxoont te aab">treh cxoont te aab</button>
-        <button class="chip" data-sentence="\Shafi \Shauq sinz kitaab chhu kaeshur lughat">\Shafi \Shauq sinz kitaab …</button>
-      </div>
-      <div class="chips" style="align-items:center">
-        <button class="kbd-btn" id="kbdBtnW" aria-pressed="false" title="Show / hide the keyboard (Ctrl+K)">⌨ Keyboard</button>
-        <label class="toggle" title="English words (from the English dictionary) stay in English in all four boxes. Tap a word below to change one."><input type="checkbox" id="keepEn" checked><span>Keep English words in English</span></label>
-        <span class="badge" id="writeStatus">loading dictionary…</span>
-      </div>
+    <div class="side-section">
+      <div class="side-label">Recent</div>
+      <div class="recent" id="sideRecent"><span class="side-empty">Your searches appear here</span></div>
     </div>
 
-    <div class="quad">
-      <div class="card qbox">
-        <div class="qhead"><span class="qtitle"><span class="qnum">1</span>Type Roman Kashmiri (a–z)</span>
-          <span><button class="btn sm" data-copy="w1">Copy</button> <button class="btn sm" id="w1Clear">Clear</button></span></div>
-        <textarea id="w1" class="roman" data-kb="roman" rows="3" spellcheck="false" autocomplete="off" placeholder="e.g. bu chhus kaeshur zabaan parun — any spelling works. Put names or words in any other language as \word or \{a phrase\} — they stay exactly as typed."></textarea>
-        <div class="qfoot"><span>Any spelling: koshur = kaeshur = kạ̄shur · <code>\word</code> and English words stay as typed</span><span id="w1Count"></span></div>
-      </div>
-      <div class="card qbox main">
-        <div class="qhead"><span class="qtitle"><span class="qnum">2</span>Kashmiri — dictionary spelling</span>
-          <button class="btn sm primary" data-copy="w4">Copy</button></div>
-        <textarea id="w4" class="ks" dir="rtl" lang="ks" data-kb="ks" rows="2"></textarea>
-        <div class="qfoot"><span id="w4Badge">—</span><span id="w4Guess" class="guessline"></span></div>
-      </div>
-      <div class="card qbox">
-        <div class="qhead"><span class="qtitle"><span class="qnum indigo">3</span>Corrected Roman spelling</span>
-          <button class="btn sm" data-copy="w3">Copy</button></div>
-        <textarea id="w3" class="roman" data-kb="roman" rows="2"></textarea>
-        <div class="qfoot"><span>Plain a–z: <code id="w3Clean"></code></span><span>\escaped &amp; English kept as typed</span></div>
-      </div>
-      <div class="card qbox">
-        <div class="qhead"><span class="qtitle"><span class="qnum gold">4</span>Letter-by-letter Kashmiri</span>
-          <button class="btn sm" data-copy="w2">Copy</button></div>
-        <textarea id="w2" class="ks" dir="rtl" lang="ks" data-kb="ks" rows="2"></textarea>
-        <div class="qfoot"><span>Rule-based, without the dictionary — useful for names and new words</span></div>
-      </div>
+    <div class="side-section">
+      <div class="side-label">Browse by letter</div>
+      <div class="side-alpha" id="sideAlpha"></div>
     </div>
 
-    <div class="card translate">
-      <div class="tr-head">
-        <div>
-          <h2>Meaning &amp; translation</h2>
-          <p>Uses box 2 (or your edits to it). The dictionary column works offline. <b>Translate</b> sends the sentence and its dictionary
-            hints to an AI translator — Claude on this site's server when configured, otherwise a free public model — and shows corrections it suggests. AI output can be wrong; the hints and notes help you check it.</p>
+    <div class="side-foot">
+      <p class="tagline" id="sub">A labour of love (and a little fun) by <b>Sajad Kainaat &amp; RGMir</b> — built on open-source resources</p>
+      <div class="side-tools">
+        <button class="tool" id="fontBtn" title="Switch Kashmiri typeface">Naskh</button>
+        <button class="tool" id="themeBtn" title="Switch light or dark" aria-label="Switch light or dark"><svg class="ic"><use href="#i-moon"/></svg></button>
+      </div>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <!-- ============================================================ MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="tool menu-btn" id="menuBtn" aria-label="Open menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+      <h1 class="page-title" id="pageTitle">Dictionary</h1>
+      <span class="top-meta mono" id="writeStatus">loading</span>
+    </header>
+
+    <!-- ========================================== DICTIONARY -->
+    <section id="view-dict" class="view view-dict" role="tabpanel">
+      <div class="searchbar">
+        <div class="search-box">
+          <svg class="ic"><use href="#i-search"/></svg>
+          <input id="q" type="search" data-kb="ks" autocomplete="off" spellcheck="false" placeholder="Search in any spelling: آب, water, koshur, tsoont, पानी" aria-label="Search the dictionary">
+          <button class="clear-x" id="clearQ" title="Clear" aria-label="Clear search"><svg class="ic"><use href="#i-x"/></svg></button>
+          <button class="kbd-btn" id="kbdBtn" aria-pressed="false" title="Kashmiri keyboard (Ctrl K)"><svg class="ic"><use href="#i-keyboard"/></svg><span class="ks">کٲشُر</span></button>
         </div>
-        <div class="chips">
-          <button class="btn primary" id="translateBtn">✨ Translate &amp; correct</button>
+        <div class="controls">
+          <div class="seg" id="modeSeg" role="group" aria-label="Match">
+            <button data-v="auto" aria-pressed="true">Smart</button>
+            <button data-v="start" aria-pressed="false">Starts with</button>
+            <button data-v="exact" aria-pressed="false">Exact</button>
+            <button data-v="contains" aria-pressed="false">Contains</button>
+          </div>
+          <button class="btn" id="filterBtn" aria-expanded="false"><svg class="ic"><use href="#i-sliders"/></svg>Filters<span class="dot" id="filterDot" hidden></span></button>
+          <button class="btn" id="browseBtn" aria-expanded="false"><span class="ks">ا ب پ</span>Letters</button>
+          <span class="hint mono" id="hint"></span>
+        </div>
+        <div class="panel" id="filters" hidden>
+          <select class="f" id="fieldSel" aria-label="Search in">
+            <option value="any">Search in everything</option>
+            <option value="ks">Kashmiri script</option>
+            <option value="en">English meaning</option>
+            <option value="roman">Roman spelling</option>
+            <option value="hi">Hindi or Devanagari</option>
+            <option value="def">Full definitions</option>
+          </select>
+          <select class="f" id="srcSel" aria-label="Source">
+            <option value="">All sources</option>
+            <option value="modern">Modern dictionary</option>
+            <option value="hassan">Hassan pronouncing dictionary</option>
+            <option value="grierson">Grierson 1932</option>
+            <option value="chikhapo">ChiKhaPo lexicon</option>
+            <option value="mine">My words</option>
+          </select>
+          <select class="f" id="posSel" aria-label="Part of speech"><option value="">Any part of speech</option></select>
+          <label class="toggle"><input type="checkbox" id="audioChk"><span><svg class="ic"><use href="#i-volume"/></svg>Has audio</span></label>
+          <label class="toggle" title="Off: آب also finds اَب and اب (vowel signs and letter variants ignored)"><input type="checkbox" id="diaChk"><span>Exact Kashmiri spelling</span></label>
+          <button class="btn ghost" id="resetBtn">Reset</button>
+        </div>
+        <div class="panel" id="alphaPanel" hidden><div class="alpha" id="alpha"></div></div>
+      </div>
+
+      <div id="welcome" class="welcome"><div class="loading">Loading the dictionary<div class="bar"><i id="barFill"></i></div></div></div>
+
+      <div class="panes" id="panes" hidden>
+        <div class="list-pane">
+          <div class="status" aria-live="polite"><span id="count"></span></div>
+          <div class="suggest" id="suggest" hidden></div>
+          <div id="results" class="results" role="listbox" aria-label="Results"></div>
+          <button class="btn loadmore" id="more" hidden>Show more</button>
+        </div>
+        <div class="detail-pane" id="detailPane">
+          <button class="btn back-btn" id="detailBack"><svg class="ic"><use href="#i-arrow-left"/></svg>Results</button>
+          <div id="detail"></div>
         </div>
       </div>
-      <div class="tr-grid">
-        <div class="tr-card">
-          <h3>From the dictionary <span class="badge">offline</span></h3>
-          <div class="tr-out" id="trDict"></div>
-          <div class="tr-small" id="trDictNote"></div>
+    </section>
+
+    <!-- ========================================== WRITE & TRANSLATE -->
+    <section id="view-write" class="view view-write" role="tabpanel" hidden>
+      <div class="write-head">
+        <div class="chips scroll-x" id="sentenceChips">
+          <button class="chip" data-sentence="yih makaan chhu dah waryo peth trovmut">yih makaan chhu … trovmut</button>
+          <button class="chip" data-sentence="saeri insaan chhi aazaad zaamut">saeri insaan chhi aazaad zaamut</button>
+          <button class="chip" data-sentence="koshur zabaan chhu meeth">koshur zabaan chhu meeth</button>
+          <button class="chip" data-sentence="treh cxoont te aab">treh cxoont te aab</button>
+          <button class="chip" data-sentence="\Shafi \Shauq sinz kitaab chhu kaeshur lughat">\Shafi \Shauq sinz kitaab …</button>
         </div>
-        <div class="tr-card best">
-          <h3>AI translation <span class="badge indigo" id="aiProvider">not run yet</span></h3>
-          <div class="tr-out placeholder" id="trAi">Click “Translate &amp; correct”.</div>
-          <div class="tr-suggest" id="aiSuggest" hidden>
-            <div>Corrected Kashmiri: <span class="ks" id="aiKs" lang="ks"></span> <button class="btn sm" id="aiApplyKs">Use in box 2</button></div>
-            <div>Roman: <code id="aiRom"></code> <button class="btn sm" id="aiApplyRom">Use in box 3</button></div>
-            <div class="tr-small" id="aiNotes"></div>
+        <div class="write-tools">
+          <label class="toggle" title="English words stay in English in all four boxes. Tap a word below to change one."><input type="checkbox" id="keepEn" checked><span>Keep English words</span></label>
+          <button class="kbd-btn" id="kbdBtnW" aria-pressed="false" title="Show or hide the keyboard (Ctrl K)"><svg class="ic"><use href="#i-keyboard"/></svg>Keyboard</button>
+        </div>
+      </div>
+
+      <div class="quad">
+        <div class="qbox">
+          <div class="qhead"><span class="qtitle"><span class="qnum">1</span>Roman Kashmiri, any spelling</span>
+            <span class="qactions"><button class="btn sm" data-copy="w1">Copy</button><button class="btn sm" id="w1Clear">Clear</button></span></div>
+          <textarea id="w1" class="roman" data-kb="roman" rows="3" spellcheck="false" autocomplete="off" placeholder="bu chhus kaeshur zabaan parun. Put names or other languages in \word or \{a phrase\}"></textarea>
+          <div class="qfoot"><span>koshur, kaeshur and kạ̄shur all work · <code>\word</code> and English words stay as typed</span><span id="w1Count" class="mono"></span></div>
+        </div>
+        <div class="qbox main">
+          <div class="qhead"><span class="qtitle"><span class="qnum accent">2</span>Kashmiri, dictionary spelling</span>
+            <span class="qactions"><button class="btn sm primary" data-copy="w4">Copy</button></span></div>
+          <textarea id="w4" class="ks" dir="rtl" lang="ks" data-kb="ks" rows="2"></textarea>
+          <div class="qfoot"><span id="w4Badge">—</span><span id="w4Guess" class="guessline"></span></div>
+        </div>
+        <div class="qbox">
+          <div class="qhead"><span class="qtitle"><span class="qnum">3</span>Corrected Roman spelling</span>
+            <span class="qactions"><button class="btn sm" data-copy="w3">Copy</button></span></div>
+          <textarea id="w3" class="roman" data-kb="roman" rows="2"></textarea>
+          <div class="qfoot"><span>Plain a to z: <code id="w3Clean"></code></span></div>
+        </div>
+        <div class="qbox">
+          <div class="qhead"><span class="qtitle"><span class="qnum">4</span>Letter by letter Kashmiri</span>
+            <span class="qactions"><button class="btn sm" data-copy="w2">Copy</button></span></div>
+          <textarea id="w2" class="ks" dir="rtl" lang="ks" data-kb="ks" rows="2"></textarea>
+          <div class="qfoot"><span>Rule-based, without the dictionary. Useful for names and new words</span></div>
+        </div>
+      </div>
+
+      <div class="card translate">
+        <div class="tr-head">
+          <div>
+            <h2>Meaning and translation</h2>
+            <p>Built from box 2. The dictionary column works offline. Translate sends the sentence and its dictionary hints to an AI translator: Claude on this site's server when configured, otherwise a free public model. Check what it suggests.</p>
+          </div>
+          <button class="btn primary" id="translateBtn">Translate and correct</button>
+        </div>
+        <div class="tr-grid">
+          <div class="tr-card">
+            <h3>From the dictionary <span class="tag mono">offline</span></h3>
+            <div class="tr-out" id="trDict"></div>
+            <div class="tr-small" id="trDictNote"></div>
+          </div>
+          <div class="tr-card best">
+            <h3>AI translation <span class="tag mono" id="aiProvider">not run yet</span></h3>
+            <div class="tr-out placeholder" id="trAi">Press Translate and correct</div>
+            <div class="tr-suggest" id="aiSuggest" hidden>
+              <div>Corrected Kashmiri <span class="ks" id="aiKs" lang="ks"></span> <button class="btn sm" id="aiApplyKs">Use in box 2</button></div>
+              <div>Roman <code id="aiRom"></code> <button class="btn sm" id="aiApplyRom">Use in box 3</button></div>
+              <div class="tr-small" id="aiNotes"></div>
+            </div>
+          </div>
+          <div class="tr-card">
+            <h3>English to Kashmiri</h3>
+            <div class="tr-small">Dictionary words appear at once. The AI writes the sentence.</div>
+            <div class="en-input"><input id="enInput" data-kb="roman" placeholder="the water is cold" autocomplete="off"><button class="btn" id="enBtn">Translate</button></div>
+            <div class="tr-out" id="enOut"></div>
+            <div class="tr-small" id="enWords"></div>
           </div>
         </div>
-        <div class="tr-card">
-          <h3>English → Kashmiri</h3>
-          <div class="tr-small">Type English to get Kashmiri. Dictionary words appear instantly; the AI writes the sentence.</div>
-          <div class="en-input"><input id="enInput" data-kb="roman" placeholder="e.g. the water is cold" autocomplete="off"><button class="btn" id="enBtn">Translate</button></div>
-          <div class="tr-out" id="enOut"></div>
-          <div class="tr-small" id="enWords"></div>
+        <div class="trace-head"><h3>Word by word</h3><span id="glossStrip" class="muted"></span></div>
+        <div class="trace" id="trace"></div>
+        <div class="cands" id="cands" hidden></div>
+      </div>
+
+      <div class="howto">
+        <div><b>ae</b> ٲ · <b>aa</b> آ</div>
+        <div><b>ee</b> یٖ · <b>oo</b> وٗ · <b>oa</b> ۄ</div>
+        <div><b>ts</b> ژ · <b>tsh</b> ژھ</div>
+        <div><b>\word</b> <b>\{…\}</b> kept as typed</div>
+      </div>
+    </section>
+
+    <!-- ========================================== SOURCES & ADD -->
+    <section id="view-about" class="view view-about" role="tabpanel" hidden>
+      <div class="about-grid">
+        <div class="card">
+          <h2>Add a word</h2>
+          <p class="muted">Fill any of the three. Your words are saved in this browser only, show up in search under My words and are used by the writer.</p>
+          <div class="add-grid">
+            <input id="addKs" dir="rtl" lang="ks" class="ks" data-kb="ks" placeholder="کٲشُر لفظ" aria-label="Kashmiri script">
+            <input id="addRom" data-kb="roman" placeholder="Roman spelling, e.g. posh / poash" aria-label="Roman spelling">
+            <input id="addMean" data-kb="roman" placeholder="English meaning, e.g. flower" aria-label="Meaning">
+          </div>
+          <div class="controls"><button class="btn primary" id="addBtn">Add word</button><button class="btn" id="exportMine">Download my words</button><button class="btn ghost" id="clearMine">Remove my words</button><span class="muted" id="addMsg"></span></div>
+        </div>
+        <div class="card">
+          <h2>How the any-spelling search works</h2>
+          <p class="muted">Every Roman spelling is reduced to a sound key (<code>cxoont</code>, <code>tsoont</code> and <code>tsūnṭh</code> become <code>tsunt</code>) and a consonant root (<code>koshur</code> and <code>kaeshur</code> become <code>kshr</code>). Kashmiri script matches with or without vowel signs, and letter variants like ٲ and ا, ؠ and ی, ۄ and و count as the same. In the writer, when a word has several dictionary spellings, the one whose meaning fits its neighbours is chosen. Tap a word to see the others.</p>
+        </div>
+        <div class="card wide">
+          <h2>What's inside</h2>
+          <table>
+            <tr><th>Source</th><th>What it adds</th><th>Licence</th></tr>
+            <tr><td>G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL</td><td>21,145 scholarly entries with Roman, Devanagari, Perso-Arabic for loanwords and full definitions</td><td>Public domain text, credit DSAL</td></tr>
+            <tr><td>kashmirizabaan.com and Kaeshir Dictionary (Izan Majeed)</td><td>Modern Perso-Arabic spellings, everyday Roman spellings, Hindi glosses, English examples</td><td>MIT for Kaeshir, site content rights unclear</td></tr>
+            <tr><td>Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL)</td><td>Phonemic Roman spellings and native-speaker audio. Its Perso-Arabic is machine-generated and marked auto script</td><td>DSAL and author, research use</td></tr>
+            <tr><td>ChiKhaPo lexicon</td><td>7,894 Kashmiri to English pairs, compiled automatically and marked unverified</td><td>MIT</td></tr>
+            <tr><td>AI4Bharat Aksharantar</td><td>About 41,000 everyday Roman spellings of Kashmiri words, shown as also typed</td><td>CC BY and CC0</td></tr>
+          </table>
+          <p class="muted">All Kashmiri text uses one Unicode convention: NFC with the Kashmiri letters ٲ ؠ ۄ ۍ ێ and vowel signs ٕ ٔ ٟ ٖ ٗ ٚ ٛ. Data files and code are at <a href="https://github.com/rizvonium/kashmiri_dictionary">github.com/rizvonium/kashmiri_dictionary</a>. Interface design follows <a href="https://github.com/heydamir/unslop">unslop</a> by Damir Sokolovsky (CC BY 4.0).</p>
         </div>
       </div>
-      <div class="status" style="margin:14px 2px 0"><b style="color:var(--text)">Word by word</b><span id="glossStrip" class="muted"></span></div>
-      <div class="trace" id="trace"></div>
-      <div class="cands" id="cands" hidden></div>
-    </div>
-
-    <div class="card howto">
-      <div><b>ae</b> → ٲ &nbsp; <b>aa</b> → آ / ا</div>
-      <div><b>ee</b> → یٖ &nbsp; <b>oo</b> → وٗ &nbsp; <b>oa</b> → ۄ</div>
-      <div><b>ts / cx</b> → ژ &nbsp; <b>tsh</b> → ژھ</div>
-      <div><b>\word</b> &nbsp;<b>\{…\}</b> &amp; English words → kept as typed</div>
-    </div>
-  </section>
-
-  <!-- ===================================================== ABOUT / SOURCES / ADD -->
-  <section id="view-about" class="view about" role="tabpanel" hidden>
-    <div class="card">
-      <h2>Add a word</h2>
-      <p class="muted" style="margin-top:0">Fill any of the three columns. Your words are saved <b>in this browser only</b>, appear in search (“My added words”) and are used by the writer.</p>
-      <div class="add-grid">
-        <input id="addKs" dir="rtl" lang="ks" class="ks" data-kb="ks" placeholder="کٲشُر لفظ" aria-label="Kashmiri script">
-        <input id="addRom" data-kb="roman" placeholder="Roman spelling(s), e.g. posh / poash" aria-label="Roman spelling">
-        <input id="addMean" data-kb="roman" placeholder="English meaning, e.g. flower" aria-label="Meaning">
-      </div>
-      <div class="controls"><button class="btn primary" id="addBtn">Add word</button><button class="btn" id="exportMine">Download my words (CSV)</button><button class="btn ghost" id="clearMine">Remove my words</button><span class="muted" id="addMsg"></span></div>
-    </div>
-    <div class="card">
-      <h2>What's inside</h2>
-      <table>
-        <tr><th>Source</th><th>What it contributes</th><th>Licence</th></tr>
-        <tr><td>G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL</td><td>21,145 scholarly entries: Roman, Devanagari, Perso-Arabic for loanwords, full definitions</td><td>Public domain text; credit DSAL</td></tr>
-        <tr><td>kashmirizabaan.com + Kaeshir Dictionary (Izan Majeed)</td><td>Modern Perso-Arabic spellings, popular Roman spellings, Hindi glosses, English examples</td><td>MIT (Kaeshir); site content rights unclear</td></tr>
-        <tr><td>Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL)</td><td>Phonemic Roman spellings and native-speaker audio (Perso-Arabic is machine-generated, marked “auto script”)</td><td>DSAL / author — research use</td></tr>
-        <tr><td>ChiKhaPo lexicon</td><td>7,894 Kashmiri → English pairs, automatically compiled (marked “unverified”)</td><td>MIT</td></tr>
-        <tr><td>AI4Bharat Aksharantar</td><td>~41,000 everyday Roman spellings of Kashmiri words (“also typed”)</td><td>CC-BY / CC0</td></tr>
-      </table>
-      <p class="muted">All Kashmiri text uses one Unicode convention (NFC with the Kashmiri letters ٲ ؠ ۄ ۍ ێ and vowel signs ٕ ٔ ٟ ٖ ٗ ٚ ٛ). Details, data files and code: <a href="https://github.com/rizvonium/kashmiri_dictionary">github.com/rizvonium/kashmiri_dictionary</a>.</p>
-    </div>
-    <div class="card">
-      <h2>How the any-spelling search works</h2>
-      <p class="muted" style="margin:0">Every Roman spelling is reduced to a sound key (<code>cxoont</code>, <code>tsoont</code>, <code>tsūnṭh</code> → <code>tsunt</code>) and a consonant root (<code>koshur</code>, <code>kaeshur</code> → <code>kshr</code>). Kashmiri script is matched with or without vowel signs, and common letter variants (ٲ/ا, ؠ/ی, ۄ/و) are treated alike. In the writer, when a word has several dictionary spellings, the one whose meaning fits the neighbouring words best is chosen; tap a word to see the alternatives.</p>
-    </div>
-  </section>
-
-  <footer>
-    <p class="made">By <b>Sajad Kainaat &amp; RGMir</b> · <span class="ks">کٲشُر لُغَت</span></p>
-    <p>Data: Grierson 1932 &amp; Hassan (DSAL, University of Chicago) · Kaeshir Dictionary · kashmirizabaan.com · ChiKhaPo · AI4Bharat Aksharantar.</p>
-  </footer>
+    </section>
+  </div>
 </div>
 
-<!-- One keyboard for the whole site: switches to Roman or کٲشُر depending on the field you use -->
+<!-- One keyboard for the whole site. Opens only on request -->
 <div class="kb" id="kb" hidden>
   <div class="kb-in">
     <div class="kb-head">
       <span class="kb-label" id="kbLabel">Keyboard</span>
-      <span class="desk-only muted"><label class="toggle" style="font-size:12px"><input type="checkbox" id="physChk" checked><span style="min-height:28px;padding:3px 10px">type with my keyboard</span></label></span>
-      <div style="display:flex;gap:6px;align-items:center">
+      <label class="toggle small desk-only"><input type="checkbox" id="physChk" checked><span>Type with my keyboard</span></label>
+      <div class="kb-actions">
         <div class="seg" role="group" aria-label="Keyboard"><button id="kbRoman" aria-pressed="false">Roman</button><button id="kbKs" aria-pressed="true"><span class="ks">کٲشُر</span></button></div>
-        <button class="btn sm" id="kbClose">Done ✓</button>
+        <button class="btn sm" id="kbClose">Close</button>
       </div>
     </div>
     <div id="kbRows"></div>
