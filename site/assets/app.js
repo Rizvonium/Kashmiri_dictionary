@@ -437,6 +437,7 @@ let searchTimer = null;
 function runSearch() {
   if (!DB.ready) return;
   $("filterDot").hidden = !activeFilters();
+  $("optDot").hidden = !(activeFilters() || S.mode !== "auto" || S.dia);
   S.hits = search(); renderResults(true);
   const qv = $("q").value.trim();
   clearTimeout(runSearch.t);
@@ -796,8 +797,23 @@ function wire() {
   $("detailBack").onclick = () => $("detailPane").classList.remove("open");
   $("menuBtn").onclick = () => setSidebar(true);
   $("scrim").onclick = () => setSidebar(false);
-  $("sideAlpha").innerHTML = ALPHABET.map(c => `<button data-letter="${c}" title="Words starting with ${c}">${c}</button>`).join("");
   renderRecent();
+  // sidebar sections fold open and closed (remembered)
+  const folds = store.get("ksd-folds", {});
+  document.querySelectorAll("[data-fold]").forEach(sec => {
+    const btn = sec.querySelector(".fold"), key = sec.dataset.fold;
+    if (folds[key] === false) btn.setAttribute("aria-expanded", "false");
+    btn.onclick = () => { const open = btn.getAttribute("aria-expanded") !== "true"; btn.setAttribute("aria-expanded", open); folds[key] = open; store.set("ksd-folds", folds); };
+  });
+  // whole sidebar collapses on desktop (remembered)
+  const setCollapsed = c => { document.body.classList.toggle("side-collapsed", c); store.set("ksd-side-collapsed", c); sizeKb(); };
+  setCollapsed(store.get("ksd-side-collapsed", false));
+  $("collapseBtn").onclick = () => setCollapsed(true);
+  $("expandBtn").onclick = () => setCollapsed(false);
+  // search options roll open and closed (remembered)
+  const setOpts = open => { $("options").hidden = !open; $("optBtn").setAttribute("aria-expanded", open); store.set("ksd-opts", open); };
+  setOpts(store.get("ksd-opts", false));
+  $("optBtn").onclick = () => setOpts($("options").hidden);
   $("results").addEventListener("keydown", e => {
     if (!["ArrowDown", "ArrowUp"].includes(e.key) || S.sel < 0) return;
     e.preventDefault(); const i = Math.max(0, Math.min(S.hits.length - 1, S.sel + (e.key === "ArrowDown" ? 1 : -1)));
@@ -835,13 +851,13 @@ function wire() {
   ["w4", "w2"].forEach(id => $(id).addEventListener("input", e => { $("w3").value = romanize(e.target.value); }));
   $("w1Clear").onclick = () => { $("w1").value = ""; updateWriter(); };
   document.querySelectorAll("[data-sentence]").forEach(c => c.onclick = () => { $("w1").value = c.dataset.sentence; updateWriter(); });
-  $("translateBtn").onclick = translateWriter;
+  const TRANSLATION_ENABLED = false;   // flip to true to switch Meaning and translation back on
+  if (TRANSLATION_ENABLED) $("translateBtn").onclick = translateWriter;
   $("keepEn").checked = store.get("ksd-keepEn", true);
   $("keepEn").onchange = e => { store.set("ksd-keepEn", e.target.checked); updateWriter(); };
   $("aiApplyKs").onclick = () => { $("w4").value = $("aiKs").textContent; toast("Box 2 updated"); };
   $("aiApplyRom").onclick = () => { $("w3").value = $("aiRom").textContent; toast("Box 3 updated"); };
-  $("enBtn").onclick = translateEnglish;
-  $("enInput").addEventListener("keydown", e => { if (e.key === "Enter") translateEnglish(); });
+  if (TRANSLATION_ENABLED) { $("enBtn").onclick = translateEnglish; $("enInput").addEventListener("keydown", e => { if (e.key === "Enter") translateEnglish(); }); }
 
   // add words
   $("addBtn").onclick = () => {
@@ -898,7 +914,7 @@ loadData().then(() => {
   $("writeStatus").textContent = `${fmt(DB.rows.length)} entries`;
   if (qParam) { $("q").value = qParam; onSearchInput(true); } else runSearch();
   if (route() === "write") { W.ready = true; updateWriter(); }
-  probeServer();
+  // Meaning and translation is "coming soon": no translation service is contacted
   if (store.get("ksd-kb-open", false)) kbShow(true, route() === "write" ? $("w1") : $("q"));
 }).catch(err => {
   $("welcome").hidden = false; $("welcome").innerHTML = `<div class="empty">Could not load the dictionary (${esc(err.message)}).<br>Open the site through a web server (e.g. <code>python3 -m http.server -d site</code>) or the deployed address.</div>`;
