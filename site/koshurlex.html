@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KoshurLex — Romanized Kashmiri Keyboard &amp; Smart Multi-Spelling Dictionary</title>
+  <meta name="author" content="Kainaat & RGMir">
+  <meta name="description" content="Type Kashmiri in any Roman spelling (kaeshur, koshur, kạ̄shur) and find it in a 47,000-entry dictionary; convert Roman Kashmiri to Perso-Arabic script.">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+    .nastaliq { font-family: 'Noto Nastaliq Urdu', 'Noto Naskh Arabic', serif; line-height: 2.2; direction: rtl; unicode-bidi: isolate; }
+    .naskh { font-family: 'Noto Naskh Arabic', serif; direction: rtl; unicode-bidi: isolate; }
+    .kbd-key { transition: all 0.12s ease; user-select: none; }
+    .kbd-key:active { transform: translateY(2px); }
+    .guess { text-decoration: underline dotted #fbbf24; text-underline-offset: 6px; }
+    :focus-visible { outline: 2px solid #34d399; outline-offset: 2px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Top Header -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="./" title="Back to the main Kashmiri Dictionary" class="w-12 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-bold text-lg naskh">
+          کٲشُر
+        </a>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold text-white flex flex-wrap items-center gap-2">
+            KoshurLex Smart Dictionary &amp; Roman IME
+            <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Multi-Spelling Engine
+            </span>
+          </h1>
+          <p class="text-xs text-slate-400">
+            Type in any Romanized Kashmiri spelling, Kashmiri Perso-Arabic script, or English meaning ·
+            Developed by <b class="text-emerald-300">Kainaat &amp; RGMir</b>
+          </p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex flex-wrap items-center gap-1.5 bg-slate-800/80 p-1 rounded-xl border border-slate-700/70">
+        <button id="tabBtnSearch" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-emerald-600 text-white transition">
+          Smart Search &amp; Keyboard
+        </button>
+        <button id="tabBtnComposer" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition">
+          Roman → کٲشُر Writer
+        </button>
+        <button id="tabBtnAgent" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition">
+          Dataset Links &amp; Add Entry
+        </button>
+        <a href="./" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition">← Main dictionary</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-6 space-y-6">
+
+    <!-- VIEW 1: SMART SEARCH & ROMANIZED KEYBOARD -->
+    <section id="viewSearch" class="space-y-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <label for="searchInput" class="text-sm font-semibold text-slate-200">
+            Search Kashmiri Word (Try multiple spellings: <span class="text-emerald-400 font-mono">kaeshur / koshur / kạ̄shur</span> or <span class="text-emerald-400 font-mono">cxoont / tsoont / tsūnt</span>)
+          </label>
+          <div class="flex items-center gap-2">
+            <button id="toggleKeyboardBtn" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 transition">
+              Hide On-Screen Keyboard
+            </button>
+            <span id="dataStatus" class="text-xs px-2.5 py-1 rounded-lg bg-indigo-600/30 text-indigo-200 border border-indigo-500/40">
+              Loading full dictionary…
+            </span>
+          </div>
+        </div>
+
+        <div class="relative flex items-center">
+          <input
+            id="searchInput"
+            type="text"
+            autocomplete="off" spellcheck="false"
+            placeholder="Type Romanized Kashmiri (e.g. trovmut, aab, cxoont, gagur, peth') or English..."
+            class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 rounded-xl px-4 py-3.5 pr-20 text-base text-white placeholder-slate-500 outline-none transition"
+          />
+          <button id="clearSearchBtn" class="absolute right-3 px-2.5 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition">
+            Clear
+          </button>
+        </div>
+
+        <!-- Live Phonetic & Script Preview Pills -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-xs">
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+            <span class="text-slate-400">Phonetic Skeleton (`KoshurSoundex`):</span>
+            <code id="livePhoneticSkel" class="text-emerald-400 font-mono font-semibold">—</code>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+            <span class="text-slate-400">Consonant Root Key:</span>
+            <code id="liveConsonantSkel" class="text-amber-300 font-mono font-semibold">—</code>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2 flex items-center justify-between gap-2">
+            <span class="text-slate-400">Live Perso-Arabic IME Preview:</span>
+            <span id="liveArabicPreview" class="text-white naskh text-lg" lang="ks">—</span>
+          </div>
+        </div>
+
+        <!-- Preset Multi-Spelling Test Chips -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-1">
+          <span class="text-xs text-slate-400 mr-1">Test spelling tolerance:</span>
+          <button data-preset="cxoont" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">cxoont (Apple)</button>
+          <button data-preset="tsoont" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">tsoont (Apple)</button>
+          <button data-preset="kaeshur" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">kaeshur</button>
+          <button data-preset="koshur" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">koshur</button>
+          <button data-preset="traavmut" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">traavmut</button>
+          <button data-preset="trovmut" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">trovmut</button>
+          <button data-preset="gagur" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">gagur / gạgɨr</button>
+          <button data-preset="cxhaay" class="preset-chip text-xs px-2.5 py-1 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-slate-200 transition">cxhaay / tshāy</button>
+          <button data-preset="کٲشُر" class="preset-chip text-sm px-2.5 py-0.5 rounded-full bg-slate-800 hover:bg-emerald-600/30 border border-slate-700 text-emerald-300 naskh transition" lang="ks">کٲشُر</button>
+        </div>
+      </div>
+
+      <!-- Interactive Romanized Kashmiri Virtual Keyboard -->
+      <div id="virtualKeyboardCard" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Romanized Kashmiri Virtual Keyboard</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="text-slate-400">Keyboard Mode:</span>
+            <button id="modeRomanBtn" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-medium">Roman Kashmiri</button>
+            <button id="modeArabicBtn" class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white font-medium">Perso-Arabic (کٲشُر)</button>
+          </div>
+        </div>
+        <div id="specialKeysRow" class="grid grid-cols-5 sm:grid-cols-10 lg:grid-cols-14 gap-1.5"></div>
+        <div id="mainKeysContainer" class="space-y-1.5"></div>
+      </div>
+
+      <!-- Search Results Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg">
+        <div class="px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <h2 class="text-sm font-semibold text-white">Matching Dictionary Entries</h2>
+            <span id="resultCountBadge" class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-emerald-300 font-medium">0 results</span>
+          </div>
+          <button id="exportCsvBtn" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+            Download Current Results (CSV)
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/60 text-xs uppercase text-slate-400">
+                <th class="py-3 px-4">Kashmiri Unicode</th>
+                <th class="py-3 px-4">Romanized Kashmiri</th>
+                <th class="py-3 px-4">Meaning</th>
+                <th class="py-3 px-4">Match Tier &amp; Skeleton</th>
+              </tr>
+            </thead>
+            <tbody id="resultsTableBody" class="divide-y divide-slate-800/70 text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: ROMAN -> KASHMIRI PERSO-ARABIC COMPOSER / WRITER -->
+    <section id="viewComposer" class="hidden space-y-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base font-bold text-white">Romanized Kashmiri → Perso-Arabic Writer</h2>
+            <p class="text-xs text-slate-400">
+              Type Romanized Kashmiri on the left. Each word is looked up in the dictionary first (any spelling).
+              Words not found are spelled by phonetic rules and shown with a <span class="guess text-amber-300">dotted underline</span> — check those.
+            </p>
+          </div>
+          <button id="copyComposerBtn" class="text-xs px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition">
+            Copy Kashmiri Unicode
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label for="composerRomanInput" class="text-xs font-medium text-slate-300">Type Romanized Kashmiri Sentence:</label>
+            <textarea id="composerRomanInput" rows="5"
+              placeholder="Try typing: kaeshur zabaan chhu saeri khotah meeth..."
+              class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-white placeholder-slate-500 outline-none focus:border-emerald-500">kaeshur lughat aab cxoont trovmut gagur</textarea>
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-xs font-medium text-slate-300">Converted Kashmiri Perso-Arabic Unicode:</label>
+            <div id="composerArabicOutput" lang="ks"
+              class="w-full min-h-[132px] bg-slate-950 border border-slate-700 rounded-xl p-4 text-xl text-emerald-300 nastaliq"></div>
+          </div>
+        </div>
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-xs space-y-2">
+          <div class="font-semibold text-slate-200">Romanized Kashmiri Typing Conventions (Casual &amp; Academic):</div>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-slate-300 font-mono">
+            <div><span class="text-emerald-400">ae / ạ̄</span> → ٲ (/əː/)</div>
+            <div><span class="text-emerald-400">ạ</span> → ◌ٔ (/ə/)</div>
+            <div><span class="text-emerald-400">ɨ</span> → ◌ٕ (/ɨ/)</div>
+            <div><span class="text-emerald-400">ɨ̄</span> → ◌ٟ (/ɨː/)</div>
+            <div><span class="text-emerald-400">cx / ts</span> → ژ (/t͡s/)</div>
+            <div><span class="text-emerald-400">cxh / tsh</span> → ژھ (/t͡sʰ/)</div>
+            <div><span class="text-emerald-400">' (apostrophe)</span> → ؠ (/ʲ/)</div>
+            <div><span class="text-emerald-400">ɔ / oa</span> → ۄ (/ɔ/)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: DATASET LINKS & ADD CUSTOM WORD -->
+    <section id="viewAgent" class="hidden space-y-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div>
+          <h2 class="text-base font-bold text-white">Add Entry (Supports Partial Entries)</h2>
+          <p class="text-xs text-slate-400">
+            Fill in any 1 of the 3 columns (Kashmiri Unicode, Romanized Kashmiri, Meaning). Missing Roman forms are auto-computed.
+            Entries are saved <b>in this browser only</b> (not sent anywhere) and can be exported with “Download CSV”.
+          </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <input id="addUnicodeInput" type="text" lang="ks" placeholder="Col 1: Kashmiri Unicode (e.g. پوش)" class="bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500" />
+          <input id="addRomanInput" type="text" placeholder="Col 2: Romanized Kashmiri (e.g. posh)" class="bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500" />
+          <input id="addMeaningInput" type="text" placeholder="Col 3: Meaning (e.g. flower)" class="bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none focus:border-emerald-500" />
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span id="addEntryFeedback" class="text-xs text-emerald-400"></span>
+          <div class="flex gap-2">
+            <button id="clearUserBtn" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700">Remove my entries</button>
+            <button id="addEntryBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs sm:text-sm font-semibold text-white transition">Add to Active Dictionary</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+        <h2 class="text-base font-bold text-white">Online Sources with Romanized Kashmiri</h2>
+        <p class="text-xs text-slate-400">
+          This page already loads the merged dataset (Grierson 1932, Hassan, Kaeshir, kashmirizabaan, ChiKhaPo — 46,872 entries) plus ~39,000 Roman spellings from Aksharantar.
+          These are the upstream sources and other candidates, with what we found when checking them:
+        </p>
+        <div class="space-y-2.5 text-xs">
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <div class="font-semibold text-emerald-300">1. Kaeshir Dictionary Data (28,718 words — MIT) ✓ included</div>
+            <div class="text-slate-300">Repo: <a href="https://github.com/izan-majeed/kaeshir-dictionary-data" target="_blank" rel="noopener" class="underline text-indigo-300">github.com/izan-majeed/kaeshir-dictionary-data</a> · Python: <code>pip install kashmiri</code></div>
+            <div class="text-slate-400"><code>collected-words.json</code> (5,156): <code>kashmiriMeaning</code> = Kashmiri Unicode, <code>englishMeaning</code> = Romanized Kashmiri, <code>title</code> = English. <code>audio-words.json</code> (2,919, Hassan) and <code>dictionary-words.json</code> (20,643, Grierson): <code>word</code> = Romanized Kashmiri, <code>desc</code>/<code>meaning</code> = English.</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <div class="font-semibold text-emerald-300">2. Grierson 1932 &amp; Hassan via DSAL (University of Chicago) ✓ included</div>
+            <div class="text-slate-300"><a href="https://dsal.uchicago.edu/dictionaries/grierson/" target="_blank" rel="noopener" class="underline text-indigo-300">dsal.uchicago.edu/dictionaries/grierson</a> · <a href="https://dsal.uchicago.edu/dictionaries/hassan/" target="_blank" rel="noopener" class="underline text-indigo-300">dsal.uchicago.edu/dictionaries/hassan</a></div>
+            <div class="text-slate-400">Grierson: romanized headwords + Devanagari for nearly all entries, Perso-Arabic only for ~17% (loanwords). Hassan: phonemic romanization + audio; its Perso-Arabic is machine-generated.</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <div class="font-semibold text-emerald-300">3. AI4Bharat Aksharantar — Kashmiri transliteration pairs ✓ included (spellings)</div>
+            <div class="text-slate-300"><a href="https://huggingface.co/datasets/ai4bharat/Aksharantar" target="_blank" rel="noopener" class="underline text-indigo-300">huggingface.co/datasets/ai4bharat/Aksharantar</a> → <code>kas.zip</code> (openly downloadable)</div>
+            <div class="text-slate-400">57,999 word pairs, no meanings: <code>native word</code> → Kashmiri Unicode, <code>english word</code> → Romanized Kashmiri. We keep the AK-Freq, AK-Uni and IndicCorp parts (~41,000 words) and drop the named-entity lists (foreign personal and place names). Used to recognise everyday Roman spellings.</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <div class="font-semibold text-emerald-300">4. ChiKhaPo Kashmiri–English lexicon ✓ included (flagged unverified)</div>
+            <div class="text-slate-300"><a href="https://huggingface.co/datasets/ec5ug/chikhapo" target="_blank" rel="noopener" class="underline text-indigo-300">huggingface.co/datasets/ec5ug/chikhapo</a> → <code>data/kas_eng.jsonl</code> (MIT)</div>
+            <div class="text-slate-400">7,915 Kashmiri → English pairs (4,615 Perso-Arabic, 3,292 Devanagari). Automatically compiled, so some entries are noisy.</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+            <div class="font-semibold text-slate-400">5. Checked but not used</div>
+            <div class="text-slate-400"><a href="https://huggingface.co/datasets/Omarrran/kashmiri_multilingual_dictionary_dataset" target="_blank" rel="noopener" class="underline text-indigo-300">Omarrran multilingual dictionary</a> is gated (manual approval required).
+              <a href="https://huggingface.co/Aju360/kathe-r11-restorer" target="_blank" rel="noopener" class="underline text-indigo-300">KATHE restorer</a> ships model weights only; its companion lexicon is 10,703 diacritization mappings with no meanings.
+              Shafi Shauq’s <i>Kāśir Lug̲h̲at</i> is copyrighted (look-up only on DSAL).
+              <a href="https://huggingface.co/datasets/ranjithraj/indic-multilingual-educational-glossary" target="_blank" rel="noopener" class="underline text-indigo-300">Indic educational glossary</a>: its Kashmiri column is empty in all 6,870 rows.
+              <a href="https://huggingface.co/datasets/cointegrated/panlex-meanings" target="_blank" rel="noopener" class="underline text-indigo-300">PanLex</a> (CC0): 7,776 Kashmiri expressions, mostly Devanagari/Roman; pairing them with English needs a 786 MB file — a candidate for later.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-800 text-xs text-slate-400">
+    <div class="max-w-6xl mx-auto px-4 py-5 flex flex-wrap justify-between gap-2">
+      <span>Developed by <b class="text-emerald-300">Kainaat &amp; RGMir</b> · <span class="naskh text-sm">کٲشُر لُغَت</span></span>
+      <span>Data: Grierson 1932 &amp; Hassan (DSAL, Univ. of Chicago) · Kaeshir Dictionary · kashmirizabaan.com · ChiKhaPo · AI4Bharat Aksharantar · <a class="underline" href="./">Main dictionary</a></span>
+    </div>
+  </footer>
+
+  <script>
+    "use strict";
+    // =========================================================================
+    // 0. KASHMIRI UNICODE NORMALIZATION (same rules as the main site / dataset)
+    // =========================================================================
+    const KS_MAP = {"ك":"ک","ي":"ی","ى":"ی","ه":"ہ","ۀ":"ۂ",
+      "ۭ":"ٟ","ۆ":"وٚ","ٳ":"اٟ","ڐ":"ڈ","ٿ":"تھ",
+      "ڇ":"چھ","ـ":"","‏":"","‎":"","﻿":""};
+    const MARK_RE = /[ً-ْٔ-ٰٟ]/g;
+    const ARABIC_RE = /[؀-ۿ]/;
+    function normKs(s) {
+      s = s.replace(/[ﭐ-﷿ﹰ-﻾]/g, c => c.normalize("NFKC"));
+      s = s.replace(/ٮ۪/g, "ؠ");
+      s = s.replace(/[كيىهۀۭۆٳڐٿڇـ‏‎﻿]/g, c => KS_MAP[c]);
+      return s.normalize("NFC").replace(/\s+/g, " ").trim();
+    }
+    const LOOSE = {"ٲ":"ا","أ":"ا","إ":"ا","آ":"ا","ۄ":"و","ؤ":"و","ؠ":"ی","ێ":"ی","ۍ":"ی","ئ":"ی","ے":"ی","ۂ":"ہ","ۃ":"ہ","ة":"ہ","ں":"ن","ٓ":"","‌":""};
+    function looseKs(s) {
+      return normKs(s).normalize("NFD").replace(MARK_RE, "").replace(/[ٲأإآۄؤؠێۍئےۂۃةںٓ‌]/g, c => LOOSE[c] ?? c).normalize("NFC");
+    }
+    const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+    // =========================================================================
+    // 1. HAND-CURATED MULTI-SPELLING CORE LIST (merged with the full dataset)
+    //    Spelling variants help the phonetic matcher; text normalized to the
+    //    dataset's Unicode convention (no legacy ٮ۪ / ۆ encodings).
+    // =========================================================================
+    const CORE_LIST = [
+      ["کٲشُر", "kạ̄shur / kaeshur / koshur", "Kashmiri language; a Kashmiri person"],
+      ["ترٛومُت", "trovmut / traavmut", "abandoned, left behind, forsaken"],
+      ["آب", "āb / aab", "water; sparkle, lustre"],
+      ["ژوٗنٛٹھ", "tsūnṭh / cxoont / tsoont", "apple"],
+      ["ژھاے", "tshāy / cxhaay", "shadow, shade"],
+      ["گَگُر", "gagur / gạgɨr / gagir", "mouse, rat"],
+      ["کۄہ", "kɔh / koh", "mountain, hill"],
+      ["پؠٹھ", "peṭh' / pyeth / peth", "on, upon"],
+      ["پوش", "posh / poash", "flower, blossom"],
+      ["کَنٛگُر", "kangur / kangɨr / kangri / kanger", "Kashmiri portable fire-pot"],
+      ["پھیرَن", "pheran / phyaran", "traditional Kashmiri woollen gown"],
+      ["کَتھ", "kath", "story, word, talk, matter"],
+      ["زَبان", "zabān / zabaan", "language, tongue"],
+      ["مِیٖٹھ", "mīṭh / meeth", "sweet"],
+      ["چُھ", "chhu / chu", "is (masculine singular)"],
+    ].map(([k, r, m]) => ({ kashmiri_unicode: k, romanized_kashmiri: r, meaning: m, source: "KoshurLex core list", quality: "native" }));
+
+    // =========================================================================
+    // 2. KOSHUR SOUNDEX & DETERMINISTIC TRANSLITERATION FUNCTIONS
+    // =========================================================================
+    const DIGRAPH_MAP = [
+      ["ژھ", "tsh"], ["چھ", "chh"], ["پھ", "ph"], ["تھ", "th"], ["ٹھ", "ṭh"],
+      ["کھ", "kh"], ["بھ", "bh"], ["دھ", "dh"], ["ڈھ", "ḍh"], ["گھ", "gh"],
+      ["یٖ", "ī"], ["وٗ", "ū"], ["یٚ", "e"], ["ےٚ", "e"],
+      ["وٚ", "o"], ["اٟ", "ɨ̄"], ["إ", "ɨ"], ["أ", "ạ"], ["آ", "ā"], ["ٲ", "ạ̄"]
+    ];
+    const CHAR_MAP = {
+      "ا": "a", "ب": "b", "پ": "p", "ت": "t", "ٹ": "ṭ", "ث": "s", "ج": "j",
+      "چ": "ch", "ح": "h", "خ": "kh", "د": "d", "ڈ": "ḍ", "ذ": "z", "ر": "r",
+      "ڑ": "ṛ", "ز": "z", "ژ": "ts", "س": "s", "ش": "sh", "ص": "s", "ض": "z",
+      "ط": "t", "ظ": "z", "ع": "a", "غ": "g", "ف": "f", "ق": "q", "ک": "k",
+      "گ": "g", "ل": "l", "م": "m", "ن": "n", "ں": "n", "و": "v", "ۄ": "ɔ",
+      "ہ": "h", "ھ": "h", "ء": "'", "ی": "y", "ے": "ē", "ؠ": "'", "ۍ": "'", "ێ": "e",
+      "َ": "a", "ِ": "i", "ُ": "u", "ٔ": "ạ",
+      "ٕ": "ɨ", "ٟ": "ɨ̄", "ٖ": "ī", "ٗ": "ū",
+      "ٚ": "e", "ٛ": "", "ٰ": "ā", "ْ": "", "ّ": "", "‌": "", "،": ","
+    };
+    function deterministicRomanize(ksText) {
+      if (!ksText) return "";
+      let s = normKs(ksText);
+      for (const [dg, rom] of DIGRAPH_MAP) s = s.split(dg).join(rom);
+      let out = "";
+      for (const ch of s) out += (CHAR_MAP[ch] !== undefined) ? CHAR_MAP[ch] : ch;
+      return out.replace(/\s+/g, " ").trim();
+    }
+
+    function computePhoneticSkeleton(word) {
+      if (!word) return "";
+      let s = word.toLowerCase().trim();
+      s = s.replace(/\([^)]*\)/g, "").replace(/\/[^/]*\//g, "");
+      if (s.includes("/")) s = s.split("/")[0].trim();
+      s = s.replace(/ʦ/g, "ts").replace(/ạ̄|ạ|ä/g, "a").replace(/ɨ̄|ɨ|ι/g, "i")
+           .replace(/ɔ̄|ɔ|ͻ|ö/g, "o").replace(/ü/g, "u").replace(/ʰ/g, "h").replace(/ʲ|ʸ/g, "y");
+      s = s.normalize("NFKD").replace(/[̀-ͯ]/g, "");
+      s = s.replace(/\s+\d+$/, "");
+      s = s.replace(/cxh|cx|tsh|tz/g, "ts").replace(/chh/g, "ch").replace(/shh/g, "sh")
+           .replace(/kh|q/g, "k").replace(/ph/g, "f").replace(/th/g, "t").replace(/dh/g, "d")
+           .replace(/bh/g, "b").replace(/gh/g, "g").replace(/w/g, "v").replace(/['’`:]/g, "");
+      s = s.replace(/ae|ea|aa|ai|ay/g, "a").replace(/ee|ii|ey|ei|e/g, "i").replace(/oo|uu|ou|ow|au|aw|oa|o/g, "u");
+      s = s.replace(/[^a-z0-9]/g, "").replace(/(.)\1+/g, "$1");
+      return s;
+    }
+    function computeConsonantSkeleton(word) {
+      const skel = computePhoneticSkeleton(word);
+      if (!skel) return "";
+      const first = "aiu".includes(skel[0]) ? "V" : skel[0];
+      const rest = skel.slice(1).replace(/[aiuy]/g, "");
+      return (first + rest).replace(/(.)\1+/g, "$1");
+    }
+    function splitVariants(rom) {
+      return (rom || "").toLowerCase().split(/\s*\/\s*|\s+or\s+|\s*[,;]\s*/)
+        .map(v => v.replace(/\([^)]*\)/g, "").replace(/\s+\d+$/, "").replace(/[.:]+$/, "").trim()).filter(Boolean);
+    }
+
+    // Roman word -> Kashmiri script: dictionary first, phonetic rules as fallback.
+    // Returns {text, guessed}.
+    function romanWordToKashmiriIME(romWord) {
+      const clean = (romWord || "").toLowerCase().trim();
+      if (!clean) return { text: "", guessed: false };
+      const hit = (index.imeVariant.get(clean) || [])[0] || (index.imePskel.get(computePhoneticSkeleton(clean)) || [])[0];
+      if (hit) return { text: hit.kashmiri_unicode, guessed: false };
+      let s = clean;
+      const rules = [
+        ["tsh", "ژھ"], ["cxh", "ژھ"], ["chh", "چھ"], ["sh", "ش"],
+        ["ts", "ژ"], ["cx", "ژ"], ["ch", "چ"], ["kh", "کھ"],
+        ["ph", "پھ"], ["ṭh", "ٹھ"], ["th", "تھ"], ["bh", "بھ"],
+        ["dh", "دھ"], ["gh", "گھ"], ["ae", "ٲ"], ["ạ̄", "ٲ"],
+        ["aa", "آ"], ["ā", "آ"], ["ee", "یٖ"], ["ī", "یٖ"],
+        ["oo", "وٗ"], ["ū", "وٗ"], ["oa", "ۄ"], ["ɔ", "ۄ"],
+        ["ɨ̄", "ٟ"], ["ɨ", "ٕ"], ["ạ", "ٔ"], ["ē", "ے"],
+        ["ṭ", "ٹ"], ["ḍ", "ڈ"], ["ṛ", "ڑ"], ["'", "ؠ"]
+      ];
+      for (const [k, v] of rules) s = s.split(k).join(v);
+      if (/^[aiueo]/.test(s)) s = "ا" + s;
+      const charRules = {
+        "a": "َ", "i": "ِ", "u": "ُ", "e": "یٚ", "o": "وٚ",
+        "b": "ب", "p": "پ", "t": "ت", "j": "ج", "d": "د",
+        "r": "ر", "z": "ز", "s": "س", "f": "ف", "q": "ق",
+        "k": "ک", "g": "گ", "l": "ل", "m": "م", "n": "ن",
+        "v": "و", "w": "و", "h": "ہ", "y": "ی", "c": "چ", "x": "ش"
+      };
+      let out = "";
+      for (const ch of s) out += (charRules[ch] !== undefined) ? charRules[ch] : ch;
+      return { text: normKs(out), guessed: true };
+    }
+    function editDistanceSimilarity(a, b) {
+      if (!a || !b) return 0;
+      const m = a.length, n = b.length;
+      let prev = Array.from({ length: n + 1 }, (_, j) => j);
+      for (let i = 1; i <= m; i++) {
+        const cur = [i];
+        for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+        prev = cur;
+      }
+      return 1 - prev[n] / Math.max(m, n);
+    }
+
+    // =========================================================================
+    // 3. STATE & INDEXES (computed once at load, so search stays fast)
+    // =========================================================================
+    let dictionaryData = [];
+    const index = { variant: new Map(), pskel: new Map(), cskel: new Map(), imeVariant: new Map(), imePskel: new Map() };
+    const QUALITY_RANK = { "native": 0, "source-perso-arabic (1932)": 1, "spelling": 1.5, "": 2, "auto-transliterated": 3, "unverified": 4 };
+    function push(map, key, item) { if (!key) return; let a = map.get(key); if (!a) map.set(key, a = []); a.push(item); }
+
+    function addEntry(raw, front) {
+      const ks = raw.kashmiri_unicode ? normKs(raw.kashmiri_unicode) : "";
+      let rom = raw.romanized_kashmiri || "";
+      let romAuto = false;
+      if (!rom && ks) { rom = deterministicRomanize(ks); romAuto = true; }
+      const variants = [...new Set(splitVariants(rom).concat(splitVariants(raw.extra_variants || "")))];
+      const item = {
+        ...raw, kashmiri_unicode: ks, romanized_kashmiri: rom, rom_auto: romAuto,
+        variants, vSkels: variants.map(computePhoneticSkeleton), vCskels: variants.map(computeConsonantSkeleton),
+        meaningLow: (raw.meaning || "").toLowerCase(), loose: ks ? looseKs(ks) : "",
+        rank: QUALITY_RANK[raw.quality ?? ""] ?? 2,
+      };
+      item.phonetic_skeleton = item.vSkels[0] || "";
+      item.consonant_skeleton = item.vCskels[0] || "";
+      front ? dictionaryData.unshift(item) : dictionaryData.push(item);
+      variants.forEach(v => push(index.variant, v, item));
+      new Set(item.vSkels).forEach(s => push(index.pskel, s, item));
+      new Set(item.vCskels).forEach(s => s.length >= 2 && push(index.cskel, s, item));
+      // IME lookups only trust reliable Kashmiri spellings, and only real (not auto) romanizations
+      if (ks && !romAuto && item.rank <= 1.5) {
+        variants.forEach(v => push(index.imeVariant, v, item));
+        new Set(item.vSkels).forEach(s => push(index.imePskel, s, item));
+      }
+      return item;
+    }
+    function sortIndexes() {
+      for (const m of [index.imeVariant, index.imePskel]) for (const a of m.values()) a.sort((x, y) => x.rank - y.rank);
+    }
+
+    async function loadFullDataset() {
+      const status = document.getElementById("dataStatus");
+      try {
+        const res = await fetch("data/dictionary.json");
+        const d = await res.json();
+        const F = Object.fromEntries(d.fields.map((f, i) => [f, i]));
+        const SRC = s => s.startsWith("grierson") ? "Grierson 1932" : s.startsWith("hassan") ? "Hassan (DSAL)" : s.startsWith("chikhapo") ? "ChiKhaPo (unverified)" : s.startsWith("injilashah") ? "Stop-word list" : "Kaeshir / kashmirizabaan";
+        for (const r of d.rows) {
+          const ks = r[F.headword_ks], rom = r[F.headword_roman];
+          if (!ks && !rom) continue;
+          let meaning = r[F.gloss_en];
+          if (!meaning && r[F.definition_en]) { const t = r[F.definition_en]; meaning = t.length > 200 ? t.slice(0, 200) + "…" : t; }
+          const pos = r[F.pos];
+          addEntry({ kashmiri_unicode: ks, romanized_kashmiri: rom, extra_variants: r[F.roman_variants] || "",
+                     meaning: (pos && r[F.gloss_en] ? pos + ". " : "") + meaning,
+                     source: SRC(d.sources[r[F.source]]), quality: d.quality[r[F.script_quality]] });
+        }
+        // Spelling-only Roman <-> Perso-Arabic pairs (AI4Bharat Aksharantar): no meanings, but they teach
+        // the search and the writer how Kashmiri words are commonly typed in Roman letters.
+        try {
+          const pairs = await (await fetch("data/roman_pairs.json")).json();
+          for (const [ks, roms] of pairs) addEntry({ kashmiri_unicode: ks, romanized_kashmiri: roms.replace(/;\s*/g, " / "), meaning: "", source: "Aksharantar (spelling only)", quality: "spelling" });
+        } catch (e) {}
+        sortIndexes();
+        status.textContent = `${dictionaryData.length.toLocaleString()} words indexed`;
+      } catch (err) {
+        status.textContent = "Full dictionary unavailable — core list only";
+      }
+    }
+
+    let keyboardMode = "roman";
+    const ROMAN_SPECIAL_KEYS = [
+      { key: "ạ̄", hint: "ٲ / ae" }, { key: "ạ", hint: "◌ٔ" }, { key: "ɨ", hint: "◌ٕ" }, { key: "ɨ̄", hint: "◌ٟ" },
+      { key: "ɔ", hint: "ۄ" }, { key: "ā", hint: "آ / aa" }, { key: "ī", hint: "یٖ / ee" }, { key: "ū", hint: "وٗ / oo" },
+      { key: "ts", hint: "ژ / cx" }, { key: "tsh", hint: "ژھ / cxh" }, { key: "'", hint: "ؠ (palatal)" },
+      { key: "ṭ", hint: "ٹ" }, { key: "ḍ", hint: "ڈ" }, { key: "ṛ", hint: "ڑ" }
+    ];
+    const ROMAN_QWERTY_ROWS = [
+      ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+      ["z", "x", "c", "v", "b", "n", "m", "⌫", "Space"]
+    ];
+    const ARABIC_SPECIAL_KEYS = [
+      { key: "ٲ", hint: "ạ̄" }, { key: "أ", hint: "ạ" }, { key: "ٕ", hint: "ɨ" }, { key: "ٟ", hint: "ɨ̄" },
+      { key: "ۄ", hint: "ɔ" }, { key: "ؠ", hint: "'" }, { key: "ۍ", hint: "ʲ (final)" }, { key: "ێ", hint: "e" },
+      { key: "ژ", hint: "ts" }, { key: "ژھ", hint: "tsh" }, { key: "ٚ", hint: "e/o" }, { key: "ٛ", hint: "ʲ/ʷ" },
+      { key: "ٖ", hint: "ī" }, { key: "ٗ", hint: "ū" }, { key: "َ", hint: "a" }, { key: "ِ", hint: "i" },
+      { key: "ُ", hint: "u" }, { key: "ٔ", hint: "ə sign" }, { key: "ّ", hint: "shad" }, { key: "ں", hint: "nasal" }
+    ];
+    const ARABIC_MAIN_ROWS = [
+      ["ض", "ص", "ث", "ق", "ف", "غ", "ع", "ہ", "خ", "ح", "ج", "چ"],
+      ["ش", "س", "ی", "ب", "ل", "ا", "آ", "ت", "ن", "م", "ک", "گ"],
+      ["ظ", "ط", "ز", "ر", "ڑ", "ذ", "د", "ڈ", "پ", "و", "ے", "ٹ", "ھ", "ء", "ئ"],
+      ["⌫", "Space"]
+    ];
+
+    // =========================================================================
+    // 4. RENDER VIRTUAL KEYBOARD & HANDLE INPUT
+    // =========================================================================
+    function renderKeyboard() {
+      const specialContainer = document.getElementById("specialKeysRow");
+      const mainContainer = document.getElementById("mainKeysContainer");
+      specialContainer.innerHTML = ""; mainContainer.innerHTML = "";
+      const specials = keyboardMode === "roman" ? ROMAN_SPECIAL_KEYS : ARABIC_SPECIAL_KEYS;
+      const rows = keyboardMode === "roman" ? ROMAN_QWERTY_ROWS : ARABIC_MAIN_ROWS;
+      const isMark = k => /^[ً-ٰٟ]$/.test(k);
+      specials.forEach(item => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "kbd-key flex flex-col items-center justify-center py-1.5 px-2 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/70 border border-emerald-700/50 text-emerald-200";
+        const label = isMark(item.key) ? "◌" + item.key : item.key;
+        btn.innerHTML = `<span class="text-base font-bold ${keyboardMode === "arabic" ? "naskh" : ""}">${esc(label)}</span><span class="text-[10px] text-emerald-400/80">${esc(item.hint)}</span>`;
+        btn.addEventListener("mousedown", e => e.preventDefault());
+        btn.addEventListener("click", () => insertAtSearchInput(item.key));
+        specialContainer.appendChild(btn);
+      });
+      rows.forEach(row => {
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "flex flex-wrap justify-center gap-1.5";
+        row.forEach(k => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          const isWide = k === "Space" || k === "⌫";
+          btn.className = `kbd-key ${k === "Space" ? "px-10" : isWide ? "px-4" : "w-9 sm:w-11"} h-11 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 ${keyboardMode === "arabic" && !isWide ? "naskh text-lg" : "text-sm"} font-medium text-slate-100 flex items-center justify-center`;
+          btn.textContent = k;
+          btn.addEventListener("mousedown", e => e.preventDefault());
+          btn.addEventListener("click", () => {
+            if (k === "⌫") backspace();
+            else insertAtSearchInput(k === "Space" ? " " : k);
+          });
+          rowDiv.appendChild(btn);
+        });
+        mainContainer.appendChild(rowDiv);
+      });
+    }
+    function insertAtSearchInput(str) {
+      const inp = document.getElementById("searchInput");
+      const s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? s;
+      inp.value = inp.value.slice(0, s) + str + inp.value.slice(e);
+      const p = s + str.length; inp.setSelectionRange(p, p);
+      if (!matchMedia("(hover: none)").matches) inp.focus();
+      scheduleSearch();
+    }
+    function backspace() {
+      const inp = document.getElementById("searchInput");
+      const s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? s;
+      if (s !== e) { inp.value = inp.value.slice(0, s) + inp.value.slice(e); inp.setSelectionRange(s, s); }
+      else if (s > 0) { const pre = Array.from(inp.value.slice(0, s)); pre.pop(); const t = pre.join(""); inp.value = t + inp.value.slice(s); inp.setSelectionRange(t.length, t.length); }
+      scheduleSearch();
+    }
+
+    // =========================================================================
+    // 5. SMART MULTI-SPELLING SEARCH
+    // =========================================================================
+    const LIMIT = 60;
+    let lastMatches = [], lastTotal = 0;
+    function searchDictionary(query) {
+      const q = (query || "").trim();
+      if (!q) return { list: dictionaryData.filter(r => r.source === "KoshurLex core list").map(item => ({ item, score: 100, tier: "Browse core list" })), total: 0 };
+      const isArabicQuery = ARABIC_RE.test(q);
+      const qLow = q.toLowerCase();
+      const romQ = isArabicQuery ? deterministicRomanize(q) : qLow;
+      const qPskel = computePhoneticSkeleton(romQ), qCskel = computeConsonantSkeleton(romQ);
+      const best = new Map();
+      const add = (item, score, tier) => {
+        if (!item.meaning) score -= 15;   // spelling-only pairs rank below real dictionary entries
+        const p = best.get(item); if (!p || p.score < score) best.set(item, { item, score, tier });
+      };
+
+      if (isArabicQuery) {
+        const nq = normKs(q), lq = looseKs(q);
+        for (const item of dictionaryData) {
+          if (!item.kashmiri_unicode) continue;
+          if (item.kashmiri_unicode === nq) add(item, 100, "Exact Kashmiri Script");
+          else if (item.loose === lq) add(item, 96, "Kashmiri Script (vowel signs ignored)");
+          else if (item.loose.includes(lq)) add(item, 88, "Kashmiri Script Substring");
+        }
+      } else {
+        (index.variant.get(qLow) || []).forEach(it => add(it, 100, "Tier 1: Exact Roman Match"));
+        (index.pskel.get(qPskel) || []).forEach(it => add(it, 94, "Tier 2: Smart Phonetic Match"));
+        const wordRe = qLow.length > 1 ? new RegExp(`(^|[^a-z])${qLow.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z]|$)`) : null;
+        for (const item of dictionaryData) {
+          if (item.meaningLow && wordRe && wordRe.test(item.meaningLow)) add(item, 89, "Tier 3: Meaning Match");
+        }
+        if (qCskel.length >= 2) (index.cskel.get(qCskel) || []).forEach(it => add(it, 85, "Tier 4: Consonant Root Match"));
+        if (best.size < LIMIT) {
+          for (const item of dictionaryData) {
+            if (item.variants.some(v => v.startsWith(qLow)) || (qPskel.length >= 2 && item.vSkels.some(s => s.startsWith(qPskel)))) add(item, 78, "Tier 5: Prefix Match");
+          }
+        }
+        if (best.size < 15 && qPskel.length >= 3) {
+          for (const item of dictionaryData) {
+            if (best.has(item)) continue;
+            for (const sk of item.vSkels) {
+              if (!sk || sk[0] !== qPskel[0] || Math.abs(sk.length - qPskel.length) > 2) continue;
+              const sim = editDistanceSimilarity(qPskel, sk);
+              if (sim >= 0.72) { add(item, Math.round(sim * 75), `Tier 6: Fuzzy Phonetic (${Math.round(sim * 100)}%)`); break; }
+            }
+          }
+        }
+      }
+      const list = [...best.values()].sort((a, b) => b.score - a.score || a.item.rank - b.item.rank ||
+        (a.item.romanized_kashmiri || "").length - (b.item.romanized_kashmiri || "").length);
+      return { list: list.slice(0, LIMIT), total: list.length };
+    }
+
+    let searchTimer = null;
+    function scheduleSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(triggerSearchUpdate, 120); }
+    function triggerSearchUpdate() {
+      const q = document.getElementById("searchInput").value;
+      const isAr = ARABIC_RE.test(q);
+      const romQ = isAr ? deterministicRomanize(q) : q;
+      document.getElementById("livePhoneticSkel").textContent = computePhoneticSkeleton(romQ) || "—";
+      document.getElementById("liveConsonantSkel").textContent = computeConsonantSkeleton(romQ) || "—";
+      document.getElementById("liveArabicPreview").textContent =
+        (isAr ? normKs(q) : q.split(/\s+/).filter(Boolean).map(w => romanWordToKashmiriIME(w).text).join(" ")) || "—";
+
+      const { list, total } = searchDictionary(q);
+      lastMatches = list; lastTotal = total;
+      document.getElementById("resultCountBadge").textContent = q.trim()
+        ? `${total.toLocaleString()} result${total === 1 ? "" : "s"}${total > list.length ? ` · top ${list.length} shown` : ""}`
+        : "core list";
+      const tbody = document.getElementById("resultsTableBody");
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-8 px-4 text-center text-slate-400">
+          No exact or phonetic match found for “<span class="text-white font-semibold">${esc(q)}</span>”.
+          Try another spelling, search the English meaning, or add it in the <strong>Dataset Links &amp; Add Entry</strong> tab.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = list.map(({ item: row, tier }) => `
+        <tr class="hover:bg-slate-800/40 transition align-top">
+          <td class="py-3 px-4 text-xl text-emerald-300 naskh whitespace-nowrap" lang="ks">${row.kashmiri_unicode ? esc(row.kashmiri_unicode) : "<span class='text-xs text-slate-500 font-sans'>— (Roman/Meaning only)</span>"}
+            ${row.quality === "auto-transliterated" ? "<div class='text-[10px] text-amber-400 font-sans' title='Machine-generated Perso-Arabic in the source'>auto script</div>" : ""}</td>
+          <td class="py-3 px-4 font-mono text-white font-medium">${esc(row.romanized_kashmiri) || "—"}${row.rom_auto ? " <span class='text-[10px] text-amber-400 font-sans'>(auto)</span>" : ""}</td>
+          <td class="py-3 px-4 text-slate-300">${esc(row.meaning) || "<span class='text-slate-500 text-xs'>spelling only — no meaning in sources</span>"}</td>
+          <td class="py-3 px-4">
+            <div class="flex flex-col gap-1">
+              <span class="inline-flex w-fit text-[11px] font-medium px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">${esc(tier)}</span>
+              <span class="text-[11px] text-slate-400 font-mono">skel: <strong class="text-slate-300">${esc(row.phonetic_skeleton) || "—"}</strong> · ${esc(row.source || "Custom")}</span>
+            </div>
+          </td>
+        </tr>`).join("");
+    }
+
+    // =========================================================================
+    // 6. COMPOSER / WRITER
+    // =========================================================================
+    function updateComposerOutput() {
+      const text = document.getElementById("composerRomanInput").value;
+      const out = document.getElementById("composerArabicOutput");
+      out.innerHTML = text.split(/(\s+)/).map(token => {
+        if (!token || /^\s+$/.test(token)) return token.includes("\n") ? "<br>" : " ";
+        const m = token.match(/^([^\p{L}'’]*)(.*?)([^\p{L}'’]*)$/u);
+        const { text: ks, guessed } = romanWordToKashmiriIME(m[2]);
+        return esc(m[1]) + (guessed ? `<span class="guess" title="Not in dictionary — spelled by rules">${esc(ks)}</span>` : esc(ks)) + esc(m[3]);
+      }).join("");
+    }
+
+    // =========================================================================
+    // 7. USER ENTRIES (localStorage) & CSV EXPORT
+    // =========================================================================
+    function loadUserEntries() { try { return JSON.parse(localStorage.getItem("koshurlex-user") || "[]"); } catch (e) { return []; } }
+    function saveUserEntries(list) { try { localStorage.setItem("koshurlex-user", JSON.stringify(list)); } catch (e) {} }
+    function csvCell(v) { return `"${String(v ?? "").replace(/"/g, '""')}"`; }
+
+    // =========================================================================
+    // 8. EVENT LISTENERS & INITIALIZATION
+    // =========================================================================
+    window.addEventListener("DOMContentLoaded", async () => {
+      CORE_LIST.forEach(e => addEntry(e));
+      loadUserEntries().forEach(e => addEntry({ ...e, source: "User Added", quality: "native" }, true));
+      sortIndexes();
+      renderKeyboard();
+      triggerSearchUpdate();
+      updateComposerOutput();
+      loadFullDataset().then(() => { triggerSearchUpdate(); updateComposerOutput(); });
+
+      const tabs = [
+        { btn: "tabBtnSearch", view: "viewSearch" },
+        { btn: "tabBtnComposer", view: "viewComposer" },
+        { btn: "tabBtnAgent", view: "viewAgent" }
+      ];
+      tabs.forEach(t => {
+        document.getElementById(t.btn).addEventListener("click", () => {
+          tabs.forEach(other => {
+            document.getElementById(other.view).classList.toggle("hidden", other.view !== t.view);
+            document.getElementById(other.btn).className = other.btn === t.btn
+              ? "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-emerald-600 text-white transition"
+              : "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium text-slate-300 hover:text-white transition";
+          });
+        });
+      });
+
+      document.getElementById("searchInput").addEventListener("input", scheduleSearch);
+      document.getElementById("clearSearchBtn").addEventListener("click", () => {
+        document.getElementById("searchInput").value = ""; triggerSearchUpdate();
+      });
+      document.querySelectorAll(".preset-chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+          document.getElementById("searchInput").value = chip.getAttribute("data-preset"); triggerSearchUpdate();
+        });
+      });
+      document.getElementById("toggleKeyboardBtn").addEventListener("click", (e) => {
+        const isHidden = document.getElementById("virtualKeyboardCard").classList.toggle("hidden");
+        e.target.textContent = isHidden ? "Show On-Screen Keyboard" : "Hide On-Screen Keyboard";
+      });
+      const setMode = mode => {
+        keyboardMode = mode;
+        document.getElementById("modeRomanBtn").className = `px-2.5 py-1 rounded-lg font-medium ${mode === "roman" ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white"}`;
+        document.getElementById("modeArabicBtn").className = `px-2.5 py-1 rounded-lg font-medium ${mode === "arabic" ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-300 hover:text-white"}`;
+        renderKeyboard();
+      };
+      document.getElementById("modeRomanBtn").addEventListener("click", () => setMode("roman"));
+      document.getElementById("modeArabicBtn").addEventListener("click", () => setMode("arabic"));
+
+      document.getElementById("composerRomanInput").addEventListener("input", updateComposerOutput);
+      document.getElementById("copyComposerBtn").addEventListener("click", async (e) => {
+        const outText = document.getElementById("composerArabicOutput").innerText;
+        try { await navigator.clipboard.writeText(outText); } catch (err) {
+          const ta = document.createElement("textarea"); ta.value = outText; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+        }
+        e.target.textContent = "Copied!";
+        setTimeout(() => { e.target.textContent = "Copy Kashmiri Unicode"; }, 1500);
+      });
+
+      document.getElementById("addEntryBtn").addEventListener("click", () => {
+        const ksUni = document.getElementById("addUnicodeInput").value.trim();
+        const romKs = document.getElementById("addRomanInput").value.trim();
+        const gloss = document.getElementById("addMeaningInput").value.trim();
+        const feedback = document.getElementById("addEntryFeedback");
+        if (!ksUni && !romKs && !gloss) { feedback.textContent = "Please provide at least 1 of the 3 columns."; return; }
+        const rec = { kashmiri_unicode: ksUni, romanized_kashmiri: romKs, meaning: gloss };
+        const saved = loadUserEntries(); saved.unshift(rec); saveUserEntries(saved);
+        const item = addEntry({ ...rec, source: "User Added", quality: "native" }, true);
+        sortIndexes();
+        ["addUnicodeInput", "addRomanInput", "addMeaningInput"].forEach(id => document.getElementById(id).value = "");
+        feedback.textContent = `Added and saved in this browser (Roman: ${item.romanized_kashmiri || "—"}${item.rom_auto ? " (auto)" : ""}, skeleton: ${item.phonetic_skeleton || "—"})`;
+        triggerSearchUpdate();
+      });
+      document.getElementById("clearUserBtn").addEventListener("click", () => {
+        saveUserEntries([]);
+        document.getElementById("addEntryFeedback").textContent = "Your entries were removed (reload the page to clear them from this session).";
+      });
+
+      document.getElementById("exportCsvBtn").addEventListener("click", () => {
+        const headers = ["kashmiri_unicode", "romanized_kashmiri", "meaning", "phonetic_skeleton", "source"];
+        const rows = (lastMatches.length ? lastMatches.map(m => m.item) : dictionaryData)
+          .map(r => headers.map(h => csvCell(r[h])).join(","));
+        const blob = new Blob(["﻿" + headers.join(",") + "\n" + rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = "koshurlex_results.csv";
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+    });
+  </script>
+</body>
+</html>

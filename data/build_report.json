@@ -1,31 +1,54 @@
 {
-  "total_entries": 38978,
+  "total_entries": 46872,
   "by_source": {
     "kashmirizabaan": 8637,
     "kaeshir": 9049,
     "hassan": 5563,
+    "chikhapo": 7894,
     "injilashah-phonemes": 82,
     "grierson": 21145
   },
-  "with_perso_arabic_headword": 20131,
+  "with_perso_arabic_headword": 24735,
   "by_script_quality": {
     "native": 12188,
     "none": 18765,
     "auto-transliterated": 5348,
-    "unverified": 82,
+    "unverified": 7976,
     "source-perso-arabic (1932)": 2595
   },
   "with_roman": 35610,
-  "with_devanagari": 19326,
+  "with_roman_variants_aksharantar": 5590,
+  "aksharantar_spelling_pairs": 40982,
+  "with_devanagari": 22616,
   "with_audio": 5606,
   "with_example_en": 11684,
   "with_hindi": 8245,
   "unique_native_headwords": 9659,
   "non_inventory_chars_in_headwords": {
     "U+002E FULL STOP": 11,
-    "U+002F SOLIDUS": 4,
-    "U+0660 ARABIC-INDIC DIGIT ZERO": 2,
-    "U+0027 APOSTROPHE": 1
+    "U+06F1 EXTENDED ARABIC-INDIC DIGIT ONE": 9,
+    "U+002F SOLIDUS": 8,
+    "U+2013 EN DASH": 8,
+    "U+06F9 EXTENDED ARABIC-INDIC DIGIT NINE": 7,
+    "U+0660 ARABIC-INDIC DIGIT ZERO": 5,
+    "U+0671 ARABIC LETTER ALEF WASLA": 5,
+    "U+06F7 EXTENDED ARABIC-INDIC DIGIT SEVEN": 4,
+    "U+06F8 EXTENDED ARABIC-INDIC DIGIT EIGHT": 4,
+    "U+06F6 EXTENDED ARABIC-INDIC DIGIT SIX": 4,
+    "U+066E ARABIC LETTER DOTLESS BEH": 3,
+    "U+06F2 EXTENDED ARABIC-INDIC DIGIT TWO": 3,
+    "U+003A COLON": 2,
+    "U+06F5 EXTENDED ARABIC-INDIC DIGIT FIVE": 2,
+    "U+0027 APOSTROPHE": 1,
+    "U+06D3 ARABIC LETTER YEH BARREE WITH HAMZA ABOVE": 1,
+    "U+06F3 EXTENDED ARABIC-INDIC DIGIT THREE": 1,
+    "U+06F0 EXTENDED ARABIC-INDIC DIGIT ZERO": 1,
+    "U+0030 DIGIT ZERO": 1,
+    "U+0031 DIGIT ONE": 1,
+    "U+0038 DIGIT EIGHT": 1,
+    "U+0039 DIGIT NINE": 1,
+    "U+0032 DIGIT TWO": 1,
+    "U+0036 DIGIT SIX": 1
   },
   "sources": {
     "kashmirizabaan": {
@@ -47,6 +70,14 @@
     "injilashah-phonemes": {
       "name": "injilashah/Kashmiri-language-text-dataset, wordphonemes-meaning.csv",
       "license": "not stated on dataset card"
+    },
+    "chikhapo": {
+      "name": "ChiKhaPo Kashmiri-English lexicon (ec5ug/chikhapo, kas_eng.jsonl)",
+      "license": "MIT"
+    },
+    "aksharantar": {
+      "name": "AI4Bharat Aksharantar Kashmiri transliteration pairs (romanizations only)",
+      "license": "CC-BY-4.0 (manual) / CC0 (mined)"
     },
     "omarrran": {
       "name": "Omarrran/kashmiri_multilingual_dictionary_dataset (Hugging Face, gated)",

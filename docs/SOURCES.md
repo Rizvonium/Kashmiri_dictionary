@@ -14,6 +14,10 @@ not match what the files actually contain. Those cases are marked ⚠.
 | 6 | **Omarrran/kashmiri_multilingual_dictionary_dataset** ([HF](https://huggingface.co/datasets/Omarrran/kashmiri_multilingual_dictionary_dataset)) | 16,598 rows (according to its card). | Unknown | Apache-2.0 | ⛔ **Not accessible.** ⚠ The dataset is *gated with manual approval* and returns HTTP 401 without an approved Hugging Face account. The build script supports it: request access, then run `HF_TOKEN=… bash scripts/fetch_sources.sh` and rebuild. |
 | 7 | **KATHE 2026 "48K lexicon"** — [Aju360/kathe-r11-restorer](https://huggingface.co/Aju360/kathe-r11-restorer) | ⚠ The Hugging Face repo has **only PyTorch weights** and no lexicon. The lexicon is in the companion GitHub repo ([AzhadArshad/kathe_2026](https://github.com/AzhadArshad/kathe_2026), `data/processed/diacritic_lexicon_both.json`). It holds **10,703** undiacritized→diacritized mappings (the "48k" is a different count), with no meanings and no POS. | Machine-mined from the BPCC/NLLB parallel corpus | Apache-2.0 (+ CC-BY-4.0 / CC0 data) | ❌ **Not a dictionary.** It is useful later as a diacritic-restoration aid for `headword_ks_bare`, but it is not merged. |
 | 8 | **Shafi Shauq, *Kāśir Lug̲h̲at*** (DSAL) | The monolingual Kashmiri dictionary pictured on the cover. DSAL hosts it as a **copyrighted, look-up-only** resource. | — | © Shafi Shauq / Ali Mohammad & Sons | ⛔ **Excluded.** Bulk scraping or redistribution would infringe copyright. Use it to look words up by hand, or ask the publisher for a licence. |
+| 11 | **AI4Bharat Aksharantar** — [ai4bharat/Aksharantar](https://huggingface.co/datasets/ai4bharat/Aksharantar), `kas.zip` | 57,999 Roman↔Perso-Arabic word pairs with **no meanings**. Sub-sources: IndicCorp 29,600, AK-Freq 15,534, AK-Uni 10,873, and the named-entity lists AK-NEI 1,176 + AK-NEF 816, which are mostly foreign personal and place names (pittman, sacramento …). | Real-usage spellings, mostly undiacritized, with some legacy `ٮ۪` encoding (normalized). | CC-BY-4.0 (manual) / CC0 (mined) | ✅ **Used for Roman spellings only.** The two named-entity lists are dropped, leaving 40,982 words in `kashmiri_roman_pairs.tsv`. These spellings are attached to 5,590 entries as `roman_variants`. |
+| 12 | **ChiKhaPo** — [ec5ug/chikhapo](https://huggingface.co/datasets/ec5ug/chikhapo), `data/kas_eng.jsonl` | 7,915 Kashmiri→English pairs (4,615 Perso-Arabic, 3,292 Devanagari). | Compiled automatically and noisy (e.g. `ا` → "a, an, s, n"). | MIT | ✅ **Used**, with every row flagged `script_quality = unverified`. |
+| 13 | **PanLex meanings** — [cointegrated/panlex-meanings](https://huggingface.co/datasets/cointegrated/panlex-meanings), `data/kas.tsv` | 7,776 Kashmiri expressions, mostly Devanagari or romanized. Getting the English requires joining on meaning ID with `eng.tsv`, which is 786 MB. | Mixed | CC0 | ⏸ **Not yet.** A candidate for later. |
+| 14 | **Indic multilingual educational glossary** — [ranjithraj/…](https://huggingface.co/datasets/ranjithraj/indic-multilingual-educational-glossary) | `glossary.csv` has 6,870 rows, but ⚠ the `kashmiri` column is **empty in every row**. | — | CC-BY-SA-4.0 | ❌ Nothing to use. |
 | 9 | **IndoWordNet Kashmiri word list** — [cfilt/iwn_wordlists](https://huggingface.co/datasets/cfilt/iwn_wordlists) | A plain word list with no glosses | — | CC-BY-NC-SA-4.0 | ❌ Not merged (no definitions; license is non-commercial and share-alike). |
 | 10 | **kashmirairesearch.online hub** | A catalogue page that links to the items above. It contains no data itself. | — | — | ℹ Index only. |
 
@@ -22,8 +26,9 @@ not match what the files actually contain. Those cases are marked ⚠.
 Each row has a `license` field that carries the licence of every source it came
 from. In practice:
 
-* **Safe to redistribute:** `kaeshir` (MIT) and `grierson` (public-domain
-  text; credit DSAL).
+* **Safe to redistribute:** `kaeshir` (MIT), `chikhapo` (MIT), `grierson`
+  (public-domain text; credit DSAL), and the Aksharantar spellings (CC-BY / CC0;
+  credit AI4Bharat).
 * **Use with care:** `kashmirizabaan`. The scraper is MIT, but the rights to
   the content on the original site are unclear. `hassan` is DSAL / author
   copyright, so treat it as research and non-commercial use only.

@@ -194,6 +194,7 @@ footer p{margin:4px 0}
     <div class="brand">
       <h1><span class="ks" lang="ks">کٲشُر لُغَت</span><span>Kashmiri Dictionary</span></h1>
       <div class="tools">
+        <a class="icon-btn" href="koshurlex.html" title="Type Kashmiri in any Roman spelling; Roman → Perso-Arabic writer" style="text-decoration:none;color:inherit">KoshurLex ⌨ Roman</a>
         <button class="icon-btn" id="fontBtn" title="Switch Kashmiri typeface">Naskh</button>
         <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
       </div>
@@ -235,6 +236,7 @@ footer p{margin:4px 0}
         <option value="modern">Modern dictionary (kashmirizabaan + Kaeshir)</option>
         <option value="hassan">Hassan pronouncing dictionary</option>
         <option value="grierson">Grierson 1932</option>
+        <option value="chikhapo">ChiKhaPo lexicon (unverified)</option>
       </select>
       <select class="f" id="posSel" aria-label="Part of speech"><option value="">Any part of speech</option></select>
       <label class="toggle"><input type="checkbox" id="audioChk"><span>🔊 Has audio</span></label>
@@ -261,7 +263,7 @@ footer p{margin:4px 0}
   <button class="loadmore" id="more" hidden>Show more</button>
 
   <footer>
-    <p><b>Sources.</b> G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL, University of Chicago · Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL; audio © DSAL) · Kaeshir Dictionary (Izan Majeed, MIT) · kashmirizabaan.com (via kzwebscrap / injilashah).</p>
+    <p><b>Sources.</b> G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL, University of Chicago · Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL; audio © DSAL) · Kaeshir Dictionary (Izan Majeed, MIT) · kashmirizabaan.com (via kzwebscrap / injilashah) · ChiKhaPo (MIT) · Roman spellings: AI4Bharat Aksharantar (CC-BY/CC0).</p>
     <p><b>Script.</b> All Kashmiri text is in Unicode NFC, using the Kashmiri Perso-Arabic code points (ٲ ؠ ۄ ۍ ٕ ٔ ٟ ٖ ٗ ٚ ٛ …). Entries marked <span class="badge warn">auto script</span> have machine-generated Perso-Arabic spellings, so trust their romanization and audio instead.</p>
     <p>Data &amp; code: <a href="https://github.com/rizvonium/kashmiri_dictionary">github.com/rizvonium/kashmiri_dictionary</a></p>
     <p class="made">Developed by <b>Kainaat &amp; RGMir</b> · <span class="ks" lang="ks">کٲشُر لُغَت</span></p>
@@ -457,14 +459,15 @@ async function loadData(){
   state.rows = d.rows.map((r, i) => {
     const src = d.sources[r[F.source]];
     const e = {
-      i, ks: r[F.headword_ks], bare: r[F.headword_ks_bare], rom: r[F.headword_roman], scheme: d.schemes[r[F.roman_scheme]],
+      i, ks: r[F.headword_ks], bare: r[F.headword_ks_bare], rom: r[F.headword_roman], scheme: d.schemes[r[F.roman_scheme]], rv: r[F.roman_variants] || "",
       deva: r[F.headword_deva], pos: r[F.pos], gender: r[F.gender], gloss: r[F.gloss_en], def: r[F.definition_en],
       hindi: r[F.hindi_gloss], exEn: r[F.example_en], exKs: r[F.example_ks], exKsR: r[F.example_ks_roman],
       audio: r[F.audio_url] ? r[F.audio_url].replace(/^@h\//, "https://dsal.uchicago.edu/dictionaries/hassan/audio/") : "",
       src, ref: r[F.source_ref], q: d.quality[r[F.script_quality]],
     };
-    e.grp = src.startsWith("grierson") ? "grierson" : src.startsWith("hassan") ? "hassan" : src.startsWith("injilashah") ? "other" : "modern";
+    e.grp = src.startsWith("grierson") ? "grierson" : src.startsWith("hassan") ? "hassan" : src.startsWith("chikhapo") ? "chikhapo" : src.startsWith("injilashah") ? "other" : "modern";
     e.romF = foldLat(e.rom);
+    e.rvF = e.rv ? e.rv.split(/;\s*/).map(foldLat) : [];
     e.loose = e.ks ? looseKs(e.ks) : "";
     e.glossF = e.gloss.toLowerCase();
     e.glossWords = e.glossF.split(/[;,]\s*/).map(s => s.replace(/^(to|a|an|the)\s+/, "").trim());
@@ -514,7 +517,7 @@ function search(){
         if(!s && (r.exKs) && mode === "contains" && (dia ? r.exKs : bareKs(r.exKs)).includes(needle)) s = 1;
       }
       if(!s && (field === "def" || (field === "any" && (mode === "auto" || mode === "contains"))) && r.def && r.def.includes(normKs(raw))) s = 1;
-      if(s) hits.push([s, r]);
+      if(s) hits.push([s - (r.q === "unverified" ? 7 : 0), r]);
     }
   } else if(script === "deva"){
     const needle = raw.normalize("NFC");
@@ -526,7 +529,7 @@ function search(){
         s = Math.max(0, ...d.map(m)) * 10;
         if(!s && r.hindi){ s = Math.max(0, ...r.hindi.split(/;\s*/).map(m)) * 5; }
       }
-      if(s) hits.push([s, r]);
+      if(s) hits.push([s - (r.q === "unverified" ? 7 : 0), r]);
     }
   } else {
     const nl = raw.toLowerCase(), nf = foldLat(raw);
@@ -544,8 +547,8 @@ function search(){
         }
       }
       if(field === "any" || field === "roman"){
-        if(r.romF){
-          const forms = r.romF.split(/\s+or\s+|\s*\/\s*|,\s*/).map(x => x.replace(/\s+\d+$/, ""));
+        if(r.romF || r.rvF.length){
+          const forms = r.romF.split(/\s+or\s+|\s*\/\s*|,\s*/).map(x => x.replace(/\s+\d+$/, "")).concat(r.rvF);
           const m = matcher(nf, mode === "auto" ? "start" : mode);
           s = Math.max(s, Math.max(0, ...forms.map(m)) * 10 + (mode === "auto" ? 1 : 0) * (forms.includes(nf) ? 5 : 0));
         }
@@ -554,7 +557,7 @@ function search(){
         if(wordRe.test(r.def.toLowerCase())) s = 2;
       }
       if(!s && field === "def" && r.def && r.def.toLowerCase().includes(nl)) s = 1;
-      if(s) hits.push([s, r]);
+      if(s) hits.push([s - (r.q === "unverified" ? 7 : 0), r]);
     }
   }
   const qRank = {"native":0, "source-perso-arabic (1932)":1, "auto-transliterated":2, "":2, "unverified":3};
@@ -572,9 +575,9 @@ const QUALITY_LABEL = {
   "native": ["", ""],
   "source-perso-arabic (1932)": ["1932 spelling", "Perso-Arabic spelling as printed by Grierson in 1932 (Persian-style, without Kashmiri vowel signs)"],
   "auto-transliterated": ["auto script", "Perso-Arabic generated by machine from the romanization in the source. The romanization and audio are reliable; the script spelling may not be."],
-  "unverified": ["unverified", "From a small stop-word list; meanings not verified"],
+  "unverified": ["unverified", "From an automatically compiled word list (ChiKhaPo / stop-word list); spelling and meaning not checked by an editor"],
 };
-const SRC_LABEL = {modern:"Modern dictionary", hassan:"Hassan · DSAL", grierson:"Grierson 1932", other:"Stop-word list"};
+const SRC_LABEL = {modern:"Modern dictionary", hassan:"Hassan · DSAL", grierson:"Grierson 1932", chikhapo:"ChiKhaPo lexicon", other:"Stop-word list"};
 function card(r, raw){
   const el = document.createElement("article"); el.className = "card"; el.id = "e" + r.i;
   const parts = [];
@@ -582,6 +585,7 @@ function card(r, raw){
   if(r.ks) parts.push(`<span class="ks" lang="ks">${escapeHtml(r.ks)}</span>`);
   if(r.rom) parts.push(`<span class="rom${r.ks ? "" : " big"}">${hl(r.rom, raw)}</span>`);
   if(r.deva) parts.push(`<span class="deva" lang="ks-Deva">${escapeHtml(r.deva)}</span>`);
+  if(r.rv) parts.push(`<span class="deva" title="Common Roman spellings (AI4Bharat Aksharantar)">also typed: ${escapeHtml(r.rv)}</span>`);
   parts.push(`</div><div class="actions">`);
   if(r.audio) parts.push(`<button class="act" data-audio="${escapeHtml(r.audio)}" title="Play pronunciation" aria-label="Play pronunciation"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 4V6L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg></button>`);
   parts.push(`<button class="act" data-copy="${escapeHtml(r.ks || r.rom || r.deva)}" title="Copy word" aria-label="Copy word"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>`);

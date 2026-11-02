@@ -8,27 +8,33 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 |---|---|
 | [`data/kashmiri_dictionary.jsonl`](data/kashmiri_dictionary.jsonl) | Canonical dataset, one JSON entry per line |
 | [`data/kashmiri_dictionary.csv`](data/kashmiri_dictionary.csv) | The same entries as a flat CSV (UTF-8 with BOM, so Excel opens it correctly) |
+| [`data/kashmiri_roman_pairs.tsv`](data/kashmiri_roman_pairs.tsv) | Kashmiri word → everyday Roman spellings (AI4Bharat Aksharantar), with an `in_dictionary` flag |
 | [`data/kashmiri_headwords.txt`](data/kashmiri_headwords.txt) | Unique native-orthography Perso-Arabic headwords, in Kashmiri alphabetical order |
 | [`data/build_report.json`](data/build_report.json) | Counts, coverage and QA statistics |
 | [`docs/SOURCES.md`](docs/SOURCES.md) | **Source-by-source usability assessment** (what each link really contains, quality, licence) |
 | [`docs/ORTHOGRAPHY.md`](docs/ORTHOGRAPHY.md) | **Which Unicode to use for Kashmiri** and every normalization rule applied |
-| `scripts/` | `fetch_sources.sh` (download), `build_dataset.py` (merge), `ks_normalize.py` (Unicode normalizer) |
+| `scripts/` | `fetch_sources.sh` (download), `build_dataset.py` (merge), `ks_normalize.py` (Unicode normalizer), `koshur_search.py` (spelling-tolerant search engine, see [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md)) |
 
 ## At a glance
 
 | | |
 |---|---|
-| Total entries | **38,978** |
-| With a Perso-Arabic headword | 20,131 (12,188 in native modern orthography, 9,659 unique words) |
-| With Devanagari | 19,326 |
-| With romanization | 35,610 |
+| Total entries | **46,872** |
+| With a Perso-Arabic headword | 24,735 (12,188 in native modern orthography, 9,659 unique words) |
+| With Devanagari | 22,616 |
+| With romanization | 35,610 (+ 5,590 entries with extra everyday Roman spellings from Aksharantar) |
+| Roman ↔ Perso-Arabic spelling pairs | 40,982 words (`data/kashmiri_roman_pairs.tsv`) |
 | With native-speaker audio | 5,606 |
 | With English example sentence | 11,684 |
 | With Hindi gloss | 8,245 |
-| Entries by source | Grierson 21,145 · kashmirizabaan 8,637 · Kaeshir 9,049 · Hassan 5,563 · other 82 (one entry can come from several sources) |
-
+| Entries by source | Grierson 21,145 · kashmirizabaan 8,637 · Kaeshir 9,049 · ChiKhaPo 7,894 · Hassan 5,563 · other 82 (one entry can come from several sources) |
 
 ## Website (search UI)
+
+Two pages, both in `site/`:
+
+* **`index.html`**: the main dictionary (described below).
+* **`koshurlex.html`** (KoshurLex): type Kashmiri in *any* Roman spelling (kaeshur / koshur / kạ̄shur, cxoont / tsoont). It also offers a Roman-Kashmiri keyboard and a Roman → Perso-Arabic writer that marks rule-based guesses, and you can add your own entries (saved in your browser only). The method is described in [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md).
 
 `site/` is a static website, with no build step. It loads `site/data/dictionary.json` and offers:
 
@@ -59,6 +65,7 @@ python3 scripts/build_site_data.py data/kashmiri_dictionary.jsonl site/data/dict
 | `headword_ks` | Kashmiri headword in Perso-Arabic, normalized (empty if the source has none) |
 | `headword_ks_bare` | Same headword with the vowel signs removed, for search and matching |
 | `headword_roman` | Romanization, exactly as the source gives it |
+| `roman_variants` | Everyday Roman spellings of the headword from AI4Bharat Aksharantar (`; `-separated) |
 | `roman_scheme` | `grierson-1932`, `hassan-dsal`, `kaeshir-popular` (the schemes differ; see ORTHOGRAPHY.md) |
 | `headword_deva` | Devanagari form (Grierson; the Kashmiri stop-word list) |
 | `pos`, `gender` | Normalized part of speech (`noun`, `verb`, `adjective`, …) and gender (`m`, `f`, `c.g.`) |

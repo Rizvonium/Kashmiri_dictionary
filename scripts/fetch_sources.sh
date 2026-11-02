@@ -31,4 +31,11 @@ for p in $(seq 1 1260); do
     "https://dsal.uchicago.edu/cgi-bin/app/grierson_query.py?page=$p" -o "grierson/pages/$p.html" || true
   sleep 0.5
 done
+
+# AI4Bharat Aksharantar Kashmiri Roman<->Perso-Arabic pairs (CC-BY/CC0) and ChiKhaPo Kashmiri-English (MIT)
+mkdir -p aksharantar chikhapo
+[ -s aksharantar/kas.zip ] || curl -fsSL -o aksharantar/kas.zip \
+  "https://huggingface.co/datasets/ai4bharat/Aksharantar/resolve/main/kas.zip"
+[ -s chikhapo/kas_eng.jsonl ] || curl -fsSL -o chikhapo/kas_eng.jsonl \
+  "https://huggingface.co/datasets/ec5ug/chikhapo/resolve/main/data/kas_eng.jsonl"
 echo "done: $(ls grierson/pages | wc -l) Grierson pages"

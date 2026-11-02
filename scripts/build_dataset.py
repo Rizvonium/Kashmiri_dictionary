@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ks_normalize import foreign_chars, normalize_ks, strip_marks  # noqa: E402
 
 FIELDS = [
-    "id", "headword_ks", "headword_ks_bare", "headword_roman", "roman_scheme",
+    "id", "headword_ks", "headword_ks_bare", "headword_roman", "roman_scheme", "roman_variants",
     "headword_deva", "pos", "gender", "gloss_en", "definition_en",
     "hindi_gloss", "example_en", "example_ks", "example_ks_roman",
     "audio_url", "source", "source_ref", "script_quality", "license",
@@ -59,6 +59,14 @@ SOURCES = {
     "injilashah-phonemes": {
         "name": "injilashah/Kashmiri-language-text-dataset, wordphonemes-meaning.csv",
         "license": "not stated on dataset card",
+    },
+    "chikhapo": {
+        "name": "ChiKhaPo Kashmiri-English lexicon (ec5ug/chikhapo, kas_eng.jsonl)",
+        "license": "MIT",
+    },
+    "aksharantar": {
+        "name": "AI4Bharat Aksharantar Kashmiri transliteration pairs (romanizations only)",
+        "license": "CC-BY-4.0 (manual) / CC0 (mined)",
     },
     "omarrran": {
         "name": "Omarrran/kashmiri_multilingual_dictionary_dataset (Hugging Face, gated)",
@@ -411,7 +419,50 @@ def roman_sort_key(word):
 
 
 SRC_RANK = {"kashmirizabaan": 0, "kaeshir": 0, "omarrran": 0, "hassan": 1,
-            "injilashah-phonemes": 2, "grierson": 3}
+            "injilashah-phonemes": 2, "chikhapo": 2, "grierson": 3}
+
+
+AKSHARANTAR_KEEP = {"AK-Freq", "AK-Uni", "IndicCorp"}   # drop AK-NEI / AK-NEF (named entities)
+
+
+def load_aksharantar(raw):
+    """Return {normalized Kashmiri word: [romanizations, most frequent first]}."""
+    import zipfile
+    p = os.path.join(raw, "aksharantar/kas.zip")
+    if not os.path.exists(p):
+        return {}
+    counts = {}
+    z = zipfile.ZipFile(p)
+    for name in z.namelist():
+        for line in z.read(name).decode("utf-8").splitlines():
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            if r.get("source") not in AKSHARANTAR_KEEP:
+                continue
+            ks, rom = normalize_ks(r.get("native word", "")), clean(r.get("english word", "")).lower()
+            if ks and rom:
+                counts.setdefault(ks, Counter())[rom] += 1
+    return {k: [r for r, _ in c.most_common()] for k, c in counts.items()}
+
+
+def build_chikhapo(raw):
+    p = os.path.join(raw, "chikhapo/kas_eng.jsonl")
+    if not os.path.exists(p):
+        return []
+    out = []
+    for line in open(p, encoding="utf-8"):
+        r = json.loads(line)
+        w = clean(r.get("source_word"))
+        tr = [clean(t) for t in r.get("target_translations", []) if clean(t)]
+        if not w or not tr or len(w) < 2:
+            continue
+        deva = bool(re.search(r"[\u0900-\u097F]", w))
+        out.append(dict(
+            headword_ks="" if deva else normalize_ks(w), headword_deva=w if deva else "",
+            gloss_en="; ".join(dict.fromkeys(tr)), source="chikhapo",
+            source_ref="chikhapo:kas_eng.jsonl", script_quality="unverified"))
+    return out
 
 
 def main(raw, out_dir):
@@ -423,7 +474,21 @@ def main(raw, out_dir):
     if len(grierson) < 1000:
         grierson = build_grierson_fallback(raw)
 
-    entries = en_ks + hassan + injila + grierson
+    chik = build_chikhapo(raw)
+    entries = en_ks + hassan + injila + chik + grierson
+
+    # attach Aksharantar romanizations (exact spelling first, else same consonant skeleton)
+    ak = load_aksharantar(raw)
+    ak_bare = {}
+    for k, v in ak.items():
+        ak_bare.setdefault(strip_marks(k), []).extend(v)
+    for e in entries:
+        hk = e.get("headword_ks")
+        if hk and ak:
+            rv = ak.get(hk) or ak_bare.get(strip_marks(hk)) or []
+            e["roman_variants"] = "; ".join(list(dict.fromkeys(rv))[:6])
+            if rv and "aksharantar" not in e["source"]:
+                pass  # romanizations only; the entry's own source/licence stay primary
 
     def order(e):
         first_src = e["source"].split(";")[0].strip()
@@ -454,6 +519,12 @@ def main(raw, out_dir):
         w.writeheader()
         for e in entries:
             w.writerow({f: e[f] for f in FIELDS})
+    # Roman <-> Perso-Arabic spelling lexicon (Aksharantar), with a flag for dictionary coverage
+    dict_heads = {e["headword_ks"] for e in entries if e["headword_ks"]}
+    with open(os.path.join(out_dir, "kashmiri_roman_pairs.tsv"), "w", encoding="utf-8") as fh:
+        fh.write("kashmiri_unicode\tromanized_variants\tin_dictionary\n")
+        for k in sorted(ak, key=ks_sort_key):
+            fh.write(f"{k}\t{'; '.join(ak[k])}\t{int(k in dict_heads)}\n")
     native = sorted({e["headword_ks"] for e in entries
                      if e["headword_ks"] and e["script_quality"] == "native"}, key=ks_sort_key)
     with open(os.path.join(out_dir, "kashmiri_headwords.txt"), "w", encoding="utf-8") as fh:
@@ -465,6 +536,8 @@ def main(raw, out_dir):
         "with_perso_arabic_headword": sum(1 for e in entries if e["headword_ks"]),
         "by_script_quality": Counter(e["script_quality"] or "none" for e in entries),
         "with_roman": sum(1 for e in entries if e["headword_roman"]),
+        "with_roman_variants_aksharantar": sum(1 for e in entries if e["roman_variants"]),
+        "aksharantar_spelling_pairs": len(ak),
         "with_devanagari": sum(1 for e in entries if e["headword_deva"]),
         "with_audio": sum(1 for e in entries if e["audio_url"]),
         "with_example_en": sum(1 for e in entries if e["example_en"]),
