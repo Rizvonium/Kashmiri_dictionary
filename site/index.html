@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kashmiri Dictionary · کٲشُر لُغَت</title>
+<meta name="author" content="Kainaat & RGMir">
 <meta name="description" content="Search 39,000 Kashmiri dictionary entries in Perso-Arabic, Roman and Devanagari, with English and Hindi meanings, audio and an on-screen Kashmiri keyboard.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -127,6 +128,54 @@ label.chk{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:va
 mark{background:#ffe58f;color:inherit;border-radius:3px;padding:0 1px}
 :root[data-theme="dark"] mark{background:#5c4a12}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) mark{background:#5c4a12}}
+.credit{margin:4px 0 0;font-size:13px;color:var(--muted)}
+.credit b,.made b{color:var(--accent);font-weight:600}
+.made{font-size:14px;margin-top:10px!important}
+.made .ks{font-size:16px}
+.pill{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:13.5px;display:inline-flex;align-items:center;gap:6px;min-height:38px;position:relative}
+.pill:hover{border-color:var(--accent)}
+.pill[aria-expanded="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-2)}
+.pill.ghost{border-style:dashed;color:var(--muted)}
+.pill .ks{font-size:16px}
+.dot[hidden]{display:none}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.filters[hidden]{display:none}
+.filters select.f{min-height:38px}
+.toggle{display:inline-flex;align-items:center;cursor:pointer}
+.toggle input{position:absolute;opacity:0;pointer-events:none}
+.toggle span{border:1px solid var(--border);border-radius:999px;padding:8px 14px;font-size:13.5px;min-height:38px;display:inline-flex;align-items:center;background:var(--surface-2)}
+.toggle input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.toggle input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.seg button{min-height:34px}
+.alpha[hidden]{display:none}
+.welcome{display:grid;gap:14px}
+.welcome h2{font-size:15px;margin:0 0 8px;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;min-height:40px}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.ks{font-size:19px;padding:4px 14px}
+.chip small{color:var(--muted);margin-inline-start:6px;font:12px Inter,system-ui,sans-serif;direction:ltr;unicode-bidi:isolate}
+.tips{margin:0;padding-inline-start:18px;color:var(--muted);font-size:14px}
+.tips li{margin:3px 0}
+.wotd{position:relative}
+.wotd .label{display:block;margin-bottom:2px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);font-weight:700}
+.suggest{margin:-2px 2px 12px;font-size:14px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.suggest[hidden]{display:none}
+.suggest .chip{min-height:34px;padding:5px 12px}
+.totop{position:fixed;right:16px;bottom:20px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;font-size:18px;z-index:30}
+.hw .ks{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (hover:none){ .desk-only{display:none} }
+@media (max-width:640px){
+  #kbd.open{position:fixed;left:0;right:0;bottom:0;margin:0;border-radius:16px 16px 0 0;z-index:40;padding:8px 6px calc(8px + env(safe-area-inset-bottom));max-height:62vh;overflow-y:auto;box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+  body.kbd-open{padding-bottom:62vh}
+  body.kbd-open .totop{display:none}
+  .marks{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:68px;overflow-x:auto;padding-bottom:4px}
+  .controls .seg{width:100%} .controls .seg button{flex:1}
+  .filters select.f{width:100%}
+  .tools .icon-btn{padding:7px 9px}
+}
 footer{border-top:1px solid var(--border);color:var(--muted);font-size:13px;padding:22px 0 40px;margin-top:10px}
 footer p{margin:4px 0}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
@@ -149,7 +198,8 @@ footer p{margin:4px 0}
         <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
       </div>
     </div>
-    <p class="sub" id="sub">Kashmiri ↔ English · Perso-Arabic, Roman & Devanagari · Grierson 1932, Hassan, Kaeshir and kashmirizabaan, merged</p>
+    <p class="sub" id="sub">Kashmiri ↔ English · Perso-Arabic, Roman &amp; Devanagari</p>
+    <p class="credit">Developed by <b>Kainaat &amp; RGMir</b></p>
   </header>
 
   <div class="search-card">
@@ -166,6 +216,12 @@ footer p{margin:4px 0}
         <button data-v="exact" aria-pressed="false">Exact</button>
         <button data-v="contains" aria-pressed="false">Contains</button>
       </div>
+      <button class="pill" id="filterBtn" aria-expanded="false" aria-controls="filters">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+        Filters <span class="dot" id="filterDot" hidden></span></button>
+      <button class="pill" id="browseBtn" aria-expanded="false" aria-controls="alpha" title="Browse words by first letter"><span class="ks">ا ب پ</span> Browse</button>
+    </div>
+    <div class="filters" id="filters" hidden>
       <select class="f" id="fieldSel" aria-label="Search in">
         <option value="any">Search in: everything</option>
         <option value="ks">Kashmiri script</option>
@@ -181,24 +237,26 @@ footer p{margin:4px 0}
         <option value="grierson">Grierson 1932</option>
       </select>
       <select class="f" id="posSel" aria-label="Part of speech"><option value="">Any part of speech</option></select>
-      <label class="chk"><input type="checkbox" id="audioChk"> with audio</label>
-      <label class="chk" title="When off, آب matches اَب, اٰب … (vowel signs ignored)"><input type="checkbox" id="diaChk"> match vowel signs</label>
+      <label class="toggle"><input type="checkbox" id="audioChk"><span>🔊 Has audio</span></label>
+      <label class="toggle" title="Off: آب also finds اَب, اب … (vowel signs and letter variants ignored)"><input type="checkbox" id="diaChk"><span>Exact spelling (vowel signs)</span></label>
+      <button class="pill ghost" id="resetBtn">Reset filters</button>
     </div>
 
     <div id="kbd" aria-label="Kashmiri on-screen keyboard">
       <div class="kbd-head">
-        <span>Phonetic Kashmiri layout · <b>Shift</b> = upper symbol · <label class="chk" style="display:inline-flex"><input type="checkbox" id="physChk" checked> type with my keyboard</label></span>
-        <span>Ctrl+K toggles · Esc closes</span>
+        <span>Kashmiri keyboard · <b>⇧</b> shows the green letters<span class="desk-only"> · <label class="chk"><input type="checkbox" id="physChk" checked> type with my keyboard</label> · Ctrl+K / Esc</span></span>
+        <button class="pill" id="kbdClose" aria-label="Close keyboard">Done ✓</button>
       </div>
       <div id="krows"></div>
       <div class="marks-title">Vowel signs &amp; marks (اعراب) — tap after a letter</div>
       <div class="marks" id="marks"></div>
     </div>
 
-    <div class="alpha" id="alpha" aria-label="Browse by letter"></div>
+    <div class="alpha" id="alpha" aria-label="Browse by letter" hidden></div>
   </div>
 
-  <div class="status"><span id="count"></span><span id="hint"></span></div>
+  <div class="status" aria-live="polite"><span id="count"></span><span id="hint"></span></div>
+  <div id="suggest" class="suggest" hidden></div>
   <main id="results"><div class="loading">Loading dictionary…<div class="bar"><i id="barFill"></i></div></div></main>
   <button class="loadmore" id="more" hidden>Show more</button>
 
@@ -206,9 +264,11 @@ footer p{margin:4px 0}
     <p><b>Sources.</b> G. A. Grierson, <i>A Dictionary of the Kashmiri Language</i> (1932), via DSAL, University of Chicago · Sheeba Hassan, <i>A Pronouncing Dictionary of Kashmiri</i> (DSAL; audio © DSAL) · Kaeshir Dictionary (Izan Majeed, MIT) · kashmirizabaan.com (via kzwebscrap / injilashah).</p>
     <p><b>Script.</b> All Kashmiri text is in Unicode NFC, using the Kashmiri Perso-Arabic code points (ٲ ؠ ۄ ۍ ٕ ٔ ٟ ٖ ٗ ٚ ٛ …). Entries marked <span class="badge warn">auto script</span> have machine-generated Perso-Arabic spellings, so trust their romanization and audio instead.</p>
     <p>Data &amp; code: <a href="https://github.com/rizvonium/kashmiri_dictionary">github.com/rizvonium/kashmiri_dictionary</a></p>
+    <p class="made">Developed by <b>Kainaat &amp; RGMir</b> · <span class="ks" lang="ks">کٲشُر لُغَت</span></p>
   </footer>
 </div>
 <div class="toast" id="toast"></div>
+<button class="totop" id="toTop" aria-label="Back to top" hidden>↑</button>
 
 <script>
 "use strict";
@@ -226,6 +286,11 @@ function normKs(s){
   return s.normalize("NFC").replace(/\s+/g, " ").trim();
 }
 function bareKs(s){ return normKs(s).normalize("NFD").replace(MARK_RE, "").normalize("NFC"); }
+/* "loose" key: also folds letter variants people often type interchangeably
+   (ٲ/أ/إ/آ → ا, ۄ/ؤ → و, ؠ/ێ/ۍ/ئ/ے → ی, ۂ/ۃ/ة → ہ, ں → ن), so کاشر finds کٲشُر */
+const LOOSE = {"ٲ":"ا","أ":"ا","إ":"ا","آ":"ا","ۄ":"و","ؤ":"و","ؠ":"ی","ێ":"ی","ۍ":"ی","ئ":"ی","ے":"ی","ۂ":"ہ","ۃ":"ہ","ة":"ہ","ں":"ن","\u0653":"","\u200C":""};
+function looseKs(s){ return bareKs(s).normalize("NFD").replace(/[ٲأإآۄؤؠێۍئےۂۃةں\u0653\u200C]/g, c => LOOSE[c] ?? c).replace(/\s+/g, " "); }
+const isTouch = matchMedia("(hover: none)").matches;
 const LAT_SPECIAL = {"ʦ":"ts","ʰ":"h","ʸ":"y","ι":"i","ͻ":"o","ɔ":"o","ə":"a","ɨ":"i","ñ":"n","ŋ":"ng","ʃ":"sh","ʒ":"zh","ʷ":"w","ʼ":"","ʻ":"","'":"","’":"",":":""};
 function foldLat(s){
   return s.normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase()
@@ -327,19 +392,21 @@ function renderMarks(){
 function insert(text){
   const s = qEl.selectionStart ?? qEl.value.length, e = qEl.selectionEnd ?? s;
   qEl.value = qEl.value.slice(0, s) + text + qEl.value.slice(e);
-  const p = s + text.length; qEl.setSelectionRange(p, p); qEl.focus(); onInput();
+  const p = s + text.length; qEl.setSelectionRange(p, p); if(!isTouch) qEl.focus(); onInput();
 }
 function backspace(){
   const s = qEl.selectionStart, e = qEl.selectionEnd;
   if(s !== e){ qEl.value = qEl.value.slice(0, s) + qEl.value.slice(e); qEl.setSelectionRange(s, s); }
   else if(s > 0){ const arr = Array.from(qEl.value.slice(0, s)); arr.pop(); const pre = arr.join(""); qEl.value = pre + qEl.value.slice(s); qEl.setSelectionRange(pre.length, pre.length); }
-  qEl.focus(); onInput();
+  if(!isTouch) qEl.focus(); onInput();
 }
 function toggleKbd(force){
   const open = force ?? !$("kbd").classList.contains("open");
   $("kbd").classList.toggle("open", open);
   $("kbdBtn").setAttribute("aria-pressed", open);
-  if(open) qEl.focus();
+  document.body.classList.toggle("kbd-open", open);
+  if(isTouch){ qEl.setAttribute("inputmode", open ? "none" : "search"); qEl.blur(); }
+  if(open && !isTouch) qEl.focus();
 }
 $("kbdBtn").onclick = () => toggleKbd();
 qEl.addEventListener("keydown", e => {
@@ -367,7 +434,7 @@ function renderAlpha(){
   ALPHABET.forEach(ch => {
     const b = document.createElement("button"); b.type = "button"; b.textContent = ch; b.title = "Words beginning with " + ch;
     b.setAttribute("aria-pressed", "false");
-    b.onclick = () => { qEl.value = ch; setMode("start"); onInput(); };
+    b.onclick = () => searchFor(ch, "start");
     host.appendChild(b);
   });
 }
@@ -398,11 +465,16 @@ async function loadData(){
     };
     e.grp = src.startsWith("grierson") ? "grierson" : src.startsWith("hassan") ? "hassan" : src.startsWith("injilashah") ? "other" : "modern";
     e.romF = foldLat(e.rom);
+    e.loose = e.ks ? looseKs(e.ks) : "";
     e.glossF = e.gloss.toLowerCase();
     e.glossWords = e.glossF.split(/[;,]\s*/).map(s => s.replace(/^(to|a|an|the)\s+/, "").trim());
     if(e.pos) posCount[e.pos] = (posCount[e.pos] || 0) + 1;
     return e;
   });
+  // English vocabulary for "did you mean"
+  const vocab = new Map();
+  state.rows.forEach(r => { if(r.grp !== "grierson") r.glossF.split(/[^a-z]+/).forEach(w => { if(w.length > 2) vocab.set(w, (vocab.get(w) || 0) + 1); }); });
+  state.vocab = vocab;
   const sel = $("posSel");
   Object.entries(posCount).sort((a, b) => b[1] - a[1]).forEach(([p, n]) => {
     const o = document.createElement("option"); o.value = p; o.textContent = `${p} (${n.toLocaleString()})`; sel.appendChild(o);
@@ -433,11 +505,12 @@ function search(){
   if(script === "ks"){
     const needle = dia ? normKs(raw) : bareKs(raw);
     const m = matcher(needle, mode === "auto" ? "contains" : mode);
+    const mL = dia ? null : matcher(looseKs(raw), mode === "auto" ? "contains" : mode);
     for(const r of pool){
       let s = 0;
       if(field === "any" || field === "ks"){
         const h = dia ? r.ks : r.bare;
-        if(h){ s = m(h) * 10; }
+        if(h){ s = m(h) * 10; if(!s && mL) s = mL(r.loose) * 8; }
         if(!s && (r.exKs) && mode === "contains" && (dia ? r.exKs : bareKs(r.exKs)).includes(needle)) s = 1;
       }
       if(!s && (field === "def" || (field === "any" && (mode === "auto" || mode === "contains"))) && r.def && r.def.includes(normKs(raw))) s = 1;
@@ -538,6 +611,7 @@ function card(r, raw){
 }
 function render(reset){
   const host = $("results");
+  if(reset && !qEl.value.trim() && !state.browseAll && !activeFilters()){ renderWelcome(); return; }
   if(reset){ host.innerHTML = ""; state.page = 0; window.scrollTo({top: 0}); }
   const start = state.page * PAGE, slice = state.hits.slice(start, start + PAGE);
   const raw = qEl.value.trim();
@@ -546,8 +620,9 @@ function render(reset){
   host.appendChild(frag);
   state.page++;
   const n = state.hits.length;
-  if(!n){ host.innerHTML = `<div class="empty"><p style="font-size:28px;margin:0" class="ks">کہِنہٕ میوٗل نہٕ</p><p>No entries found. Try <b>Contains</b>, turn off <b>match vowel signs</b>, or search a different field.</p></div>`; }
-  $("count").textContent = raw ? `${n.toLocaleString()} result${n === 1 ? "" : "s"}` : `Browsing all ${n.toLocaleString()} entries`;
+  if(!n){ host.innerHTML = `<div class="empty"><p style="font-size:28px;margin:0" class="ks">کہِنہٕ میوٗل نہٕ</p><p>Nothing found for “${escapeHtml(raw)}”.</p><p>${state.mode !== "contains" ? '<button class="chip" data-mode="contains">Try “Contains”</button> ' : ""}${activeFilters() ? '<button class="chip" data-reset>Clear filters</button> ' : ""}${state.dia ? '<button class="chip" data-nodia>Ignore vowel signs</button>' : ""}</p></div>`; }
+  $("count").textContent = raw ? `${n.toLocaleString()} result${n === 1 ? "" : "s"}` : `Browsing ${n.toLocaleString()} entries`;
+  if(reset) renderSuggest(raw, n);
   $("more").hidden = state.page * PAGE >= n;
   $("more").textContent = `Show more (${Math.max(0, n - state.page * PAGE).toLocaleString()} left)`;
 }
@@ -557,6 +632,13 @@ $("results").addEventListener("click", e => {
   if(a) playAudio(a);
   if(c){ navigator.clipboard?.writeText(c.dataset.copy).then(() => toast("Copied " + c.dataset.copy)); }
   if(m){ const d = m.previousElementSibling; const open = d.classList.toggle("clamp"); m.textContent = open ? "Read full entry ↓" : "Show less ↑"; }
+  const hw = e.target.closest(".hw .ks"); if(hw && !a && !c){ searchFor(hw.textContent, "auto"); }
+  const chip = e.target.closest("[data-q]"); if(chip) searchFor(chip.dataset.q, chip.dataset.m || "auto");
+  if(e.target.closest("[data-mode]")){ setMode(e.target.closest("[data-mode]").dataset.mode); run(); }
+  if(e.target.closest("[data-reset]")) resetFilters();
+  if(e.target.closest("[data-nodia]")){ $("diaChk").checked = false; state.dia = false; run(); }
+  if(e.target.closest("[data-browseall]")){ state.browseAll = true; run(); }
+  if(e.target.closest("[data-letter]")){ searchFor(e.target.closest("[data-letter]").dataset.letter, "start"); }
 });
 let player = null, playingBtn = null;
 function playAudio(btn){
@@ -566,6 +648,77 @@ function playAudio(btn){
   player.play().catch(() => { btn.classList.remove("playing"); toast("Audio unavailable"); });
 }
 function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 1600); }
+
+/* ------------------------------------------------------------------ Welcome, suggestions, filters */
+function searchFor(text, mode){
+  qEl.value = text; setMode(mode || "auto"); state.browseAll = false; onInput(true);
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+function activeFilters(){ return !!(state.src || state.pos || state.audio || state.field !== "any"); }
+function resetFilters(){
+  Object.assign(state, {src:"", pos:"", audio:false, field:"any"});
+  $("srcSel").value = ""; $("posSel").value = ""; $("fieldSel").value = "any"; $("audioChk").checked = false;
+  run();
+}
+const EXAMPLES = [["water"],["mother"],["love"],["آب","ks"],["کٲشُر","ks"],["کاشر","ks","plain spelling"],["पानी"],["ʦūr","","Grierson"],["house"],["گُلاب","ks"]];
+function recent(){ try{ return JSON.parse(localStorage.getItem("ksd-recent") || "[]"); }catch(e){ return []; } }
+function remember(q){ try{ const r = [q, ...recent().filter(x => x !== q)].slice(0, 8); localStorage.setItem("ksd-recent", JSON.stringify(r)); }catch(e){} }
+function renderWelcome(){
+  const host = $("results");
+  const natives = state.rows.filter(r => r.q === "native" && r.exEn && r.gloss);
+  const day = Math.floor(Date.now() / 864e5);
+  const w = natives[(day * 2654435761 >>> 0) % natives.length];
+  const rec = recent();
+  host.innerHTML = `<div class="welcome">
+    <section><h2>Try a search</h2><div class="chips">${EXAMPLES.map(([q, k, note]) =>
+      `<button class="chip${k === "ks" ? " ks" : ""}" data-q="${escapeHtml(q)}">${escapeHtml(q)}${note ? `<small>${escapeHtml(note)}</small>` : ""}</button>`).join("")}</div></section>
+    ${rec.length ? `<section><h2>Your recent searches</h2><div class="chips">${rec.map(q => `<button class="chip${ARABIC_RE.test(q) ? " ks" : ""}" data-q="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join("")}</div></section>` : ""}
+    <section><h2>Word of the day</h2><div class="wotd" id="wotd"></div></section>
+    <section><h2>Browse by first letter</h2><div class="alpha" style="margin:0">${ALPHABET.map(ch => `<button data-letter="${ch}" title="Words starting with ${ch}">${ch}</button>`).join("")}</div></section>
+    <section><h2>How to search</h2><ul class="tips">
+      <li>Type in <b>English</b>, <b>Kashmiri script</b>, <b>romanized Kashmiri</b> or <b>हिन्दी</b>. The language is detected automatically.</li>
+      <li>No Kashmiri keyboard? Tap <b>⌨ کٲشُر</b>. You also don’t need the vowel signs: <span class="ks">کاشر</span> finds <span class="ks">کٲشُر</span>.</li>
+      <li>Tap a Kashmiri word in a result to look it up exactly. Tap 🔊 to hear it spoken.</li>
+      <li><button class="chip" data-browseall>Browse all ${state.rows.length.toLocaleString()} entries</button></li>
+    </ul></section></div>`;
+  if(w){ const c = card(w, ""); $("wotd").appendChild(c); }
+  $("count").textContent = `${state.rows.length.toLocaleString()} entries ready`;
+  $("more").hidden = true; $("suggest").hidden = true;
+}
+function lev(a, b, max){
+  if(Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({length: b.length + 1}, (_, i) => i);
+  for(let i = 1; i <= a.length; i++){
+    const cur = [i]; let best = i;
+    for(let j = 1; j <= b.length; j++){
+      cur[j] = Math.min(prev[j] + 1, cur[j-1] + 1, prev[j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      if(cur[j] < best) best = cur[j];
+    }
+    if(best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+function renderSuggest(raw, n){
+  const box = $("suggest"); box.hidden = true; box.innerHTML = "";
+  if(!raw || n >= 3 || ARABIC_RE.test(raw) || DEVA_RE.test(raw)) return;
+  const w = raw.toLowerCase().trim();
+  if(!/^[a-z]{3,}$/.test(w) || !state.vocab) return;
+  const max = w.length > 5 ? 2 : 1, cands = [];
+  for(const [v, c] of state.vocab){ if(v !== w && v[0] === w[0]){ const d = lev(w, v, max); if(d <= max) cands.push([d, -c, v]); } }
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  if(!cands.length) return;
+  box.innerHTML = "Did you mean: " + cands.slice(0, 4).map(([, , v]) => `<button class="chip" data-q="${v}">${v}</button>`).join("");
+  box.hidden = false;
+}
+$("suggest").addEventListener("click", e => { const c = e.target.closest("[data-q]"); if(c) searchFor(c.dataset.q); });
+$("filterBtn").onclick = () => { const f = $("filters"); f.hidden = !f.hidden; $("filterBtn").setAttribute("aria-expanded", !f.hidden); };
+$("browseBtn").onclick = () => { const a = $("alpha"); a.hidden = !a.hidden; $("browseBtn").setAttribute("aria-expanded", !a.hidden); };
+$("resetBtn").onclick = resetFilters;
+$("kbdClose").onclick = () => toggleKbd(false);
+const toTop = $("toTop");
+addEventListener("scroll", () => { toTop.hidden = scrollY < 900; }, {passive: true});
+toTop.onclick = () => scrollTo({top: 0, behavior: "smooth"});
 
 /* ------------------------------------------------------------------ Wiring */
 function setMode(v){ state.mode = v; document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v)); }
@@ -577,16 +730,21 @@ $("audioChk").onchange = e => { state.audio = e.target.checked; run(); };
 $("diaChk").onchange = e => { state.dia = e.target.checked; run(); };
 $("clearQ").onclick = () => { qEl.value = ""; onInput(); qEl.focus(); };
 let timer = null, lastAlpha = "";
-function onInput(){
+function onInput(now){
   if(state.mode === "start" && !ARABIC_RE.test(qEl.value) && ALPHABET.includes(lastAlpha)) setMode("auto");
   lastAlpha = ALPHABET.includes(qEl.value.trim()) ? qEl.value.trim() : "";
   qEl.classList.toggle("rtl", ARABIC_RE.test(qEl.value));
   document.querySelectorAll("#alpha button").forEach(b => b.setAttribute("aria-pressed", b.textContent === qEl.value.trim() && state.mode === "start"));
-  clearTimeout(timer); timer = setTimeout(run, 140);
+  if(qEl.value.trim()) state.browseAll = false; else if(state.mode !== "auto") setMode("auto");
+  clearTimeout(timer); if(now === true) run(); else timer = setTimeout(run, 140);
 }
 qEl.addEventListener("input", onInput);
 function run(){
   if(!state.rows.length) return;
+  $("filterDot").hidden = !activeFilters();
+  clearTimeout(run.rt);
+  const qv = qEl.value.trim();
+  if(qv) run.rt = setTimeout(() => { if(qEl.value.trim() === qv && state.hits.length) remember(qv); }, 1500);
   state.hits = search();
   render(true);
   const params = new URLSearchParams();
@@ -595,7 +753,7 @@ function run(){
   if(state.field !== "any") params.set("in", state.field);
   if(state.src) params.set("src", state.src);
   history.replaceState(null, "", params.toString() ? "#" + params.toString() : location.pathname);
-  $("hint").textContent = qEl.value.trim() ? ({ks:"Kashmiri script search", deva:"Devanagari search", lat:"English / Roman search"})[detect(qEl.value.trim())] : "Tip: press / to search, Ctrl+K for the keyboard";
+  $("hint").textContent = qEl.value.trim() ? ({ks:"Kashmiri script search", deva:"Devanagari search", lat:"English / Roman search"})[detect(qEl.value.trim())] : (isTouch ? "" : "Tip: press / to search, Ctrl+K for the keyboard");
 }
 function fromHash(){
   const p = new URLSearchParams(location.hash.slice(1));

@@ -36,6 +36,9 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 * Smart / Starts with / Exact / Contains matching. Vowel signs are ignored unless you ask for them
 * filters for source, part of speech and audio, and browsing by Kashmiri letter
 * an on-screen **Kashmiri keyboard** that also maps your physical keyboard, covering every Kashmiri letter and vowel sign ([docs/KEYBOARD.md](docs/KEYBOARD.md))
+* a welcome page with example searches, a word of the day, your recent searches, and browsing by letter
+* forgiving search: کاشر finds کٲشُر (letter variants and vowel signs are ignored unless you ask for an exact spelling), and "did you mean …" for English typos
+* on phones, the keyboard slides up from the bottom and the phone's own keyboard stays hidden
 * native-speaker audio, Naskh/Nastaʿlīq typeface switch (both fonts cover all Kashmiri code points), dark mode, and shareable `#q=…` links
 
 **Run locally:** `python3 -m http.server -d site 8000`, then open http://localhost:8000
@@ -97,6 +100,9 @@ water = [e for e in entries if "water" in (e["gloss_en"] + e["definition_en"]).l
 ```
 
 ## Licence and credits
+
+Developed by **Kainaat & RGMir**.
+
 
 The build code is released under MIT. The data rows keep their sources'
 licences (per-row `license` field). See [`docs/SOURCES.md`](docs/SOURCES.md);
