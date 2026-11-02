@@ -39,7 +39,7 @@ Every key produces exactly the code point listed in
 | sign | َ a | ِ i | ُ u | ٔ ə | ٕ ɨ | ٖ iː | ٗ uː | ٚ e/o | ٛ ʲ/ʷ | ٟ ɨː | ّ shad | ٰ khaḍā zabar |
 
 Examples: `kE` + `x` + `Shift+3` + `r` gives **کٲشُر**. `x` `h` gives **شھ**,
-`Shift+X` `h` gives **ژھ** (tsʰ), and `t` `Shift+R` `Shift+9` gives **ترٛ**.
+`Shift+X` `h` gives **ژھ** (tsʰ), and `t` `r` `Shift+9` gives **ترٛ**.
 
 By default, the search ignores vowel signs: آب finds اَب, آب and so on. Tick
 **match vowel signs** to search for an exact diacritized spelling.
