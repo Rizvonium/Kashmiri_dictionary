@@ -191,19 +191,43 @@
         <div class="cands" id="cands" hidden></div>
       </div>
 
-      <div class="card translate soon" aria-disabled="true">
+      <div class="card translate">
         <div class="tr-head">
           <div>
-            <h2>Meaning and translation <span class="soon-tag">Coming soon</span></h2>
-            <p>Sentence meanings, AI translation and correction, and English to Kashmiri will open here. Until then, the dictionary meaning of every word is in Word by word above.</p>
+            <h2>Meaning and translation</h2>
+            <p>The dictionary meaning is instant and offline. Translate also asks Google's free translator and then an AI model, which gets the sentence, every word's dictionary meaning and Google's attempt, and returns a fluent translation with corrections. Names and English words you kept stay as typed. Machine translation of Kashmiri can be wrong, so check it against the word meanings.</p>
           </div>
-          <button class="btn primary" id="translateBtn" disabled>Translate and correct</button>
+          <button class="btn primary" id="translateBtn">Translate and correct</button>
         </div>
-        <div class="tr-grid" inert>
-          <div class="tr-card"><h3>From the dictionary</h3><div class="tr-out" id="trDict"></div><div class="tr-small" id="trDictNote"></div></div>
-          <div class="tr-card"><h3>AI translation <span class="tag mono" id="aiProvider">coming soon</span></h3><div class="tr-out placeholder" id="trAi">Not available yet</div>
-            <div class="tr-suggest" id="aiSuggest" hidden><span id="aiKs"></span><code id="aiRom"></code><button id="aiApplyKs"></button><button id="aiApplyRom"></button><span id="aiNotes"></span></div></div>
-          <div class="tr-card"><h3>English to Kashmiri</h3><div class="en-input"><input id="enInput" placeholder="the water is cold" disabled><button class="btn" id="enBtn" disabled>Translate</button></div><div class="tr-out" id="enOut"></div><div class="tr-small" id="enWords"></div></div>
+        <div class="tr-grid">
+          <div class="tr-card">
+            <h3>From the dictionary <span class="tag mono">offline</span></h3>
+            <div class="tr-out" id="trDict"></div>
+            <div class="tr-small" id="trDictNote"></div>
+          </div>
+          <div class="tr-card">
+            <h3>Google Translate <span class="tag mono" id="gStatus">free</span></h3>
+            <div class="tr-out placeholder" id="trGoogle">Press Translate and correct</div>
+            <div class="tr-small" id="trGoogleNote"></div>
+          </div>
+          <div class="tr-card best">
+            <h3>AI translation <span class="tag mono" id="aiProvider">not run yet</span></h3>
+            <div class="tr-out placeholder" id="trAi">Press Translate and correct</div>
+            <div class="tr-suggest" id="aiSuggest" hidden>
+              <div>Corrected Kashmiri <span class="ks" id="aiKs" lang="ks"></span> <button class="btn sm" id="aiApplyKs">Use in box 2</button></div>
+              <div>Roman <code id="aiRom"></code> <button class="btn sm" id="aiApplyRom">Use in box 3</button></div>
+              <div class="tr-small" id="aiNotes"></div>
+            </div>
+          </div>
+        </div>
+        <div class="en-row">
+          <h3>English to Kashmiri</h3>
+          <div class="en-input"><input id="enInput" data-kb="roman" placeholder="the water is cold" autocomplete="off"><button class="btn" id="enBtn">Translate</button></div>
+          <div class="tr-small" id="enWords"></div>
+          <div class="en-results">
+            <div class="tr-card"><h3>Google Translate <span class="tag mono" id="enGStatus">free</span></h3><div class="tr-out" id="enGoogle"></div></div>
+            <div class="tr-card best"><h3>AI translation <span class="tag mono" id="enAiStatus"></span></h3><div class="tr-out" id="enOut"></div></div>
+          </div>
         </div>
       </div>
 

@@ -45,6 +45,15 @@ The look takes its colours from Kashmir in autumn: warm paper neutrals, one chin
   * **English → Kashmiri**.
 * **Sources & add a word**: add your own words (saved in your browser and exportable as CSV), and read about the sources.
 
+### Meaning and translation
+
+Press **Translate and correct** in Write and translate to use three sources:
+1. **The dictionary meaning**: instant and works offline.
+2. **Google Translate's free web endpoint**: needs no key. Google may limit or refuse automated use, and Kashmiri support is up to Google. When it is unavailable, the column says so.
+3. **An AI translation**: the AI receives the sentence, every word's dictionary meanings and Google's attempt. It returns a fluent English translation plus corrected Kashmiri and Roman text, which you can apply with one click.
+
+English → Kashmiri works the same way. Words typed as `\word` or `\{phrase\}`, and English words you kept, stay exactly as typed. To switch the panel off, set `TRANSLATION_ENABLED = false` in `site/assets/app.js`.
+
 ### Translation quality: optional server-side Claude
 
 The best translations come from the included Vercel function `api/translate.js`, which calls **Claude** (`claude-opus-5-5`, high effort, with server-side refusal fallback enabled). To turn it on, open Vercel → Project → Settings → Environment Variables and add `ANTHROPIC_API_KEY`, then redeploy. Without the key, the site falls back to a free public model (text.pollinations.ai), which works on the deployed site but not from `localhost`. The function only accepts requests from your own site (or the `ALLOWED_ORIGINS` you list), limits each request to 1,200 characters, and rate-limits each IP address on a best-effort basis. Note that each translation spends your API credit.

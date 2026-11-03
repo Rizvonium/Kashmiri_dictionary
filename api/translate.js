@@ -51,19 +51,20 @@ function originAllowed(req) {
 function buildPrompt(body) {
   const mode = body.mode === "en2ks" ? "en2ks" : "ks2en";
   const clip = s => String(s || "").slice(0, MAX_INPUT);
+  const rough = body.rough ? `\nGoogle Translate's attempt (machine translation, may be wrong): ${clip(body.rough)}` : "";
   const hints = Array.isArray(body.hints) ? body.hints.slice(0, 60).map(h => `- ${clip(h).slice(0, 300)}`).join("\n") : "";
   if (mode === "en2ks") {
     return `Translate this English text into Kashmiri.
 English: ${clip(body.english)}
 Dictionary hints (English word -> Kashmiri candidates):
-${hints || "(none)"}
+${hints || "(none)"}${rough}
 Return the Kashmiri translation in "kashmiri" (Perso-Arabic) and "roman", and put the English text (lightly corrected if needed) in "english_translation".`;
   }
   return `Correct and translate this Kashmiri text.
 Roman Kashmiri as typed: ${clip(body.roman) || "(none)"}
 Kashmiri script (from the dictionary, may contain errors): ${clip(body.kashmiri) || "(none)"}
 Dictionary hints (typed word -> candidate spelling (meaning)):
-${hints || "(none)"}
+${hints || "(none)"}${rough}
 Return the corrected Kashmiri in "kashmiri" and "roman", and a natural English translation in "english_translation".`;
 }
 

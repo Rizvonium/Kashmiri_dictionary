@@ -626,6 +626,23 @@ function hintsForEnglish(text) {
   }
   return out;
 }
+/* Google's free web endpoint (no key). Kashmiri support and availability depend on Google; it can refuse
+   automated or heavy use (HTTP 429), so failures are shown plainly and the other sources still work. */
+async function googleTranslate(text, sl, tl) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 8000);
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text.slice(0, 1500))}`;
+    const r = await fetch(url, { signal: ctl.signal });
+    if (r.status === 429) throw new Error("Google is limiting requests from this network right now");
+    if (!r.ok) throw new Error(`Google returned HTTP ${r.status}`);
+    const data = await r.json().catch(() => { throw new Error("Google sent an unexpected reply"); });
+    const out = (data?.[0] || []).map(x => x?.[0] || "").join("").trim();
+    if (!out) throw new Error("no translation returned");
+    return { text: out, untranslated: out.replace(/\s+/g, " ") === text.replace(/\s+/g, " ").trim() };
+  } catch (e) {
+    throw new Error(e.name === "AbortError" ? "Google did not answer in time" : (e.message === "Failed to fetch" ? "Google could not be reached from this page" : e.message));
+  } finally { clearTimeout(timer); }
+}
 const FREE_SYSTEM = "You are an expert translator and editor of the Kashmiri language (Koshur). Use correct Kashmiri Perso-Arabic orthography with Kashmiri vowel signs. Output only valid JSON.";
 async function aiRequest(payload) {
   if (serverAI === null) await probeServer();
@@ -637,8 +654,8 @@ async function aiRequest(payload) {
   }
   // free public model (text.pollinations.ai) — same task, same hints
   const task = payload.mode === "en2ks"
-    ? `Translate this English text into Kashmiri.\nEnglish: ${payload.english}\nDictionary hints (English word -> Kashmiri candidates):\n${payload.hints.join("\n") || "(none)"}`
-    : `Correct and translate this Kashmiri text.\nRoman Kashmiri as typed: ${payload.roman || "(none)"}\nKashmiri script (may contain errors): ${payload.kashmiri}\nWords marked KEEP (written as \\word or \\{phrase\\} — names, English or any other language — or English words) must stay exactly as typed, in Latin letters, in every output including "kashmiri" and "roman".\nDictionary hints (typed word -> candidate spelling = meaning):\n${payload.hints.join("\n") || "(none)"}`;
+    ? `Translate this English text into Kashmiri.\nEnglish: ${payload.english}\nDictionary hints (English word -> Kashmiri candidates):\n${payload.hints.join("\n") || "(none)"}${payload.rough ? `\nGoogle Translate's attempt (may be wrong): ${payload.rough}` : ""}`
+    : `Correct and translate this Kashmiri text.\nRoman Kashmiri as typed: ${payload.roman || "(none)"}\nKashmiri script (may contain errors): ${payload.kashmiri}\nWords marked KEEP (written as \\word or \\{phrase\\} — names, English or any other language — or English words) must stay exactly as typed, in Latin letters, in every output including "kashmiri" and "roman".\nDictionary hints (typed word -> candidate spelling = meaning):\n${payload.hints.join("\n") || "(none)"}${payload.rough ? `\nGoogle Translate's attempt (may be wrong): ${payload.rough}` : ""}`;
   const prompt = `${task}\nReturn ONLY a JSON object with keys "english_translation", "kashmiri" (Perso-Arabic), "roman" (Romanized Kashmiri), "notes" (corrections or uncertain words; empty if none).`;
   const r = await fetch("https://text.pollinations.ai/", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages: [{ role: "system", content: FREE_SYSTEM }, { role: "user", content: prompt }], model: "openai", jsonMode: true }) });
@@ -651,13 +668,24 @@ async function aiRequest(payload) {
 async function translateWriter() {
   const ks = $("w4").value.trim(), roman = $("w1").value.trim();
   if (!ks && !roman) { toast("Type something in box 1 first"); return; }
-  const btn = $("translateBtn"); btn.disabled = true; $("trAi").textContent = "Translating…"; $("trAi").classList.add("placeholder");
+  const btn = $("translateBtn"); btn.disabled = true;
+  const setOut = (id, text, placeholder) => { $(id).textContent = text; $(id).classList.toggle("placeholder", !!placeholder); };
+  setOut("trGoogle", "Asking Google…", true); $("trGoogleNote").textContent = ""; $("gStatus").textContent = "free";
+  setOut("trAi", "Waiting for Google, then the AI…", true); $("aiSuggest").hidden = true;
+  let rough = "";
   try {
-    const j = await aiRequest({ mode: "ks2en", roman, kashmiri: ks, hints: hintsForWriter() });
-    $("aiProvider").textContent = j.provider; $("trAi").textContent = j.english_translation || "—"; $("trAi").classList.remove("placeholder");
+    const g = await googleTranslate(ks, "ks", "en");
+    rough = g.untranslated ? "" : g.text;
+    setOut("trGoogle", g.text);
+    $("trGoogleNote").textContent = g.untranslated ? "Google returned the text untranslated." : "Rough machine translation, often literal.";
+  } catch (e) { setOut("trGoogle", `Not available: ${e.message}.`, true); $("gStatus").textContent = "unavailable"; }
+  setOut("trAi", "Translating…", true);
+  try {
+    const j = await aiRequest({ mode: "ks2en", roman, kashmiri: ks, hints: hintsForWriter(), rough });
+    $("aiProvider").textContent = j.provider; setOut("trAi", j.english_translation || "—");
     $("aiKs").textContent = j.kashmiri ? normKs(j.kashmiri) : "—"; $("aiRom").textContent = j.roman || "—"; $("aiNotes").textContent = j.notes ? "Notes: " + j.notes : "";
     $("aiSuggest").hidden = false;
-  } catch (e) { $("trAi").textContent = `Translation unavailable: ${e.message}. The dictionary meaning on the left still works.`; }
+  } catch (e) { setOut("trAi", `Not available: ${e.message}. The dictionary meaning still works.`, true); }
   btn.disabled = false;
 }
 async function translateEnglish() {
@@ -666,16 +694,25 @@ async function translateEnglish() {
   const wordsHtml = [];
   for (const w of [...new Set(text.toLowerCase().split(/[^a-z']+/).filter(x => x.length > 1 && !STOP.has(x)))].slice(0, 12)) {
     const hits = DB.rows.filter(r => r.ks && r.glossWords.includes(w)).sort((a, b) => a.glossWords.indexOf(w) - b.glossWords.indexOf(w) || a.glossWords.length - b.glossWords.length || a.rank - b.rank).filter((h, i, a) => a.findIndex(x => x.ks === h.ks) === i).slice(0, 3);
-    if (hits.length) wordsHtml.push(`<b>${esc(w)}</b>: ${hits.map(h => `<span class="ks" lang="ks" style="font-size:17px">${esc(h.ks)}</span>`).join(" · ")}`);
+    if (hits.length) wordsHtml.push(`<span dir="ltr" style="unicode-bidi:isolate;white-space:nowrap"><b>${esc(w)}</b>: ${hits.map(h => `<span class="ks" lang="ks" style="font-size:17px">${esc(h.ks)}</span>`).join(" · ")}</span>`);
   }
   $("enWords").innerHTML = wordsHtml.length ? "From the dictionary — " + wordsHtml.join(" &nbsp;|&nbsp; ") : "No dictionary words found for this text.";
-  $("enOut").innerHTML = `<span class="muted">Translating…</span>`; $("enBtn").disabled = true;
+  $("enOut").innerHTML = `<span class="muted">Waiting for Google, then the AI…</span>`; $("enBtn").disabled = true;
+  $("enGoogle").innerHTML = `<span class="muted">Asking Google…</span>`; $("enGStatus").textContent = "free";
+  let rough = "";
   try {
-    const j = await aiRequest({ mode: "en2ks", english: text, hints });
-    $("enOut").innerHTML = `<div class="ks" lang="ks" style="font-size:24px">${esc(normKs(j.kashmiri || ""))}</div><code>${esc(j.roman || "")}</code>${j.notes ? `<div class="tr-small">Notes: ${esc(j.notes)}</div>` : ""}
-      <div class="tr-small">${esc(j.provider)} · <button class="btn sm" id="enToWriter">Open in writer</button></div>`;
+    const g = await googleTranslate(text, "en", "ks");
+    rough = g.untranslated ? "" : g.text;
+    $("enGoogle").innerHTML = g.untranslated ? `<span class="muted">Google returned the text untranslated.</span>` : `<div class="ks" lang="ks">${esc(normKs(g.text))}</div>`;
+  } catch (e) { $("enGoogle").innerHTML = `<span class="muted">Not available: ${esc(e.message)}.</span>`; $("enGStatus").textContent = "unavailable"; }
+  $("enOut").innerHTML = `<span class="muted">Translating…</span>`;
+  try {
+    const j = await aiRequest({ mode: "en2ks", english: text, hints, rough });
+    $("enAiStatus").textContent = j.provider;
+    $("enOut").innerHTML = `<div class="ks" lang="ks">${esc(normKs(j.kashmiri || ""))}</div><code>${esc(j.roman || "")}</code>${j.notes ? `<div class="tr-small">Notes: ${esc(j.notes)}</div>` : ""}
+      <div class="tr-small"><button class="btn sm" id="enToWriter">Open in the writer</button></div>`;
     $("enToWriter").onclick = () => { $("w1").value = toClean26(j.roman || "") || ""; updateWriter(); scrollTo({ top: 0, behavior: "smooth" }); };
-  } catch (e) { $("enOut").innerHTML = `<span class="muted">AI translation unavailable: ${esc(e.message)}</span>`; }
+  } catch (e) { $("enOut").innerHTML = `<span class="muted">Not available: ${esc(e.message)}.</span>`; }
   $("enBtn").disabled = false;
 }
 
@@ -851,7 +888,7 @@ function wire() {
   ["w4", "w2"].forEach(id => $(id).addEventListener("input", e => { $("w3").value = romanize(e.target.value); }));
   $("w1Clear").onclick = () => { $("w1").value = ""; updateWriter(); };
   document.querySelectorAll("[data-sentence]").forEach(c => c.onclick = () => { $("w1").value = c.dataset.sentence; updateWriter(); });
-  const TRANSLATION_ENABLED = false;   // flip to true to switch Meaning and translation back on
+  const TRANSLATION_ENABLED = true;   // set to false to switch Meaning and translation off
   if (TRANSLATION_ENABLED) $("translateBtn").onclick = translateWriter;
   $("keepEn").checked = store.get("ksd-keepEn", true);
   $("keepEn").onchange = e => { store.set("ksd-keepEn", e.target.checked); updateWriter(); };
@@ -914,7 +951,7 @@ loadData().then(() => {
   $("writeStatus").textContent = `${fmt(DB.rows.length)} entries`;
   if (qParam) { $("q").value = qParam; onSearchInput(true); } else runSearch();
   if (route() === "write") { W.ready = true; updateWriter(); }
-  // Meaning and translation is "coming soon": no translation service is contacted
+  probeServer();
   if (store.get("ksd-kb-open", false)) kbShow(true, route() === "write" ? $("w1") : $("q"));
 }).catch(err => {
   $("welcome").hidden = false; $("welcome").innerHTML = `<div class="empty">Could not load the dictionary (${esc(err.message)}).<br>Open the site through a web server (e.g. <code>python3 -m http.server -d site</code>) or the deployed address.</div>`;
