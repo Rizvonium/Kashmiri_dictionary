@@ -13,7 +13,7 @@ using the dedicated Kashmiri Perso-Arabic code points (ک ی ہ ھ ؠ ٲ ۄ ۍ �
 | [`data/build_report.json`](data/build_report.json) | Counts, coverage and QA statistics |
 | [`docs/SOURCES.md`](docs/SOURCES.md) | **Source-by-source usability assessment** (what each link really contains, quality, licence) |
 | [`docs/ORTHOGRAPHY.md`](docs/ORTHOGRAPHY.md) | **Which Unicode to use for Kashmiri** and every normalization rule applied |
-| `scripts/` | `fetch_sources.sh` (download), `build_dataset.py` (merge), `ks_normalize.py` (Unicode normalizer), `koshur_search.py` (spelling-tolerant search engine, see [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md)) |
+| `scripts/` | `fetch_sources.sh` (download), `build_dataset.py` (merge), `ks_normalize.py` (Unicode normalizer), `koshur_search.py` (spelling-tolerant search engine, see [docs/ROMAN_SEARCH.md](docs/ROMAN_SEARCH.md)), `ks_verifier.py` and `validate_lexicon.py` (dual-lookup verification, see below) |
 
 ## At a glance
 
@@ -71,6 +71,50 @@ python3 scripts/build_site_data.py data/kashmiri_dictionary.jsonl site/data/dict
 ### Adding word lists
 
 Put CSV files (`kashmiri_unicode, romanized_kashmiri, meaning`) in `data/contrib/` and rebuild. They are normalized, de-duplicated and merged; see `data/contrib/README.md`.
+
+## Dictionary verification (dual-lookup)
+
+`scripts/ks_verifier.py` implements the verifier from *Recursive Dual-Lookup Dictionary Verification
+for Grammatical Self-Correction in Low-Resource Kashmiri Generation* (S. A. Sheikh, project guide v1.0,
+2026) on this dataset. Every content word is looked up twice:
+
+* **by form**: what does the written token correspond to? Exact key first, then the vowel-free
+  skeleton, then Kashmiri look-alikes (ٲ→ا, ۄ→و, ؠ/ۍ→ی), then a character-trigram index with fuzzy
+  scoring (`rapidfuzz` if installed);
+* **by meaning**: which entry expresses the intended sense with the required valency? TF-IDF over
+  the English gloss by default; any sentence-transformers embedder can be passed instead.
+
+`flag()` decides in code whether a token has a valency mismatch or is unknown, and
+`verify_and_correct()` runs draft → dual lookup → flags → critic → re-check, where the critic may only
+substitute attested forms. Valency comes only from the sources' own labels ("verb (transitive)",
+Grierson's *v. t.* / *v. i.*), never from a model.
+
+```bash
+python3 scripts/ks_verifier.py form کاشر                       # -> کٲشُر
+python3 scripts/ks_verifier.py meaning "to collect (transitive)" --valency transitive
+python3 scripts/ks_verifier.py check "مےٚ چُھ کٲشُر زَبانہِ پؠٹھ غُرور"
+python3 scripts/validate_lexicon.py data/kashmiri_dictionary.jsonl
+python3 tests/test_pipeline.py
+```
+
+`tests/test_pipeline.py` replays the guide's motivating example (*pot waan*: the intransitive
+سَمیِتھ is flagged next to an ergative agent and replaced by the attested transitive سۄمبرٲوِتھ)
+with a scripted model, so it runs offline. On the real dataset, the form lookup recovers **97.5%** of
+2,000 damaged native headwords (vowel signs dropped, Kashmiri letters typed as Urdu ones), above the
+guide's 95% target. The guide's own three sample entries are in `data/lexicon_sample.json`.
+
+`scripts/validate_lexicon.py` (guide §6.4) checks every entry: required fields, unique ids, part of
+speech, valency, NFC/canonical form and foreign characters. All 46,872 entries are NFC and canonical.
+It flags 23 headwords that are not really headwords: alternatives joined with `/`
+(رۄہُن/رُہُن), trailing or bare `....`, a `label: value` pair and a whole sentence. `build_dataset.py`
+now splits and cleans these, so the next rebuild removes them. 5,119 verbs still have no valency
+label in any source; the guide's annotation protocol (two annotators, a third on disagreement) is the
+way to fill them.
+
+The website's **Translate and correct** follows the same rules: each hint says whether a word is
+`[IN DICTIONARY]` (with part of speech) or `[NOT IN DICTIONARY]` (spelled by rule), the model may
+only swap in spellings from the hints, and it returns an `edits` list (from, to, reason), which
+the page shows under the AI translation.
 
 ## Entry schema
 

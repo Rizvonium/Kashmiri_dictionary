@@ -1,0 +1,31 @@
+[
+  {
+    "id": "ks_0195_08",
+    "headword": "پۆت وان",
+    "transliteration": "pot waan",
+    "pos": "noun",
+    "valency": null,
+    "definition_ks": "دانہِ چھۄمبَنَس دوران وانہِ موٗنٛڈِس پَتہٕ کَنہِ سَمیومُت دانہِ۔",
+    "gloss_en": "grain accumulated behind the threshing log during paddy threshing"
+  },
+  {
+    "id": "ks_0412_02",
+    "headword": "سَمیُن",
+    "transliteration": "samyun",
+    "pos": "verb",
+    "valency": "intransitive",
+    "stems_and_participles": ["سَمیومُت", "سَمیِتھ"],
+    "definition_ks": "اَکِہ جایِہ جَمع گَژھُن یا یکجا گَژھُن۔",
+    "gloss_en": "to come together, to accumulate by itself, to be gathered (intransitive)"
+  },
+  {
+    "id": "ks_0430_11",
+    "headword": "سۄمبراوُن",
+    "transliteration": "sombrawun",
+    "pos": "verb",
+    "valency": "transitive",
+    "stems_and_participles": ["سۄمبرامُت", "سۄمبرٲوِتھ"],
+    "definition_ks": "پھُہلِتھ پیٚمتۍ چیز اَکِہ جایِہ جَمع کَرنۍ۔",
+    "gloss_en": "to collect, to gather together actively, to assemble items (transitive)"
+  }
+]

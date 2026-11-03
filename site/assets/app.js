@@ -616,7 +616,21 @@ async function probeServer() {
 }
 function hintsForWriter() {
   return (W.last?.trace || []).map(t => t.keep ? `${t.raw} -> KEEP EXACTLY "${t.rom}" in Latin letters in every output (${t.kind === "english" ? "English word" : "escaped text — a name, English or another language; do not translate it"})`
-    : `${t.raw} -> ${t.ks}${t.cands && t.cands.length > 1 ? " (alternatives: " + t.cands.slice(1, 4).map(c => c.e.ks + " = " + shortMeaning(c.e.meaning)).join("; ") + ")" : ""} = ${t.meaning}`);
+    : `${t.raw} -> ${t.ks} ${t.kind === "guess" ? "[NOT IN DICTIONARY: spelled by rule, may need fixing]" : `[IN DICTIONARY${t.chosen?.e.pos ? ", " + t.chosen.e.pos : ""}]`}${t.cands && t.cands.length > 1 ? " (alternatives: " + t.cands.slice(1, 4).map(c => c.e.ks + (c.e.pos ? " [" + c.e.pos + "]" : "") + " = " + shortMeaning(c.e.meaning)).join("; ") + ")" : ""} = ${t.meaning}`);
+}
+/* Dual-lookup rules (Sheikh 2026, sections 7.4 and 8): the dictionary decides which words are attested;
+   the model may only swap in attested spellings from the hints, and must list every change. */
+const EDIT_RULES = `Rules for the Kashmiri text:
+1. Words marked [IN DICTIONARY] are attested spellings: keep them, unless the sentence needs a different sense or a grammatically different form (for example a transitive verb with an ergative agent such as تٔمۍ / مےٚ / تٔمؠ); then use one of that word's listed alternatives.
+2. Words marked [NOT IN DICTIONARY] were spelled by rule: correct their spelling if you are confident.
+3. Never invent a spelling for a word that has a dictionary spelling or alternative in the hints.
+4. List every change in "edits" as {"from", "to", "reason"}; an empty list if you changed nothing.`;
+function showEdits(j) {
+  const ed = Array.isArray(j.edits) ? j.edits.filter(e => e && e.from && e.to && e.from !== e.to) : [];
+  const parts = [];
+  if (ed.length) parts.push("Changes: " + ed.map(e => `${e.from} → ${e.to}${e.reason ? " (" + e.reason + ")" : ""}`).join("; "));
+  if (j.notes) parts.push("Notes: " + j.notes);
+  return parts.join("  ·  ");
 }
 function hintsForEnglish(text) {
   const out = [];
@@ -655,8 +669,8 @@ async function aiRequest(payload) {
   // free public model (text.pollinations.ai) — same task, same hints
   const task = payload.mode === "en2ks"
     ? `Translate this English text into Kashmiri.\nEnglish: ${payload.english}\nDictionary hints (English word -> Kashmiri candidates):\n${payload.hints.join("\n") || "(none)"}${payload.rough ? `\nGoogle Translate's attempt (may be wrong): ${payload.rough}` : ""}`
-    : `Correct and translate this Kashmiri text.\nRoman Kashmiri as typed: ${payload.roman || "(none)"}\nKashmiri script (may contain errors): ${payload.kashmiri}\nWords marked KEEP (written as \\word or \\{phrase\\} — names, English or any other language — or English words) must stay exactly as typed, in Latin letters, in every output including "kashmiri" and "roman".\nDictionary hints (typed word -> candidate spelling = meaning):\n${payload.hints.join("\n") || "(none)"}${payload.rough ? `\nGoogle Translate's attempt (may be wrong): ${payload.rough}` : ""}`;
-  const prompt = `${task}\nReturn ONLY a JSON object with keys "english_translation", "kashmiri" (Perso-Arabic), "roman" (Romanized Kashmiri), "notes" (corrections or uncertain words; empty if none).`;
+    : `Correct and translate this Kashmiri text.\nRoman Kashmiri as typed: ${payload.roman || "(none)"}\nKashmiri script (may contain errors): ${payload.kashmiri}\nWords marked KEEP (written as \\word or \\{phrase\\} — names, English or any other language — or English words) must stay exactly as typed, in Latin letters, in every output including "kashmiri" and "roman".\nDictionary hints (typed word -> candidate spelling = meaning):\n${payload.hints.join("\n") || "(none)"}${payload.rough ? `\nGoogle Translate's attempt (may be wrong): ${payload.rough}` : ""}\n${EDIT_RULES}`;
+  const prompt = `${task}\nReturn ONLY a JSON object with keys "english_translation", "kashmiri" (Perso-Arabic), "roman" (Romanized Kashmiri), "edits" (list of {"from","to","reason"} for every change to the Kashmiri; empty if none), "notes" (uncertain words; empty if none).`;
   const r = await fetch("https://text.pollinations.ai/", { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages: [{ role: "system", content: FREE_SYSTEM }, { role: "user", content: prompt }], model: "openai", jsonMode: true }) });
   const raw = await r.text();
@@ -683,7 +697,7 @@ async function translateWriter() {
   try {
     const j = await aiRequest({ mode: "ks2en", roman, kashmiri: ks, hints: hintsForWriter(), rough });
     $("aiProvider").textContent = j.provider; setOut("trAi", j.english_translation || "—");
-    $("aiKs").textContent = j.kashmiri ? normKs(j.kashmiri) : "—"; $("aiRom").textContent = j.roman || "—"; $("aiNotes").textContent = j.notes ? "Notes: " + j.notes : "";
+    $("aiKs").textContent = j.kashmiri ? normKs(j.kashmiri) : "—"; $("aiRom").textContent = j.roman || "—"; $("aiNotes").textContent = showEdits(j);
     $("aiSuggest").hidden = false;
   } catch (e) { setOut("trAi", `Not available: ${e.message}. The dictionary meaning still works.`, true); }
   btn.disabled = false;

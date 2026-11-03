@@ -113,13 +113,30 @@ def clean(s):
 
 def norm_pos(p):
     p = clean(p).lower().strip(" .()")
+    if p in {"not found", "unknown", "none", "n/a"}:
+        return ""
     return POS_MAP.get(p, p)
 
 
+_HAS_KS_LETTER = re.compile(r"[\u0620-\u064A\u066E-\u06D3\u06FA-\u06FF]")
+
+
 def split_alternatives(ks):
-    """Split 'a، b , c' into ['a','b','c'] (Kashmiri synonyms in one cell)."""
-    parts = re.split(r"\s*[،,؛;]\s*", ks)
-    return [p for p in (normalize_ks(x) for x in parts) if p]
+    """Split 'a، b , c / d' into ['a','b','c','d'] (Kashmiri synonyms in one cell).
+
+    Also drops what validate_lexicon.py flags as non-headwords: pieces without a Kashmiri
+    letter ('....'), leading/trailing dots, 'label: value' duplicates and sentence-length
+    cells (more than 6 words), which are descriptions rather than dictionary words.
+    """
+    if len(ks.split()) > 10:  # a sentence or description, not a headword
+        return []
+    parts = re.split(r"\s*[،,؛;/:]\s*", ks)
+    out = []
+    for x in parts:
+        x = normalize_ks(x.strip(" .…"))
+        if x and _HAS_KS_LETTER.search(x) and len(x.split()) <= 6 and x not in out:
+            out.append(x)
+    return out
 
 
 # --------------------------------------------------------------------------- sources
@@ -490,10 +507,11 @@ def build_chikhapo(raw):
         if not w or not tr or len(w) < 2:
             continue
         deva = bool(re.search(r"[\u0900-\u097F]", w))
-        out.append(dict(
-            headword_ks="" if deva else normalize_ks(w), headword_deva=w if deva else "",
-            gloss_en="; ".join(dict.fromkeys(tr)), source="chikhapo",
-            source_ref="chikhapo:kas_eng.jsonl", script_quality="unverified"))
+        for head in ([w] if deva else split_alternatives(w)):
+            out.append(dict(
+                headword_ks="" if deva else head, headword_deva=head if deva else "",
+                gloss_en="; ".join(dict.fromkeys(tr)), source="chikhapo",
+                source_ref="chikhapo:kas_eng.jsonl", script_quality="unverified"))
     return out
 
 

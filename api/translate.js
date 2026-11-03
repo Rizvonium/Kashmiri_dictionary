@@ -16,19 +16,34 @@ const hits = new Map();
 const SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["english_translation", "kashmiri", "roman", "notes"],
+  required: ["english_translation", "kashmiri", "roman", "edits", "notes"],
   properties: {
     english_translation: { type: "string", description: "Natural English translation of the whole text" },
     kashmiri: { type: "string", description: "The text in correct Kashmiri Perso-Arabic script (Unicode, Kashmiri vowel signs)" },
     roman: { type: "string", description: "The text in readable Romanized Kashmiri" },
-    notes: { type: "string", description: "Short notes: corrections made, uncertain words, alternatives. Empty if none." },
+    edits: {
+      type: "array",
+      description: "Every change made to the Kashmiri text, so it can be audited. Empty if nothing changed.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["from", "to", "reason"],
+        properties: { from: { type: "string" }, to: { type: "string" }, reason: { type: "string" } },
+      },
+    },
+    notes: { type: "string", description: "Short notes: uncertain words, alternatives. Empty if none." },
   },
 };
 
 const SYSTEM = `You are an expert translator and editor of the Kashmiri language (Koshur, کٲشُر), fluent in its Perso-Arabic orthography and in common Roman spellings.
 Kashmiri script conventions: use Kashmiri letters and vowel signs (ٲ ؠ ۄ ۍ ێ ژ ٹ ڈ ڑ ھ ہ, signs َ ِ ُ ٔ ٕ ٟ ٖ ٗ ٚ ٛ); never Arabic ك ي ه.
 Words marked KEEP in the hints (typed as \\word or \\{phrase\\} — names, English or any other language — or English words in the sentence) must stay exactly as typed, in Latin letters, in every field — including "kashmiri" and "roman". Do not translate or transliterate them.
-You receive dictionary hints for each word (candidate spellings and meanings from Grierson's 1932 dictionary, Hassan's pronouncing dictionary and modern word lists). Treat them as evidence, not as a fixed answer: choose the sense that fits the sentence, fix spelling and grammar, and say in "notes" what you changed or are unsure about. Never invent meanings for words you do not know — say so in notes.`;
+You receive dictionary hints for each word (candidate spellings and meanings from Grierson's 1932 dictionary, Hassan's pronouncing dictionary and modern word lists). Treat them as evidence, not as a fixed answer: choose the sense that fits the sentence, fix spelling and grammar, and say in "notes" what you changed or are unsure about. Never invent meanings for words you do not know — say so in notes.
+Dictionary verification rules (the dictionary decides what is attested; you only edit):
+- A word marked [IN DICTIONARY] is an attested spelling. Keep it unless the sentence needs another sense or a grammatically different form — for example a transitive verb when the agent is ergative (تٔمۍ, مےٚ, تٔمؠ …) or an intransitive one when there is no object — and then use one of that word's listed alternatives.
+- A word marked [NOT IN DICTIONARY] was spelled by rule; correct it if you are confident.
+- Never invent a spelling for a word that has a dictionary spelling or alternative in the hints.
+- Record every change in "edits" (from, to, reason). Change nothing you cannot justify.`;
 
 function clientIp(req) {
   return String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || req.socket?.remoteAddress || "?";
