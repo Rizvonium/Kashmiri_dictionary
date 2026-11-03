@@ -414,3 +414,21 @@ select.f{height:36px;border:1px solid var(--line);background:var(--card);border-
 }
 @media (hover:none){ .desk-only{display:none!important} }
 @media (prefers-reduced-motion: reduce){ *{transition-duration:0s!important} }
+
+/* ---- Scan to text */
+.ocr-controls{flex-wrap:wrap;align-items:center;gap:10px}
+.ocr-num{width:64px;height:32px;margin:0 4px;padding:0 6px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--text)}
+.ocr-progress{display:flex;align-items:center;gap:12px;margin-top:12px}
+.ocr-bar{flex:0 0 220px;height:6px;background:var(--sunken);border-radius:4px;overflow:hidden}
+.ocr-bar>div{height:100%;width:0;background:var(--accent);transition:width .2s var(--ease)}
+.ocr-note{font-size:12.5px;margin-top:10px}
+.ocr-out{margin-top:20px;display:flex;flex-direction:column;gap:14px}
+.ocr-page{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:start}
+@media (max-width:900px){.ocr-page{grid-template-columns:1fr}}
+.ocr-page h3{grid-column:1/-1;margin:8px 0 0;font-size:15px}
+.ocr-page canvas{width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff}
+.ocr-table{width:100%;border-collapse:collapse;font-size:14px}
+.ocr-table td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;min-width:60px}
+.ocr-table td.ks{font-size:19px;line-height:1.9;text-align:right}
+.ocr-table td:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.ocr-table th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-2);text-align:left;padding:4px 8px}

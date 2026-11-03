@@ -806,11 +806,13 @@ const root = document.documentElement;
 function setTheme(t) { if (t) root.setAttribute("data-theme", t); else root.removeAttribute("data-theme"); store.set("ksd-theme", t || ""); }
 function setFont(f) { root.setAttribute("data-font", f); $("fontBtn").textContent = f === "nastaliq" ? "Nastaʿlīq" : "Naskh"; store.set("ksd-font", f); }
 const route = () => (location.hash.slice(1).split("?")[0] || "dict");
-const TITLES = { dict: "Dictionary", write: "Write and translate", about: "Sources and your words" };
+const TITLES = { dict: "Dictionary", write: "Write and translate", ocr: "Scan to text", about: "Sources and your words" };
+let ocrLoaded = false;
 function setSidebar(open) { $("sidebar").classList.toggle("open", open); $("scrim").hidden = !open; }
 function go(view, push = true) {
   if (!TITLES[view]) view = "dict";
-  ["dict", "write", "about"].forEach(v => { $("view-" + v).hidden = v !== view; });
+  ["dict", "write", "ocr", "about"].forEach(v => { $("view-" + v).hidden = v !== view; });
+  if (view === "ocr" && !ocrLoaded) { ocrLoaded = true; import("./ocr/ui.js").then(m => m.init()).catch(e => { $("ocrStatus").textContent = "Could not load the scanner: " + e.message; $("ocrProgress").hidden = false; }); }
   document.querySelectorAll(".tab").forEach(t => t.dataset.view === view ? t.setAttribute("aria-current", "page") : t.removeAttribute("aria-current"));
   $("pageTitle").textContent = TITLES[view]; document.title = `${TITLES[view]} · Kashmiri Dictionary`;
   setSidebar(false);

@@ -49,6 +49,7 @@
     <nav class="nav" aria-label="Sections">
       <button class="tab" data-view="dict" aria-current="page"><svg class="ic"><use href="#i-book"/></svg><span>Dictionary</span><span class="ks nav-ks" lang="ks">لُغَت</span></button>
       <button class="tab" data-view="write"><svg class="ic"><use href="#i-pen"/></svg><span>Write and translate</span><span class="ks nav-ks" lang="ks">تَرجُمہٕ</span></button>
+      <button class="tab" data-view="ocr"><svg class="ic"><use href="#i-pen"/></svg><span>Scan to text</span><span class="ks nav-ks" lang="ks">سکین</span></button>
       <button class="tab" data-view="about"><svg class="ic"><use href="#i-info"/></svg><span>Sources, add a word</span></button>
     </nav>
 
@@ -240,6 +241,32 @@
     </section>
 
     <!-- ========================================== SOURCES & ADD -->
+    <section id="view-ocr" class="view view-ocr" role="tabpanel" hidden>
+      <div class="card wide ocr-intro">
+        <h2>Scan to text</h2>
+        <p class="muted">Turn a PDF or a photo of a printed page with <b>Kashmiri</b> and <b>English</b> into typed, editable text, kept in the page's own rows and columns. Everything runs in your browser; nothing is uploaded. The first run downloads the Kashmiri model (7.7 MB), the dictionary (3.8 MB) and the English/Hindi readers. Hindi (Devanagari) is recognised only so it is not mistaken for Kashmiri, and is left out.</p>
+        <div class="controls ocr-controls">
+          <label class="btn primary" for="ocrFile">Choose PDF or images</label>
+          <input id="ocrFile" type="file" accept="application/pdf,image/*" multiple hidden>
+          <span class="muted" id="ocrFileName">No file chosen</span>
+          <label class="muted">Pages <input id="ocrFrom" type="number" min="1" value="1" class="ocr-num"> to <input id="ocrTo" type="number" min="1" value="1" class="ocr-num"></label>
+          <button class="btn" id="ocrRun" disabled>Convert</button>
+          <button class="btn ghost" id="ocrStop" hidden>Stop after this page</button>
+        </div>
+        <div class="ocr-progress" id="ocrProgress" hidden><div class="ocr-bar"><div id="ocrBar"></div></div><span class="muted mono" id="ocrStatus"></span></div>
+        <p class="muted ocr-note">Works best on straight, high-resolution scans (300 DPI). Kashmiri accuracy is still limited on small or unusual fonts, so check the result; tap any cell to edit it.</p>
+      </div>
+      <div class="ocr-out" id="ocrOut" hidden>
+        <div class="controls">
+          <button class="btn sm" id="ocrCsv">Download CSV</button>
+          <button class="btn sm" id="ocrTxt">Download text</button>
+          <button class="btn sm" id="ocrJson">Download JSON</button>
+          <button class="btn sm ghost" id="ocrCopy">Copy all</button>
+        </div>
+        <div id="ocrPages"></div>
+      </div>
+    </section>
+
     <section id="view-about" class="view view-about" role="tabpanel" hidden>
       <div class="about-grid">
         <div class="card wide add-card">
