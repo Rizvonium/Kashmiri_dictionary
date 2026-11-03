@@ -16,7 +16,8 @@ Target convention (see docs/ORTHOGRAPHY.md):
         ٲ U+0672 əː  اٟ ɨː (initial; deprecated ٳ U+0673 is decomposed)  ۄ U+06C4 ɔ  ێ U+06CE e  ۍ U+06CD ʲ
   * Arabic-Indic / Extended digits -> ASCII digits are NOT touched (rare).
   * Tatweel removed, ZWNJ kept, repeated identical marks collapsed,
-    whitespace collapsed, Arabic comma ، used as the list separator.
+    whitespace collapsed, Arabic comma ، used as the list separator,
+    a vowel sign separated from its letter by a space re-attached.
 """
 import re
 import unicodedata
@@ -37,6 +38,8 @@ _TRANS = str.maketrans({k: v for k, v in _CHAR_MAP.items()})
 
 _MARKS = "ً-ٰٟۖ-ۭ"
 _DUP_MARK = re.compile(r"([%s])\1+" % _MARKS)
+# A vowel sign separated from its letter by spaces (a common typing/OCR slip) is re-attached.
+_DETACHED_MARK = re.compile(r"(?<=[\u0620-\u06D3])[ \t]+([\u064B-\u065F\u0670])")
 _LEGACY_KASHMIRI_YEH = re.compile("ٮ۪")
 _SPACE_BEFORE_PUNCT = re.compile(r"\s+([،؛۔,;.])")
 _COMMA_SPACING = re.compile(r"\s*[،,]\s*")
@@ -61,6 +64,7 @@ def normalize_ks(text):
     t = t.replace("ڐ", "ڈ").replace("ٿ", "تھ").replace("ڇ", "چھ")
     t = _LEGACY_KASHMIRI_YEH.sub("ؠ", t)
     t = t.translate(_TRANS)
+    t = _DETACHED_MARK.sub(r"\1 ", t)  # 'اَسنہ ٕ دٕہان' -> 'اَسنہٕ دٕہان', 'اَمہ ِکِس' -> 'اَمہِ کِس'
     t = _DUP_MARK.sub(r"\1", t)
     t = unicodedata.normalize("NFC", t)
     t = _COMMA_SPACING.sub("، ", t)

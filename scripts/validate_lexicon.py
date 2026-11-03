@@ -66,6 +66,12 @@ def validate(entries):
                 errors.append(f"{tag}: not NFC: {form}")
             elif not guide_schema and form != normalize_ks(form):
                 errors.append(f"{tag}: not in canonical form: {form!r} -> {normalize_ks(form)!r}")
+            if form and unicodedata.category(form[0]).startswith("M"):
+                errors.append(f"{tag}: starts with a stray vowel sign U+{ord(form[0]):04X}: {form}")
+            for w in form.split()[1:]:
+                if unicodedata.category(w[0]).startswith("M"):
+                    errors.append(f"{tag}: a word starts with a stray vowel sign: {form}")
+                    break
             if bad := {c for c in form if not allowed(c)}:
                 errors.append(f"{tag}: foreign chars {[f'U+{ord(c):04X}' for c in sorted(bad)]} in {form}")
     return errors, warnings
