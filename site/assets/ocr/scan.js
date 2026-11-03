@@ -292,17 +292,28 @@ export async function scanPage(canvas, progress) {
   const inside = (r, b) => { const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2; return cx >= r.x0 && cx <= r.x1 && cy >= r.y0 && cy <= r.y1; };
   const { regions: regs } = regions(norm, w, h, words);
   const items = [];
-  // English: Tesseract's own lines inside English regions
-  regs.forEach((r, ri) => {
-    if (r.script !== "en") return;
-    const byLine = new Map();
-    for (const wd of words) if (inside(r, wd.bbox) && /[A-Za-z0-9]/.test(wd.text) && wd.confidence >= 30) (byLine.get(wd.lineKey) || byLine.set(wd.lineKey, []).get(wd.lineKey)).push(wd);
-    for (const ws of byLine.values()) {
-      ws.sort((a, b) => a.bbox.x0 - b.bbox.x0);
-      items.push({ script: "en", region: ri, text: ws.map((x) => x.text).join(" "), conf: ws.reduce((a, x) => a + x.confidence, 0) / ws.length,
-        x0: Math.min(...ws.map((x) => x.bbox.x0)), y0: Math.min(...ws.map((x) => x.bbox.y0)), x1: Math.max(...ws.map((x) => x.bbox.x1)), y1: Math.max(...ws.map((x) => x.bbox.y1)) });
+  // English: every Latin word joins the English column of its band that it overlaps most
+  // (so words at a column's edge are not lost), grouped by Tesseract's own lines.
+  const enRegs = regs.map((r, ri) => [r, ri]).filter(([r]) => r.script === "en");
+  const byLine = new Map();
+  for (const wd of words) {
+    if (!/[A-Za-z0-9]/.test(wd.text) || /[\u0600-\u06FF\u0900-\u097F]/.test(wd.text) || wd.confidence < 15) continue;
+    const cy = (wd.bbox.y0 + wd.bbox.y1) / 2;
+    let best = null, bestOv = -Infinity;
+    for (const [r, ri] of enRegs) {
+      if (cy < r.y0 || cy > r.y1) continue;
+      const ov = Math.min(r.x1, wd.bbox.x1) - Math.max(r.x0, wd.bbox.x0);
+      if (ov > bestOv) { bestOv = ov; best = ri; }
     }
-  });
+    if (best === null || bestOv < -0.5 * (wd.bbox.x1 - wd.bbox.x0)) continue;
+    const key = `${best}|${wd.lineKey}`;
+    (byLine.get(key) || byLine.set(key, []).get(key)).push({ ...wd, ri: best });
+  }
+  for (const ws of byLine.values()) {
+    ws.sort((a, b) => a.bbox.x0 - b.bbox.x0);
+    items.push({ script: "en", region: ws[0].ri, text: ws.map((x) => x.text).join(" "), conf: ws.reduce((a, x) => a + x.confidence, 0) / ws.length,
+      x0: Math.min(...ws.map((x) => x.bbox.x0)), y0: Math.min(...ws.map((x) => x.bbox.y0)), x1: Math.max(...ws.map((x) => x.bbox.x1)), y1: Math.max(...ws.map((x) => x.bbox.y1)) });
+  }
   // Kashmiri: our model inside Kashmiri regions; Hindi regions are left out
   const blocked = new Uint8Array(w * h);
   const ksRegs = regs.map((r, ri) => [r, ri]).filter(([r]) => r.script === "ks");
@@ -331,6 +342,24 @@ function layout(items, regs) {
   }
   const colOf = (it) => cols.findIndex((c) => c.regs.includes(regs[it.region]));
   const hgt = median(items.map((i) => i.y1 - i.y0)) || 20;
+  // Entry mode: text in blocks separated by blank space (sentence lists, glossaries with wrapped
+  // entries) -> one row per block, each column's lines joined. Gaps are measured on the English and
+  // Kashmiri text only (a Hindi column, which is left out, may fill the space between entries).
+  const byTop = [...items].sort((a, b) => a.y0 - b.y0), blocks = [];
+  for (const it of byTop) {
+    const blk = blocks[blocks.length - 1];
+    if (blk && it.y0 - blk.y1 <= 0.9 * hgt) { blk.items.push(it); blk.y1 = Math.max(blk.y1, it.y1); }
+    else blocks.push({ y1: it.y1, items: [it] });
+  }
+  const linesPerBlock = blocks.length ? items.length / blocks.length : 0;
+  if (blocks.length >= 3 && linesPerBlock >= 2.5) {
+    const table = blocks.map((blk) => cols.map((_, c) => {
+      const its = blk.items.filter((i) => colOf(i) === c).sort((a, b) => a.y0 + a.y1 - (b.y0 + b.y1));
+      return its.length ? [{ ...its[0], text: its.map((i) => i.text).join(" ") }] : [];
+    })).filter((row) => row.some((c) => c.length));
+    const columns = cols.map((c, k) => { const its = items.filter((i) => colOf(i) === k); return its.filter((i) => i.script === "ks").length > its.length / 2 ? "ks" : "en"; });
+    return { columns, rows: table, items };
+  }
   const sorted = [...items].sort((a, b) => a.y0 + a.y1 - (b.y0 + b.y1)), rows = [];
   for (const it of sorted) {
     const yc = (it.y0 + it.y1) / 2, r = rows[rows.length - 1];
