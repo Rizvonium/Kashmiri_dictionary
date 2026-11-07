@@ -329,6 +329,12 @@ select.f{height:36px;border:1px solid var(--line);background:var(--card);border-
 .about-grid table{width:100%;border-collapse:collapse;font-size:14px}
 .about-grid td,.about-grid th{padding:10px 8px;border-top:1px solid var(--line);text-align:left;vertical-align:top}
 .about-grid th{font-weight:500;color:var(--text-2);font-size:13px}
+.src-row{cursor:pointer;transition:background .15s}
+.src-row:hover,.src-row:focus-visible{background:var(--sunken);outline:none}
+.src-row:focus-visible td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.src-links{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:8px;font-size:13px}
+.src-go{color:var(--accent)}
+@media (max-width:640px){.src-table tr:first-child{display:none}.src-table td{display:block;border-top:0;padding:4px 8px}.src-table tr{display:block;border-top:1px solid var(--line);padding:8px 0}}
 .add-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
 .add-grid input{width:100%;min-width:0;height:40px;border:1px solid var(--line);background:var(--sunken);border-radius:8px;padding:0 12px}
 .add-grid input.ks{font-size:18px}

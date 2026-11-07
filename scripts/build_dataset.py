@@ -50,11 +50,11 @@ SOURCES = {
     "hassan": {
         "name": "Sheeba Hassan, A Pronouncing Dictionary of Kashmiri (DSAL, Univ. of Chicago), "
                 "via ubaierbhat/kzwebscrap and izan-majeed/kaeshir-dictionary-data",
-        "license": "DSAL / author copyright - research and non-commercial use",
+        "license": "No licence stated; (c) Sheeba Hassan / SALRC, University of Chicago - ask before redistributing",
     },
     "grierson": {
         "name": "G. A. Grierson, A Dictionary of the Kashmiri Language (1932), DSAL digital edition",
-        "license": "Public domain text (1932); DSAL digitization - cite DSAL",
+        "license": "1932 text public domain; DSAL digital edition CC BY-NC-ND 2.0 - credit DSAL, non-commercial, no derivatives",
     },
     "injilashah-phonemes": {
         "name": "injilashah/Kashmiri-language-text-dataset, wordphonemes-meaning.csv",

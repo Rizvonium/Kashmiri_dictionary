@@ -43,7 +43,7 @@ The look takes its colours from Kashmir in autumn: warm paper neutrals, one chin
   * a word-by-word meaning from the dictionary (offline);
   * an **AI translation and correction**, which receives every word's dictionary hints;
   * **English → Kashmiri**.
-* **Sources & add a word**: add your own words (saved in your browser and exportable as CSV), and read about the sources.
+* **Sources & add a word**: add your own words (saved in your browser and exportable as CSV), and read about the sources. Click any source to browse only its entries, or open the original.
 
 ### Meaning and translation
 
@@ -173,7 +173,9 @@ A labour of love (and a little fun) by **Sajad Kainaat & RGMir**, built on open-
 The build code is released under MIT. The data rows keep their sources'
 licences (per-row `license` field). See [`docs/SOURCES.md`](docs/SOURCES.md);
 to keep only rows that are safe to redistribute, filter
-`source ∈ {kaeshir, grierson}`. Credits: G. A. Grierson (1932) and DSAL,
+`source ∈ {kaeshir, chikhapo}`. Grierson rows come from DSAL's digital
+edition, which is CC BY-NC-ND 2.0 (non-commercial); Hassan rows state no
+licence. Credits: G. A. Grierson (1932) and DSAL,
 University of Chicago; Sheeba Hassan and DSAL; Izan Majeed (Kaeshir
 Dictionary); kashmirizabaan.com; ubaierbhat/kzwebscrap; injilashah.
 

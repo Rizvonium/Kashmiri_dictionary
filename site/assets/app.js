@@ -190,7 +190,7 @@ function search() {
   const raw = $("q").value.trim();
   const { field, mode, src, pos, audio, dia } = S;
   let pool = DB.rows;
-  if (src) pool = pool.filter(r => src === "mine" ? r.grp === "mine" : src === "modern" ? (r.grp === "modern" || r.grp === "core" || r.grp === "upload") : r.grp === src);
+  if (src) pool = pool.filter(r => src === "mine" ? r.grp === "mine" : src === "aksharantar" ? !!r.rv : src === "modern" ? (r.grp === "modern" || r.grp === "core" || r.grp === "upload") : r.grp === src);
   if (pos) pool = pool.filter(r => r.pos === pos);
   if (audio) pool = pool.filter(r => r.audio);
   if (!raw) return pool.map(r => ({ r, s: 0, why: "" }));
@@ -453,6 +453,12 @@ function onSearchInput(now) {
 }
 function setMode(v) { S.mode = v; document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === v)); }
 function searchFor(text, mode) { go("dict"); $("detailPane").classList.remove("open"); $("q").value = text; setMode(mode || "auto"); S.browseAll = false; onSearchInput(true); scrollTo({ top: 0, behavior: "smooth" }); }
+function browseSource(src) {
+  go("dict"); $("detailPane").classList.remove("open"); $("q").value = ""; setMode("auto");
+  Object.assign(S, { src, pos: "", audio: false, field: "any", browseAll: true });
+  $("srcSel").value = src; $("posSel").value = ""; $("fieldSel").value = "any"; $("audioChk").checked = false;
+  runSearch(); scrollTo({ top: 0, behavior: "smooth" });
+}
 function resetFilters() {
   Object.assign(S, { src: "", pos: "", audio: false, field: "any" });
   $("srcSel").value = ""; $("posSel").value = ""; $("fieldSel").value = "any"; $("audioChk").checked = false; runSearch();
@@ -876,10 +882,12 @@ function wire() {
   $("results").tabIndex = 0;
   $("q").addEventListener("keydown", e => { if (e.key === "ArrowDown" && S.hits.length && !$("panes").hidden) { e.preventDefault(); $("results").focus(); selectHit(Math.max(0, S.sel), false); } });
   $("kbdBtn").onclick = () => { const q = $("q"); kbShow(!KB.open || KB.target !== q, q); if (KB.open && !isTouch) q.focus(); };
+  document.addEventListener("keydown", e => { const sr = e.target.closest?.("tr[data-source]"); if (sr && e.target === sr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); browseSource(sr.dataset.source); } });
   document.addEventListener("click", e => {
     const t = e.target;
     const q = t.closest("[data-q]"); if (q) { searchFor(q.dataset.q); return; }
     const l = t.closest("[data-letter]"); if (l) { searchFor(l.dataset.letter, "start"); return; }
+    const sr = t.closest("[data-source]"); if (sr && !t.closest("a")) { browseSource(sr.dataset.source); return; }
     if (t.closest("[data-browseall]")) { S.browseAll = true; runSearch(); return; }
     if (t.closest("[data-reset]")) { resetFilters(); return; }
     const md = t.closest("[data-mode]"); if (md) { setMode(md.dataset.mode); runSearch(); return; }
